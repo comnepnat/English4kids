@@ -2760,3 +2760,195 @@ button {
     font-size: 1.7rem;
   }
 }
+
+/* ==========================================================================
+   CONTENT EXPANSION POLISH (PHASES 1, 2, 3)
+   ========================================================================== */
+.count-chip {
+  display: inline-block;
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #1D4ED8;
+  background: #EFF6FF;
+  border: 2px solid #BFDBFE;
+  padding: 2px 12px;
+  border-radius: var(--radius-pill);
+  vertical-align: middle;
+  margin-left: 6px;
+}
+
+/* Numbers 11-20 compact dot display & quiz visuals */
+.number-badge-giant.is-large > span {
+  font-size: 64px;
+}
+
+.number-dots-row.compact {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  max-width: 162px;
+  font-size: 14px;
+  line-height: 1.25;
+  letter-spacing: 1px;
+}
+
+.opt-swatch {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  border: 4px solid #FFFFFF;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.18);
+}
+
+.opt-num-badge {
+  font-family: var(--font-display);
+  font-size: 2.6rem;
+  font-weight: 800;
+  color: var(--primary-orange);
+  line-height: 1;
+}
+
+/* Phase 2: Difficulty bar, pic-number & Golden Balloon */
+.game-difficulty-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.diff-label {
+  font-family: var(--font-display);
+  font-weight: 800;
+  color: var(--text-slate);
+  font-size: 0.98rem;
+}
+
+.pic-number {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 5.5vw, 2.8rem);
+  font-weight: 800;
+  color: var(--text-navy);
+  line-height: 1;
+}
+
+.balloon.golden {
+  box-shadow: inset -10px -14px 0 rgba(180, 83, 9, 0.25), 0 0 18px rgba(250, 204, 21, 0.75);
+  border: 3px solid #FEF08A;
+}
+
+.balloon-gold-tag {
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #FEF08A;
+  color: #92400E;
+  border: 2px solid #F59E0B;
+  font-family: var(--font-display);
+  font-size: 0.78rem;
+  font-weight: 800;
+  padding: 1px 8px;
+  border-radius: var(--radius-pill);
+  white-space: nowrap;
+}
+
+/* Phase 3: 4 example words (2x2), Word Family bar & 3-mode Quiz */
+.letter-examples-grid {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.alpha-tile.is-digraph .alpha-pair {
+  font-size: 1.32rem;
+}
+
+.blend-family-bar,
+.pquiz-mode-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+
+.blend-letter-tile.is-digraph {
+  background: #F3E8FF;
+  border-color: #A78BFA;
+  box-shadow: 0 7px 0 #7C3AED;
+}
+
+.blend-letter-tile.is-digraph .blend-ch {
+  font-size: 2.5rem;
+}
+
+.pquiz-visual-prompt {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: #FFFBEB;
+  border: 3px solid #FDE68A;
+  border-radius: 24px;
+  padding: 10px 22px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.pqv-emoji {
+  font-size: 2.6rem;
+  line-height: 1;
+}
+
+.pqv-masked {
+  font-family: var(--font-display);
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: var(--text-navy);
+  letter-spacing: 0.06em;
+}
+
+.pqv-masked mark {
+  background: #FEF08A;
+  color: var(--primary-orange);
+  padding: 0 8px;
+  border-radius: 10px;
+}
+
+.pqv-vi {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-slate);
+}
+
+.pquiz-rhyme-word {
+  font-family: var(--font-display);
+  font-size: 1.85rem;
+  font-weight: 800;
+  color: #0F766E;
+}
+
+@media (max-width: 600px) {
+  .letter-examples-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .blend-letter-tile.is-digraph .blend-ch {
+    font-size: 2rem;
+  }
+}
+
+.big-letter-box.is-digraph {
+  align-items: center;
+  padding-top: 0;
+  gap: 8px;
+}
+
+.big-letter-box.is-digraph .big-upper {
+  font-size: 3.6rem;
+}
+
+.big-letter-box.is-digraph .big-lower {
+  font-size: 2.6rem;
+}
