@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>English4Kids - Bé Học Tiếng Anh Vui Nhộn (6 Tuổi)</title>
-  <meta name="description" content="Ứng dụng học tiếng Anh tương tác qua thẻ từ vựng (Flashcards), phát âm chuẩn và trò chơi vui nhộn dành cho bé 6 tuổi." />
+  <title>English4Kids - Bé Học Tiếng Anh Vui Nhộn (4–15 Tuổi)</title>
+  <meta name="description" content="Ứng dụng học tiếng Anh tương tác qua thẻ từ vựng (Flashcards), phát âm chuẩn, phim tương tác và trò chơi vui nhộn cho bé 4–15 tuổi (Pre-A1 đến B2)." />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@500;600;700;800&display=swap" rel="stylesheet">
@@ -1367,19 +1367,20 @@
             <strong>💡 Mẹo để câu dài &amp; phim đọc hay như người thật 100% (Miễn phí):</strong>
             <ul>
               <li><strong>Trên iPad / iPhone:</strong> Vào <em>Cài đặt → Trợ năng → Nội dung được đọc → Giọng nói → Tiếng Anh</em> → tải miễn phí giọng <strong>Enhanced / Premium</strong> (<em>Ava, Zoe</em> hoặc <em>Samantha Enhanced</em>).</li>
+              <li><strong>Trên Samsung Galaxy Tab / Android:</strong> Vào <em>Cài đặt → Quản lý chung → Chuyển văn bản thành giọng nói → Công cụ ưu tiên</em> → chọn <strong>Dịch vụ lời nói của Google</strong> (thay cho Samsung TTS). Bấm ⚙️ cạnh đó → <em>Cài đặt dữ liệu giọng nói</em> → tải <em>Tiếng Anh (Hoa Kỳ)</em> và chọn giọng nghe hay nhất. Sau đó mở app bằng <strong>Chrome</strong> và chọn lại giọng trong mục này.</li>
               <li><strong>Trên Máy tính:</strong> Mở bằng <strong>Microsoft Edge</strong> (có sẵn giọng <em>Ana / Aria / Jenny Online Natural</em> rất tự nhiên) hoặc <strong>Google Chrome</strong> (<em>Google US English</em>).</li>
             </ul>
           </div>
 
           <!-- Optional BYO Cloud AI TTS -->
           <details class="gdrive-guide voice-cloud-box">
-            <summary>✨ Nâng cao (Tùy chọn): Kết nối AI TTS (Google Neural2 / OpenAI Nova) cho câu dài</summary>
+            <summary>✨ Nâng cao (Tùy chọn): Kết nối AI TTS (Google Chirp 3 HD / OpenAI GPT-4o) cho câu dài</summary>
             <p class="voice-cloud-desc">Dành cho phụ huynh muốn mọi câu ví dụ &amp; tập phim dùng giọng AI điện ảnh (chỉ lưu key trong máy của bạn):</p>
             <div class="voice-cloud-form">
               <select id="voice-cloud-provider" class="srs-select">
                 <option value="none">Tắt (Dùng miễn phí)</option>
-                <option value="google">Google Cloud TTS (Neural2 • Miễn phí 1M ký tự/tháng)</option>
-                <option value="openai">OpenAI TTS (tts-1 • Giọng Nova)</option>
+                <option value="google">Google Cloud TTS (Chirp 3 HD, dự phòng Neural2)</option>
+                <option value="openai">OpenAI TTS (gpt-4o-mini-tts, dự phòng tts-1)</option>
               </select>
               <input type="password" id="voice-cloud-key" placeholder="Dán API Key của bạn (nếu muốn dùng)" autocomplete="off" />
               <button type="button" class="btn-save-cid" id="btn-save-cloud-tts">Lưu</button>

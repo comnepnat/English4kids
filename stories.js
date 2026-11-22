@@ -39,8 +39,20 @@
 
   function clearStoryTimer() {
     if (sState.timer) {
-      clearTimeout(sState.timer);
+      if (typeof sState.timer.cancel === 'function') sState.timer.cancel();
+      else clearTimeout(sState.timer);
       sState.timer = null;
+    }
+  }
+
+  // Wait until the narrator has finished the sentence (never cut it off), keeping at least
+  // `minMs` per scene so short lines still leave time to look at the picture.
+  function scheduleAfterNarration(fn, minMs) {
+    clearStoryTimer();
+    if (typeof window.afterSpeech === 'function') {
+      sState.timer = window.afterSpeech(fn, { gap: 700, min: minMs, max: 25000 });
+    } else {
+      sState.timer = setTimeout(fn, minMs);
     }
   }
 
@@ -307,7 +319,7 @@
     speakEnglish(scene.successEn, 0.94);
     updatePlayPauseBtn();
 
-    sState.timer = setTimeout(() => {
+    scheduleAfterNarration(() => {
       const ep = EPISODES[sState.epIndex];
       if (sState.sceneIndex < ep.scenes.length - 1) {
         sState.sceneIndex += 1;
@@ -360,7 +372,7 @@
 
       speakEnglish(scene.en, 0.92);
       if (sState.playing) {
-        sState.timer = setTimeout(() => {
+        scheduleAfterNarration(() => {
           if (!sState.playing) return;
           if (sState.sceneIndex < ep.scenes.length - 1) {
             sState.sceneIndex += 1;

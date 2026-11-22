@@ -93,6 +93,12 @@
     return AGE_GROUPS.find(a => a.id === ageId) || AGE_GROUPS[1];
   }
 
+  function escapeHtml(str) {
+    return String(str == null ? '' : str).replace(/[&<>"']/g, ch => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    }[ch]));
+  }
+
   function progressKeyFor(profileId) {
     return `${ PROGRESS_PREFIX }${ profileId }`;
   }
@@ -185,7 +191,7 @@
       activeId: bundle.activeId || bundle.profiles[0].id,
       profiles: bundle.profiles.map(p => ({
         id: p.id,
-        name: p.name || 'Bé',
+        name: String(p.name || 'Bé').slice(0, 40),
         avatar: p.avatar || '🦁',
         ageGroup: p.ageGroup || 'age_6_7',
         createdAt: p.createdAt || new Date().toISOString()
@@ -306,11 +312,11 @@
       card.style.setProperty('--prof-bg', ag.bg);
 
       card.innerHTML = `
-        <button type="button" class="profile-select-area" data-prof-id="${ prof.id }">
-          <div class="prof-avatar-circle">${ prof.avatar }</div>
+        <button type="button" class="profile-select-area" data-prof-id="${ escapeHtml(prof.id) }">
+          <div class="prof-avatar-circle">${ escapeHtml(prof.avatar) }</div>
           <div class="prof-card-info">
             <div class="prof-name-row">
-              <strong>${ prof.name }</strong>
+              <strong>${ escapeHtml(prof.name) }</strong>
               ${ isActive ? '<span class="prof-active-tag">✅ Đang học</span>' : '' }
             </div>
             <span class="prof-age-pill">${ ag.icon } ${ ag.label } • ${ ag.levels.join('–') }</span>

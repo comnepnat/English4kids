@@ -182,7 +182,7 @@
   function stopAll() {
     clearTimers();
     if (g.balloon) g.balloon.running = false;
-    if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+    if (typeof window.stopAllSpeech === 'function') window.stopAllSpeech(); else if ('speechSynthesis' in window) window.speechSynthesis.cancel();
     const sky = $('balloon-sky');
     if (sky) sky.querySelectorAll('.balloon').forEach(b => b.remove());
   }
@@ -1015,7 +1015,7 @@
     const all = uniquePool();
     const distractors = shuffleArray(all.filter(c => c.id !== card.id)).slice(0, 3);
     const options = shuffleArray([card, ...distractors]);
-    const masked = maskSentenceTarget(card.exampleEn, card.en);
+    const masked = maskSentenceTarget(card.exampleEn, card.exampleWord || card.en);
 
     stage.innerHTML = `
       <div class="sent-prompt-card">
@@ -1061,9 +1061,10 @@
       btn.classList.add('correct');
       const enLine = $('sent-en-line');
       if (enLine) {
+        const shownWord = target.exampleWord || target.en;
         enLine.innerHTML = target.exampleEn.replace(
-          new RegExp(`\\b${ target.en.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') }\\b`, 'i'),
-          `<span class="sent-filled-pill">${ target.en }</span>`
+          new RegExp(`\\b${ shownWord.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') }\\b`, 'i'),
+          match => `<span class="sent-filled-pill">${ match }</span>`
         );
       }
       playSoundEffect('correct');

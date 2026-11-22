@@ -297,7 +297,8 @@ function spellWordOutLoud(word) {
     .replace(/[^a-zA-Z]/g, '')
     .toUpperCase()
     .split('');
-  const spelledSequence = `${ letters.join(', ') }. ${ word }!`;
+  // "L. I. O. N." makes engines say letter names (A = "ay", not the article "uh")
+  const spelledSequence = `${ letters.join('. ') }. ${ word }!`;
   speakEnglish(spelledSequence, 0.85);
 }
 
@@ -648,6 +649,7 @@ function renderMontessoriPeriod() {
   if (!box) return;
   const m = state.montessori;
   const triad = m.triad;
+  m.locked = false; // set while the "correct" sentence is being read, so taps can't skip it
 
   const stepPillsHTML = `
     <div class="mont-steps-header">
@@ -746,11 +748,13 @@ function renderMontessoriPeriod() {
         <span class="mont-card-ipa">${ card.phonetic || '' }</span>
       `;
       cardEl.addEventListener('click', () => {
+        if (m.locked) return;
         if (card.id === targetCard.id) {
+          m.locked = true;
           cardEl.classList.add('correct');
           playSoundEffect('correct');
           speakEnglish(`Yes! That is ${ targetCard.en }!`, 0.92);
-          setTimeout(() => {
+          window.afterSpeech(() => {
             if (m.stepIndex < 2) {
               m.stepIndex += 1;
               renderMontessoriPeriod();
@@ -759,7 +763,7 @@ function renderMontessoriPeriod() {
               m.stepIndex = 0;
               renderMontessoriPeriod();
             }
-          }, 700);
+          }, { gap: 350 });
         } else {
           cardEl.classList.remove('wrong');
           void cardEl.offsetWidth;
@@ -808,11 +812,13 @@ function renderMontessoriPeriod() {
       btn.dataset.cardId = opt.id;
       btn.innerHTML = `<strong>${ opt.en }</strong><span>${ opt.phonetic || '' }</span>`;
       btn.addEventListener('click', () => {
+        if (m.locked) return;
         if (opt.id === targetCard.id) {
+          m.locked = true;
           btn.classList.add('correct');
           playSoundEffect('correct');
           speakEnglish(`${ targetCard.en }! ${ targetCard.exampleEn }`, 0.92);
-          setTimeout(() => {
+          window.afterSpeech(() => {
             if (m.stepIndex < 2) {
               m.stepIndex += 1;
               renderMontessoriPeriod();
@@ -830,7 +836,7 @@ function renderMontessoriPeriod() {
               launchConfettiBurst();
               renderMontessoriPeriod();
             }
-          }, 800);
+          }, { gap: 400 });
         } else {
           btn.classList.add('wrong');
           btn.disabled = true;

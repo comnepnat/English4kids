@@ -220,7 +220,7 @@
           type: 'context',
           skill: 'context',
           card,
-          maskedEn: maskWordInSentence(card.exampleEn, card.en),
+          maskedEn: maskWordInSentence(card.exampleEn, card.exampleWord || card.en),
           options
         };
       }
