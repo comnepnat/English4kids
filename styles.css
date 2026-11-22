@@ -4006,3 +4006,211 @@ button {
     display: none;
   }
 }
+
+/* ==========================================================================
+   BACKUP & GOOGLE DRIVE SYNC MODAL
+   ========================================================================== */
+.backup-dialog {
+  max-width: 660px;
+}
+
+.backup-status-banner {
+  padding: 10px 14px;
+  border-radius: 16px;
+  font-weight: 700;
+  font-size: 0.92rem;
+  margin-bottom: 14px;
+}
+
+.backup-status-banner.is-success {
+  background: #DCFCE7;
+  color: #166534;
+  border: 2px solid #86EFAC;
+}
+
+.backup-status-banner.is-error {
+  background: #FEE2E2;
+  color: #991B1B;
+  border: 2px solid #FCA5A5;
+}
+
+.backup-section-card {
+  background: #F8FAFC;
+  border: 2px solid #E2E8F0;
+  border-radius: 20px;
+  padding: 16px;
+  margin-bottom: 14px;
+}
+
+.backup-section-card.gdrive-card {
+  background: #F0F9FF;
+  border-color: #BAE6FD;
+}
+
+.backup-sec-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 6px;
+}
+
+.backup-sec-head h3 {
+  font-family: var(--font-display);
+  font-size: 1.12rem;
+  font-weight: 800;
+  color: var(--text-navy);
+}
+
+.backup-sec-desc {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-slate);
+  margin-bottom: 12px;
+}
+
+.backup-btn-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.btn-backup-primary,
+.btn-backup-secondary,
+.btn-gdrive-connect,
+.btn-gdrive-upload,
+.btn-gdrive-download {
+  font-size: 0.95rem;
+  font-weight: 800;
+  padding: 9px 16px;
+  border-radius: var(--radius-pill);
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+.btn-backup-primary {
+  background: var(--primary-orange);
+  color: #FFFFFF;
+  box-shadow: 0 4px 0 var(--primary-orange-dark);
+}
+
+.btn-backup-secondary {
+  background: var(--surface-white);
+  color: var(--text-navy);
+  border: 2px solid #CBD5E1;
+  box-shadow: 0 4px 0 #CBD5E1;
+}
+
+.btn-gdrive-connect {
+  background: #2563EB;
+  color: #FFFFFF;
+  box-shadow: 0 4px 0 #1D4ED8;
+}
+
+.btn-gdrive-upload {
+  background: #16A34A;
+  color: #FFFFFF;
+  box-shadow: 0 4px 0 #15803D;
+}
+
+.btn-gdrive-download {
+  background: #0EA5E9;
+  color: #FFFFFF;
+  box-shadow: 0 4px 0 #0284C7;
+}
+
+.btn-gdrive-upload:disabled,
+.btn-gdrive-download:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.gdrive-config-row {
+  margin-bottom: 12px;
+}
+
+.gdrive-config-row label {
+  display: block;
+  font-size: 0.84rem;
+  font-weight: 800;
+  color: var(--text-slate);
+  margin-bottom: 4px;
+}
+
+.gdrive-input-group {
+  display: flex;
+  gap: 8px;
+}
+
+.gdrive-input-group input {
+  flex: 1;
+  min-width: 0;
+  padding: 8px 12px;
+  border-radius: 12px;
+  border: 2px solid #93C5FD;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-weight: 700;
+  background: #FFFFFF;
+}
+
+.btn-save-cid {
+  background: #0F172A;
+  color: #FFFFFF;
+  font-weight: 800;
+  font-size: 0.9rem;
+  padding: 8px 16px;
+  border-radius: 12px;
+}
+
+.gdrive-last-sync {
+  margin-top: 10px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.gdrive-guide {
+  margin-top: 12px;
+  background: #FFFFFF;
+  border: 2px solid #DBEAFE;
+  border-radius: 14px;
+  padding: 10px 14px;
+  font-size: 0.86rem;
+}
+
+.gdrive-guide summary {
+  font-family: var(--font-display);
+  font-weight: 800;
+  color: #1D4ED8;
+  cursor: pointer;
+}
+
+.gdrive-guide ol {
+  margin: 8px 0 0 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  color: var(--text-slate);
+  font-weight: 600;
+}
+
+.origin-copy-box {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #F1F5F9;
+  padding: 4px 10px;
+  border-radius: 10px;
+  margin-top: 4px;
+}
+
+.btn-copy-mini {
+  background: #2563EB;
+  color: #FFFFFF;
+  font-size: 0.78rem;
+  font-weight: 800;
+  padding: 3px 10px;
+  border-radius: var(--radius-pill);
+}

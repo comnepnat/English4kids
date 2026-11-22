@@ -42,6 +42,11 @@
           <span class="stat-label">Từ đã thuộc</span>
         </div>
 
+        <button class="btn-icon-action" id="btn-backup-modal" type="button" title="Sao lưu & Đồng bộ Google Drive">
+          <span>☁️</span>
+          <span class="btn-text-desktop">Sao lưu</span>
+        </button>
+
         <button class="btn-icon-action" id="btn-roadmap-modal" type="button" title="Lộ trình tính năng sắp tới">
           <span>🗺️</span>
           <span class="btn-text-desktop">Lộ trình</span>
@@ -803,6 +808,76 @@
       </div>
     </div>
 
+    <!-- MODAL: BACKUP & GOOGLE DRIVE SYNC -->
+    <div class="modal-backdrop hidden" id="backup-modal" role="dialog" aria-modal="true" aria-labelledby="backup-title">
+      <div class="modal-dialog backup-dialog">
+        <div class="modal-header">
+          <h2 id="backup-title">☁️ Sao Lưu &amp; Đồng Bộ Google Drive</h2>
+          <button class="btn-close-modal" id="btn-close-backup" type="button" aria-label="Đóng">✕</button>
+        </div>
+
+        <div class="modal-body">
+          <div class="backup-status-banner hidden" id="backup-status-banner"></div>
+
+          <!-- Option 1: Instant File Export / Import (Save directly to Google Drive via Files) -->
+          <div class="backup-section-card">
+            <div class="backup-sec-head">
+              <h3>💾 Cách 1: Xuất / Nhập File Sao Lưu (Dùng ngay)</h3>
+              <span class="phase-badge done">Không cần cài đặt</span>
+            </div>
+            <p class="backup-sec-desc">Tải file tiến trình (<code>.json</code>) về lưu thẳng vào thư mục <strong>Google Drive</strong> trên iPad/máy tính, hoặc khôi phục lại khi đổi thiết bị.</p>
+            <div class="backup-btn-row">
+              <button class="btn-backup-primary" id="btn-export-json" type="button">⬇️ Xuất file sao lưu</button>
+              <button class="btn-backup-secondary" id="btn-import-json" type="button">⬆️ Khôi phục từ file</button>
+              <input type="file" id="input-import-json" accept=".json,application/json" class="hidden" />
+            </div>
+          </div>
+
+          <!-- Option 2: Direct 1-Tap Google Drive Sync -->
+          <div class="backup-section-card gdrive-card">
+            <div class="backup-sec-head">
+              <h3>☁️ Cách 2: Đồng Bộ Trực Tiếp Google Drive (1 chạm)</h3>
+              <span class="phase-badge upcoming" id="gdrive-conn-badge">Chưa kết nối</span>
+            </div>
+            <p class="backup-sec-desc">Lưu và tải tự động file <code>english4kids_progress.json</code> trực tiếp trên Google Drive cá nhân của bạn.</p>
+
+            <div class="gdrive-config-row">
+              <label for="gdrive-client-id">Google OAuth Client ID:</label>
+              <div class="gdrive-input-group">
+                <input type="text" id="gdrive-client-id" placeholder="Dán Client ID (...apps.googleusercontent.com)" autocomplete="off" />
+                <button class="btn-save-cid" id="btn-save-client-id" type="button">Lưu</button>
+              </div>
+            </div>
+
+            <div class="backup-btn-row">
+              <button class="btn-gdrive-connect" id="btn-gdrive-connect" type="button">🔑 Kết nối Google Drive</button>
+              <button class="btn-gdrive-upload" id="btn-gdrive-upload" type="button" disabled>☁️ Lưu lên Drive</button>
+              <button class="btn-gdrive-download" id="btn-gdrive-download" type="button" disabled>📥 Tải từ Drive</button>
+            </div>
+
+            <div class="gdrive-last-sync" id="gdrive-last-sync">Chưa đồng bộ lần nào.</div>
+
+            <details class="gdrive-guide">
+              <summary>📖 Hướng dẫn tạo Google Client ID miễn phí (chỉ làm 1 lần – 3 phút)</summary>
+              <ol>
+                <li>Mở <strong>console.cloud.google.com</strong> → tạo 1 Project mới (ví dụ <code>English4Kids</code>).</li>
+                <li>Vào <strong>APIs &amp; Services → Library</strong> → tìm <strong>Google Drive API</strong> và bấm <strong>Enable</strong>.</li>
+                <li>Vào <strong>OAuth consent screen</strong> → chọn <strong>External</strong> → điền tên app → thêm email Google của bạn vào mục <strong>Test users</strong>.</li>
+                <li>Vào <strong>Credentials → Create Credentials → OAuth client ID → Web application</strong>.</li>
+                <li>Ở mục <strong>Authorized JavaScript origins</strong>, thêm đúng địa chỉ:
+                  <div class="origin-copy-box">
+                    <code id="gdrive-origin-code">https://comnepnat.github.io</code>
+                    <button type="button" id="btn-copy-origin" class="btn-copy-mini">📋 Sao chép</button>
+                  </div>
+                </li>
+                <li>Bấm <strong>Create</strong>, sao chép <strong>Client ID</strong> (đuôi <code>.apps.googleusercontent.com</code>) dán vào ô phía trên và bấm <strong>Lưu</strong>!</li>
+              </ol>
+            </details>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Celebration Confetti Canvas -->
     <canvas id="confetti-canvas" aria-hidden="true"></canvas>
   </div>
@@ -812,5 +887,6 @@
   <script src="games.js"></script>
   <script src="phonics.js"></script>
   <script src="stories.js"></script>
+  <script src="backup.js"></script>
 </body>
 </html>

@@ -30,5 +30,11 @@
 - **33 Từ ghép âm theo 6 nhóm vần** (`-AT/-AN`, `-OG/-OX`, `-UN/-UG`, `-IG/-IN`, `-ED/-EN`, `SH/CH/TH`).
 - **3 chế độ Đố Vui Ngữ Âm**: Nghe chọn chữ & âm, Tìm âm đầu còn thiếu (`_AT`), và Tìm từ cùng vần (*Rhyming Match*).
 
+## ☁️ Sao Lưu & Đồng Bộ Google Drive
+
+Bấm nút **☁️ Sao lưu** trên thanh tiêu đề để bảo vệ tiến trình học của bé (sao vàng, từ đã thuộc, chữ ABC, tập phim đã xem, bài vừa học):
+- **Cách 1 (Dùng ngay, không cần cài đặt)**: Xuất/nhập file `english4kids-backup-YYYY-MM-DD.json` để lưu thẳng vào Google Drive trên iPad/máy tính hoặc chuyển sang thiết bị khác.
+- **Cách 2 (Đồng bộ 1 chạm trực tiếp)**: Kết nối tài khoản Google Drive cá nhân bằng Google Identity Services + Drive API v3 (`english4kids_progress.json`) kèm hướng dẫn tạo Google Client ID miễn phí ngay trong ứng dụng.
+
 ## 🌐 Dùng thử trực tiếp
 https://comnepnat.github.io/English4kids/
