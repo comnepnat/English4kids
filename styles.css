@@ -8879,3 +8879,243 @@ body.is-speaking .mascot-3d-rig.is-full .m3d-speech-ring {
   }
 }
 
+/* ==========================================================================
+   HAND-PAINTED PICTURE-BOOK ART LAYER (Gouache/Watercolor Storybook World)
+   ========================================================================== */
+
+/* Full-viewport warm watercolor meadow atmosphere replacing flat geometric SVG hills */
+body {
+  background:
+    linear-gradient(180deg, rgba(224, 244, 255, 0.72) 0%, rgba(255, 252, 240, 0.62) 52%, rgba(255, 250, 232, 0.28) 100%),
+    url('assets/art/painted_home_meadow.webp') center bottom / cover no-repeat fixed;
+}
+
+body[data-age="age_11_15"] {
+  background: linear-gradient(180deg, #EEF2FF 0%, #F8FAFC 55%, #F1F5F9 100%);
+}
+
+/* Hide flat geometric CSS sun/hills/flowers so the genuine painted meadow shines cleanly */
+.sky-sun,
+.sky-hills,
+.sky-flowers,
+.sky-birds {
+  display: none;
+}
+
+.sky-decor .cloud {
+  opacity: 0.45;
+}
+
+/* Full-Bleed Painted Home Treehouse Meadow Stage */
+.home-world-painted {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center bottom;
+  display: block;
+}
+
+.home-dashboard-grid.is-storybook-world {
+  grid-template-columns: 1.06fr 1fr;
+  padding: 16px 18px 14px;
+  min-height: 290px;
+  border: 4px solid rgba(255, 255, 255, 0.96);
+  box-shadow: 0 10px 0 rgba(74, 155, 78, 0.28), 0 18px 38px rgba(15, 23, 42, 0.16);
+}
+
+.home-dashboard-grid.is-storybook-world #recent-activity-card {
+  background: rgba(255, 253, 246, 0.86);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.home-dashboard-grid.is-storybook-world #progress-overview-card {
+  background: rgba(255, 255, 255, 0.76);
+  backdrop-filter: blur(9px);
+  -webkit-backdrop-filter: blur(9px);
+  padding: 10px 12px;
+}
+
+/* Full-Body Hand-Painted Characters Standing Freely (No Circular Cutoff!) */
+.mascot-3d-rig.is-painted.is-fullbody .m3d-portrait.is-fullbody-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 6px 10px rgba(30, 41, 59, 0.24));
+}
+
+.mascot-3d-rig.is-painted.is-compact .m3d-portrait.is-face {
+  width: 90%;
+  height: 90%;
+  border-radius: 50%;
+  object-fit: cover;
+  filter: none;
+}
+
+.home-hero-leo {
+  width: 108px;
+  height: 108px;
+}
+
+.meadow-friends-strip {
+  justify-content: flex-start;
+  align-items: flex-end;
+  gap: 8px;
+  padding: 6px 10px 0 8px;
+  min-height: 112px;
+}
+
+.meadow-friend-btn .mascot-3d-rig.is-fullbody {
+  width: 88px;
+  height: 88px;
+}
+
+.meadow-friend-btn .friend-tag {
+  margin-top: -6px;
+  background: rgba(255, 253, 244, 0.95);
+  border: 2px solid #F59E0B;
+  color: #78350F;
+  font-size: 0.78rem;
+  padding: 1px 10px;
+}
+
+/* Full-Body Painted Story Stage Actors */
+.story-leo-actor.is-svg-actor {
+  left: 8px;
+  bottom: 6px;
+}
+
+.story-leo-actor.is-svg-actor .leo-actor-emoji {
+  width: 124px;
+  height: 124px;
+}
+
+.story-leo-actor.is-svg-actor .leo-name-tag {
+  margin-top: -8px;
+}
+
+.story-stage .story-speech-bubble {
+  left: 134px;
+  bottom: 22px;
+}
+
+/* Full-Bleed Painted Story Backdrops (Video Stage + 24 Episode Thumbnails) */
+.story-bg-painted {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+  display: block;
+}
+
+/* 6 Full-Bleed Hand-Painted Storybook Hub Card Banners */
+.main-hub-card.is-scenic-hub .hub-icon-wrap.is-scenic-banner {
+  height: 156px;
+}
+
+.hub-scenic-banner.is-painted-banner {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.hub-painted-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+  display: block;
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.main-hub-card.is-scenic-hub:hover .hub-painted-img {
+  transform: scale(1.07);
+}
+
+.hub-painted-sheen {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0) 65%, rgba(15, 23, 42, 0.08) 100%);
+  pointer-events: none;
+}
+
+/* Mini-Game Tiles: Full-Bleed Soft Painted Watercolor Backdrop behind Crisp 3D Icons */
+.game-tile.is-scenic-game .game-tile-icon .hub-scenic-banner.is-game-painted img.hub-painted-img.is-soft-game-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.68;
+  filter: saturate(1.06);
+}
+
+.game-tile.is-scenic-game .game-tile-icon img.hub-3d-main {
+  width: 82px;
+  height: 82px;
+}
+
+.game-tile.is-scenic-game .game-tile-icon img.hub-3d-side {
+  width: 54px;
+  height: 54px;
+}
+
+.game-tile.is-scenic-game:hover .hub-painted-img.is-soft-game-bg {
+  transform: scale(1.06);
+}
+
+/* Responsive sizing for Mobile, Tablets & Galaxy Tab S9 FE Landscape */
+@media (max-width: 900px) {
+  .home-dashboard-grid.is-storybook-world {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+    padding: 14px;
+  }
+  .home-dashboard-grid.is-storybook-world #recent-activity-card {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  .home-dashboard-grid.is-storybook-world #progress-overview-card {
+    grid-column: 1;
+    grid-row: 2;
+  }
+  .meadow-friends-strip {
+    grid-column: 1;
+    grid-row: 3;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 640px) {
+  .home-hero-leo { width: 84px; height: 84px; }
+  .meadow-friend-btn .mascot-3d-rig.is-fullbody { width: 74px; height: 74px; }
+  .main-hub-card.is-scenic-hub .hub-icon-wrap.is-scenic-banner,
+  .game-tile.is-scenic-game .game-tile-icon.is-scenic-banner { height: 132px; }
+  .story-leo-actor.is-svg-actor .leo-actor-emoji { width: 92px; height: 92px; }
+  .story-stage .story-speech-bubble { left: 102px; }
+}
+
+@media (orientation: landscape) and (min-width: 900px) and (max-height: 820px) {
+  .home-dashboard-grid.is-storybook-world {
+    min-height: 256px;
+    padding: 12px 16px 10px;
+  }
+  .home-hero-leo {
+    width: 92px;
+    height: 92px;
+  }
+  .meadow-friends-strip {
+    min-height: 92px;
+    gap: 6px;
+  }
+  .meadow-friend-btn .mascot-3d-rig.is-fullbody {
+    width: 78px;
+    height: 78px;
+  }
+  .main-hub-card.is-scenic-hub .hub-icon-wrap.is-scenic-banner,
+  .game-tile.is-scenic-game .game-tile-icon.is-scenic-banner {
+    height: 136px;
+  }
+}
+
+

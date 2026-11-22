@@ -25,11 +25,11 @@
      1. LOCAL BUNDLED STUDIO 3D ASSET MAP (70 WebP files, instant 0ms load!)
      ========================================================================== */
   const LOCAL_3D_BY_CODE = {
-    '1f981': 'assets/art/mascot_leo.webp',
-    '1f43c': 'assets/art/mascot_mimi.webp',
-    '1f98a': 'assets/art/mascot_toby.webp',
-    '1f430': 'assets/art/mascot_lulu.webp',
-    '1f407': 'assets/art/mascot_lulu.webp',
+    '1f981': 'assets/art/painted_leo.webp',
+    '1f43c': 'assets/art/painted_mimi.webp',
+    '1f98a': 'assets/art/painted_toby.webp',
+    '1f430': 'assets/art/painted_lulu.webp',
+    '1f407': 'assets/art/painted_lulu.webp',
     '1f4da': 'assets/art/hub_books.webp',
     '1f9e0': 'assets/art/hub_brain.webp',
     '2728':  'assets/art/hub_sparkles.webp',
@@ -183,278 +183,102 @@
   };
 
   /* ==========================================================================
-     2. EXPRESSIVE 3D STUDIO MASCOTS (Leo, Mimi, Toby, Lulu)
-        High-craft 3D Pixar-style portraits inside animated character rigs
+     2. HAND-PAINTED STORYBOOK CHARACTERS (Leo, Mimi, Toby, Lulu)
+        Full-body transparent watercolor/gouache characters standing freely on
+        meadow & stage, plus crisp zoomed face portraits for circular badges!
      ========================================================================== */
   const MASCOT_META = {
-    leo:  { img: 'assets/art/mascot_leo.webp',  name: 'Leo',  bg: 'radial-gradient(circle at 35% 28%, #FFFBEB 0%, #FDE68A 65%, #F59E0B 100%)', ring: '#F59E0B', greetEn: "Hi! I'm Leo! Let's learn new English words together!", greetVi: 'Chào bé! Cùng Sư Tử Leo học tiếng Anh thật vui nhé!' },
-    mimi: { img: 'assets/art/mascot_mimi.webp', name: 'Mimi', bg: 'radial-gradient(circle at 35% 28%, #F0FDF4 0%, #BBF7D0 68%, #22C55E 100%)', ring: '#16A34A', greetEn: "Hello! I'm Mimi! Ready for a Montessori adventure?", greetVi: 'Xin chào! Gấu Trúc Mimi sẽ cùng bé khám phá Montessori!' },
-    toby: { img: 'assets/art/mascot_toby.webp', name: 'Toby', bg: 'radial-gradient(circle at 35% 28%, #FFF7ED 0%, #FED7AA 68%, #FB923C 100%)', ring: '#EA580C', greetEn: "Yay! I'm Toby! Let's count and play games!", greetVi: 'Tuyệt vời! Cáo Toby rủ bé chơi trò chơi và tập đếm nhé!' },
-    lulu: { img: 'assets/art/mascot_lulu.webp', name: 'Lulu', bg: 'radial-gradient(circle at 35% 28%, #FDF2F8 0%, #FBCFE8 68%, #F472B6 100%)', ring: '#DB2777', greetEn: "Hooray! I'm Lulu! Let's sing and practice phonics!", greetVi: 'Hoan hô! Thỏ Lulu cùng bé hát ABC và tập phát âm chuẩn nào!' }
+    leo:  { img: 'assets/art/painted_leo.webp',  face: 'assets/art/face_leo.webp',  name: 'Leo',  bg: 'radial-gradient(circle at 35% 28%, #FFFBEB 0%, #FDE68A 75%, #F59E0B 100%)', ring: '#F59E0B', greetEn: "Hi! I'm Leo! Let's learn new English words together!", greetVi: 'Chào bé! Cùng Sư Tử Leo học tiếng Anh thật vui nhé!' },
+    mimi: { img: 'assets/art/painted_mimi.webp', face: 'assets/art/face_mimi.webp', name: 'Mimi', bg: 'radial-gradient(circle at 35% 28%, #F0FDF4 0%, #BBF7D0 75%, #22C55E 100%)', ring: '#16A34A', greetEn: "Hello! I'm Mimi! Ready for a Montessori adventure?", greetVi: 'Xin chào! Gấu Trúc Mimi sẽ cùng bé khám phá Montessori!' },
+    toby: { img: 'assets/art/painted_toby.webp', face: 'assets/art/face_toby.webp', name: 'Toby', bg: 'radial-gradient(circle at 35% 28%, #FFF7ED 0%, #FED7AA 75%, #FB923C 100%)', ring: '#EA580C', greetEn: "Yay! I'm Toby! Let's count and play games!", greetVi: 'Tuyệt vời! Cáo Toby rủ bé chơi trò chơi và tập đếm nhé!' },
+    lulu: { img: 'assets/art/painted_lulu.webp', face: 'assets/art/face_lulu.webp', name: 'Lulu', bg: 'radial-gradient(circle at 35% 28%, #FDF2F8 0%, #FBCFE8 75%, #F472B6 100%)', ring: '#DB2777', greetEn: "Hooray! I'm Lulu! Let's sing and practice phonics!", greetVi: 'Hoan hô! Thỏ Lulu cùng bé hát ABC và tập phát âm chuẩn nào!' }
   };
 
   window.renderMascotSvg = function (hostId = 'leo', mood = 'wave', compact = false) {
     const id = MASCOT_META[hostId] ? hostId : 'leo';
     const meta = MASCOT_META[id];
     const moodCls = mood === 'celebrate' ? 'mood-celebrate' : mood === 'ask' ? 'mood-ask' : 'mood-wave';
-    const compactCls = compact ? 'is-compact' : 'is-full';
 
-    const extras = !compact && mood === 'celebrate'
+    if (compact) {
+      return `
+        <div class="mascot-3d-rig is-painted host-${ id } ${ moodCls } is-compact" aria-hidden="true">
+          <span class="m3d-aura" style="background:${ meta.bg }; border-color:${ meta.ring };"></span>
+          <img class="m3d-portrait is-face" src="${ meta.face }" alt="${ meta.name }" draggable="false" />
+        </div>
+      `;
+    }
+
+    const extras = mood === 'celebrate'
       ? `<img class="m3d-star m3d-star-1" src="assets/art/hub_star.webp" alt="" aria-hidden="true" />
          <img class="m3d-star m3d-star-2" src="assets/art/hub_sparkles.webp" alt="" aria-hidden="true" />`
-      : (!compact && mood === 'ask'
-        ? `<span class="m3d-ask-bubble" aria-hidden="true">?</span>`
-        : '');
+      : (mood === 'ask' ? `<span class="m3d-ask-bubble" aria-hidden="true">?</span>` : '');
 
     return `
-      <div class="mascot-3d-rig host-${ id } ${ moodCls } ${ compactCls }" aria-hidden="true">
+      <div class="mascot-3d-rig is-painted is-fullbody host-${ id } ${ moodCls } is-full" aria-hidden="true">
         <span class="m3d-speech-ring"></span>
-        <span class="m3d-aura" style="background:${ meta.bg }; border-color:${ meta.ring };"></span>
-        <img class="m3d-portrait" src="${ meta.img }" alt="${ meta.name }" draggable="false" />
+        <img class="m3d-portrait is-fullbody-img" src="${ meta.img }" alt="${ meta.name }" draggable="false" />
         ${ extras }
-        ${ compact ? '' : '<span class="m3d-shadow"></span>' }
+        <span class="m3d-shadow"></span>
       </div>
     `;
   };
 
   /* ==========================================================================
-     3. KHAN-KIDS-INSPIRED HOME TREEHOUSE MEADOW WORLD (Hero Scene Backdrop)
+     3. KHAN-KIDS-STYLE HAND-PAINTED HOME TREEHOUSE MEADOW WORLD
      ========================================================================== */
   function renderHomeTreehouseSceneSvg() {
-    const g = nextUid('hm');
-    return `
-      <svg class="home-world-svg" viewBox="0 0 1120 320" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <defs>
-          <linearGradient id="${ g }sky" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#67C6FF"/>
-            <stop offset="52%" stop-color="#BBE8FF"/>
-            <stop offset="100%" stop-color="#FFF5D6"/>
-          </linearGradient>
-          <radialGradient id="${ g }sunglow" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stop-color="#FFF9C4" stop-opacity="0.95"/>
-            <stop offset="45%" stop-color="#FDE047" stop-opacity="0.45"/>
-            <stop offset="100%" stop-color="#FDE047" stop-opacity="0"/>
-          </radialGradient>
-          <linearGradient id="${ g }hillFar" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#A7F3B8"/>
-            <stop offset="100%" stop-color="#6EE787"/>
-          </linearGradient>
-          <linearGradient id="${ g }hillMid" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#7EE065"/>
-            <stop offset="100%" stop-color="#48B84A"/>
-          </linearGradient>
-          <linearGradient id="${ g }hillNear" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#65D150"/>
-            <stop offset="100%" stop-color="#35A13B"/>
-          </linearGradient>
-          <linearGradient id="${ g }bark" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%" stop-color="#7C4A22"/>
-            <stop offset="55%" stop-color="#A1622F"/>
-            <stop offset="100%" stop-color="#6B3D1A"/>
-          </linearGradient>
-          <linearGradient id="${ g }roof" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#FB7185"/>
-            <stop offset="100%" stop-color="#E11D48"/>
-          </linearGradient>
-          <linearGradient id="${ g }woodwall" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#FEF3C7"/>
-            <stop offset="100%" stop-color="#FCD34D"/>
-          </linearGradient>
-          <radialGradient id="${ g }foliage" cx="35%" cy="30%" r="70%">
-            <stop offset="0%" stop-color="#86EFAC"/>
-            <stop offset="55%" stop-color="#22C55E"/>
-            <stop offset="100%" stop-color="#15803D"/>
-          </radialGradient>
-        </defs>
-
-        <!-- Warm Morning Sky -->
-        <rect width="1120" height="320" fill="url(#${ g }sky)"/>
-
-        <!-- Radiant Sun & Soft Glow -->
-        <circle cx="965" cy="72" r="108" fill="url(#${ g }sunglow)"/>
-        <circle cx="965" cy="72" r="34" fill="#FDE047" stroke="#F59E0B" stroke-width="3"/>
-        <circle cx="954" cy="61" r="9" fill="#FFFBEB" opacity="0.7"/>
-
-        <!-- Soft Pastel Rainbow Arc -->
-        <g fill="none" stroke-linecap="round" opacity="0.46">
-          <path d="M120 260 A290 215 0 0 1 680 260" stroke="#FB7185" stroke-width="11"/>
-          <path d="M132 260 A278 203 0 0 1 668 260" stroke="#FBBF24" stroke-width="11"/>
-          <path d="M144 260 A266 191 0 0 1 656 260" stroke="#4ADE80" stroke-width="11"/>
-          <path d="M156 260 A254 179 0 0 1 644 260" stroke="#60A5FA" stroke-width="11"/>
-        </g>
-
-        <!-- Puffy Shaded Storybook Clouds -->
-        <g class="bg-clouds-drift">
-          <g transform="translate(80,34)" opacity="0.95">
-            <ellipse cx="52" cy="36" rx="46" ry="18" fill="#E0F2FE"/>
-            <circle cx="28" cy="28" r="20" fill="#FFFFFF"/>
-            <circle cx="54" cy="20" r="26" fill="#FFFFFF"/>
-            <circle cx="80" cy="28" r="19" fill="#FFFFFF"/>
-          </g>
-          <g transform="translate(470,22)" opacity="0.9">
-            <ellipse cx="46" cy="32" rx="40" ry="15" fill="#E0F2FE"/>
-            <circle cx="24" cy="24" r="17" fill="#FFFFFF"/>
-            <circle cx="48" cy="18" r="22" fill="#FFFFFF"/>
-            <circle cx="72" cy="25" r="16" fill="#FFFFFF"/>
-          </g>
-          <g transform="translate(760,44)" opacity="0.88">
-            <ellipse cx="38" cy="26" rx="34" ry="12" fill="#E0F2FE"/>
-            <circle cx="22" cy="20" r="14" fill="#FFFFFF"/>
-            <circle cx="42" cy="15" r="18" fill="#FFFFFF"/>
-            <circle cx="62" cy="21" r="13" fill="#FFFFFF"/>
-          </g>
-        </g>
-
-        <!-- Distant Atmospheric Rolling Hills -->
-        <path d="M0 205 Q210 140 460 190 T960 170 T1120 185 L1120 320 L0 320 Z" fill="url(#${ g }hillFar)"/>
-
-        <!-- Cozy Storybook Wooden Treehouse Library (Visible Meadow Landmark on Right) -->
-        <g transform="translate(888,118) scale(0.72)">
-          <!-- Lush Oak Tree Canopy Back Layer -->
-          <circle cx="62" cy="76" r="54" fill="#16A34A"/>
-          <circle cx="152" cy="82" r="52" fill="#15803D"/>
-          <!-- Tree Trunk & Roots -->
-          <path d="M88 215 Q96 150 92 98 L128 98 Q124 150 138 215 Z" fill="url(#${ g }bark)"/>
-          <path d="M122 130 Q158 116 178 96" fill="none" stroke="#8C5327" stroke-width="11" stroke-linecap="round"/>
-          <!-- Lush Oak Canopy Front -->
-          <circle cx="48" cy="64" r="44" fill="url(#${ g }foliage)"/>
-          <circle cx="108" cy="40" r="52" fill="url(#${ g }foliage)"/>
-          <circle cx="164" cy="66" r="44" fill="url(#${ g }foliage)"/>
-          <circle cx="108" cy="24" r="22" fill="#86EFAC" opacity="0.55"/>
-          <!-- Wooden Platform Deck & Railing -->
-          <rect x="44" y="132" width="132" height="12" rx="6" fill="#92400E"/>
-          <rect x="52" y="116" width="8" height="18" rx="3" fill="#B45309"/>
-          <rect x="160" y="116" width="8" height="18" rx="3" fill="#B45309"/>
-          <line x1="48" y1="120" x2="172" y2="120" stroke="#D97706" stroke-width="4" stroke-linecap="round"/>
-          <!-- Cozy Wooden Clubhouse Cabin -->
-          <rect x="64" y="76" width="92" height="58" rx="8" fill="url(#${ g }woodwall)" stroke="#B45309" stroke-width="3.5"/>
-          <!-- Arched Glowing Window & Round Door -->
-          <path d="M76 134 L76 102 A14 14 0 0 1 104 102 L104 134 Z" fill="#92400E"/>
-          <circle cx="97" cy="116" r="2.8" fill="#FDE047"/>
-          <circle cx="132" cy="102" r="14" fill="#FEF08A" stroke="#D97706" stroke-width="3.5"/>
-          <line x1="132" y1="88" x2="132" y2="116" stroke="#D97706" stroke-width="2.5"/>
-          <line x1="118" y1="102" x2="146" y2="102" stroke="#D97706" stroke-width="2.5"/>
-          <!-- Red Shingled Storybook Roof -->
-          <polygon points="52,82 110,42 168,82" fill="url(#${ g }roof)" stroke="#9F1239" stroke-width="3.5" stroke-linejoin="round"/>
-          <circle cx="110" cy="64" r="7" fill="#FEF08A" stroke="#F59E0B" stroke-width="2.5"/>
-          <!-- Rope Ladder Hanging Down -->
-          <g stroke="#B45309" stroke-width="3" stroke-linecap="round">
-            <line x1="68" y1="144" x2="64" y2="205"/>
-            <line x1="86" y1="144" x2="82" y2="205"/>
-            <line x1="66" y1="158" x2="84" y2="158"/>
-            <line x1="65" y1="174" x2="83" y2="174"/>
-            <line x1="64" y1="190" x2="82" y2="190"/>
-          </g>
-          <!-- Festive Pennant Bunting -->
-          <path d="M18 96 Q58 114 96 96" fill="none" stroke="#F59E0B" stroke-width="2"/>
-          <polygon points="28,100 38,104 31,114" fill="#F43F5E"/>
-          <polygon points="48,105 58,106 52,117" fill="#3B82F6"/>
-          <polygon points="68,104 78,102 74,114" fill="#FACC15"/>
-        </g>
-
-        <!-- Midground & Foreground Lush Meadow Hills -->
-        <path d="M0 232 Q280 185 590 228 T1120 212 L1120 320 L0 320 Z" fill="url(#${ g }hillMid)"/>
-        <path d="M0 264 Q360 228 740 262 T1120 250 L1120 320 L0 320 Z" fill="url(#${ g }hillNear)"/>
-
-        <!-- Soft Meadow Stepping Stones & Wildflower Clusters -->
-        <ellipse cx="420" cy="292" rx="34" ry="8" fill="#FEF3C7" opacity="0.65"/>
-        <ellipse cx="485" cy="282" rx="26" ry="6.5" fill="#FEF3C7" opacity="0.58"/>
-        <ellipse cx="545" cy="274" rx="20" ry="5.5" fill="#FEF3C7" opacity="0.5"/>
-
-        <!-- Painted Wildflowers along Meadow Edge -->
-        <g>
-          <circle cx="52" cy="284" r="6" fill="#F472B6"/><circle cx="52" cy="284" r="2.6" fill="#FEF08A"/>
-          <circle cx="88" cy="294" r="5" fill="#FFFFFF"/><circle cx="88" cy="294" r="2.2" fill="#FACC15"/>
-          <circle cx="142" cy="278" r="5.5" fill="#A78BFA"/><circle cx="142" cy="278" r="2.4" fill="#FEF08A"/>
-          <circle cx="675" cy="286" r="5.5" fill="#FB7185"/><circle cx="675" cy="286" r="2.4" fill="#FEF08A"/>
-          <circle cx="1010" cy="282" r="6" fill="#FFFFFF"/><circle cx="1010" cy="282" r="2.6" fill="#F59E0B"/>
-          <circle cx="1058" cy="294" r="5.5" fill="#F472B6"/><circle cx="1058" cy="294" r="2.4" fill="#FEF08A"/>
-        </g>
-      </svg>
-    `;
+    return `<img class="home-world-painted" src="assets/art/painted_home_meadow.webp" alt="" draggable="false" aria-hidden="true" />`;
   }
 
   /* ==========================================================================
-     4. 6 FULL-BLEED SCENIC 3D STORYBOOK HUB CARD BANNERS
-        Replaces tiny flat icons inside blank white squares with lush mini-worlds!
+     4. 6 FULL-BLEED HAND-PAINTED STORYBOOK HUB CARD ILLUSTRATIONS
      ========================================================================== */
-  const HUB_SCENES = {
-    vocab: {
-      skyTop: '#FFE8A3', skyBot: '#FFF8E1', hill1: '#A7F3B8', hill2: '#4ADE80',
-      mainImg: 'assets/art/hub_books.webp',
-      subLeft: 'assets/art/mascot_leo.webp',
-      subRight: 'assets/art/word_apple.webp',
-      decor: '<circle cx="245" cy="34" r="20" fill="#FDE047" opacity="0.85"/><path d="M18 46 Q42 32 66 46" fill="none" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round" opacity="0.7"/>'
-    },
-    srs: {
-      skyTop: '#A7F3D0', skyBot: '#ECFDF5', hill1: '#6EE7B7', hill2: '#10B981',
-      mainImg: 'assets/art/hub_brain.webp',
-      subLeft: 'assets/art/hub_star.webp',
-      subRight: 'assets/art/hub_sparkles.webp',
-      decor: '<circle cx="52" cy="30" r="14" fill="#FEF08A" opacity="0.75"/><circle cx="236" cy="38" r="10" fill="#FFFFFF" opacity="0.65"/>'
-    },
-    milestones: {
-      skyTop: '#C7D2FE', skyBot: '#EEF2FF', hill1: '#A5B4FC', hill2: '#6366F1',
-      mainImg: 'assets/art/hub_trophy.webp',
-      subLeft: 'assets/art/hub_crown.webp',
-      subRight: 'assets/art/hub_star.webp',
-      decor: '<path d="M38 110 A110 85 0 0 1 262 110" fill="none" stroke="#FDE047" stroke-width="8" opacity="0.5"/><path d="M52 110 A96 72 0 0 1 248 110" fill="none" stroke="#F472B6" stroke-width="7" opacity="0.45"/>'
-    },
-    stories: {
-      skyTop: '#FBCFE8', skyBot: '#FFF1F2', hill1: '#F9A8D4', hill2: '#EC4899',
-      mainImg: 'assets/art/hub_clapper.webp',
-      subLeft: 'assets/art/hub_popcorn.webp',
-      subRight: 'assets/art/hub_sparkles.webp',
-      decor: '<path d="M0 0 L300 0 L300 22 Q275 34 250 22 Q225 34 200 22 Q175 34 150 22 Q125 34 100 22 Q75 34 50 22 Q25 34 0 22 Z" fill="#F43F5E" opacity="0.82"/>'
-    },
-    games: {
-      skyTop: '#BAE6FD', skyBot: '#F0F9FF', hill1: '#7DD3FC', hill2: '#38BDF8',
-      mainImg: 'assets/art/hub_gamepad.webp',
-      subLeft: 'assets/art/hub_balloon.webp',
-      subRight: 'assets/art/hub_puzzle.webp',
-      decor: '<path d="M0 16 Q150 42 300 16" fill="none" stroke="#FFFFFF" stroke-width="3" opacity="0.85"/><polygon points="35,20 52,24 41,38" fill="#FACC15"/><polygon points="248,24 265,20 259,38" fill="#FB7185"/>'
-    },
-    phonics: {
-      skyTop: '#DDD6FE', skyBot: '#F5F3FF', hill1: '#C4B5FD', hill2: '#8B5CF6',
-      mainImg: 'assets/art/hub_abc.webp',
-      subLeft: 'assets/art/hub_bird.webp',
-      subRight: 'assets/art/hub_music.webp',
-      decor: '<path d="M36 108 A112 80 0 0 1 264 108" fill="none" stroke="#FB7185" stroke-width="7" opacity="0.45"/><path d="M46 108 A102 70 0 0 1 254 108" fill="none" stroke="#38BDF8" stroke-width="7" opacity="0.45"/>'
-    }
+  const PAINTED_HUB_ART = {
+    vocab:      'assets/art/painted_hub_vocab.webp',
+    srs:        'assets/art/painted_hub_srs.webp',
+    milestones: 'assets/art/painted_hub_milestones.webp',
+    stories:    'assets/art/painted_hub_stories.webp',
+    games:      'assets/art/painted_hub_games.webp',
+    phonics:    'assets/art/painted_hub_phonics.webp'
   };
 
   window.renderHubIconSvg = function (hubKey) {
-    const s = HUB_SCENES[hubKey] || HUB_SCENES.vocab;
-    const g = nextUid('hb');
+    const src = PAINTED_HUB_ART[hubKey] || PAINTED_HUB_ART.vocab;
     return `
-      <div class="hub-scenic-banner hub-scene-${ hubKey }">
-        <svg class="hub-banner-bg" viewBox="0 0 300 130" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <defs>
-            <linearGradient id="${ g }bg" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stop-color="${ s.skyTop }"/>
-              <stop offset="100%" stop-color="${ s.skyBot }"/>
-            </linearGradient>
-          </defs>
-          <rect width="300" height="130" fill="url(#${ g }bg)"/>
-          ${ s.decor }
-          <ellipse cx="150" cy="70" rx="74" ry="52" fill="#FFFFFF" opacity="0.52"/>
-          <path d="M0 98 Q85 72 175 94 T300 88 L300 130 L0 130 Z" fill="${ s.hill1 }" opacity="0.65"/>
-          <path d="M0 112 Q110 90 215 108 T300 104 L300 130 L0 130 Z" fill="${ s.hill2 }" opacity="0.5"/>
-        </svg>
-        <div class="hub-3d-cluster" aria-hidden="true">
-          <img class="hub-3d-side is-left" src="${ s.subLeft }" alt="" draggable="false" />
-          <img class="hub-3d-main" src="${ s.mainImg }" alt="" draggable="false" />
-          <img class="hub-3d-side is-right" src="${ s.subRight }" alt="" draggable="false" />
-          <span class="hub-3d-shadow"></span>
-        </div>
+      <div class="hub-scenic-banner is-painted-banner hub-scene-${ hubKey }">
+        <img class="hub-painted-img" src="${ src }" alt="" draggable="false" aria-hidden="true" />
+        <span class="hub-painted-sheen" aria-hidden="true"></span>
       </div>
     `;
   };
 
   /* ==========================================================================
-     5. 18 MULTI-GRADIENT ATMOSPHERIC STORYBOOK BACKDROPS (Zero ID Collisions)
+     5. FULL-BLEED HAND-PAINTED STORYBOOK VIDEO BACKDROPS (All 24 Episodes)
      ========================================================================== */
+  const PAINTED_STORY_BG = {
+    zoo:       'assets/art/painted_bg_zoo.webp',
+    room:      'assets/art/painted_bg_montessori.webp',
+    home:      'assets/art/painted_bg_montessori.webp',
+    lab:       'assets/art/painted_bg_montessori.webp',
+    ocean:     'assets/art/painted_bg_ocean.webp',
+    farm:      'assets/art/painted_home_meadow.webp',
+    weather:   'assets/art/painted_home_meadow.webp',
+    park:      'assets/art/painted_home_meadow.webp',
+    eco:       'assets/art/painted_hub_srs.webp',
+    music:     'assets/art/painted_hub_phonics.webp',
+    art:       'assets/art/painted_hub_vocab.webp',
+    bakery:    'assets/art/painted_hub_stories.webp',
+    market:    'assets/art/painted_hub_games.webp',
+    city:      'assets/art/painted_hub_milestones.webp',
+    summit:    'assets/art/painted_hub_milestones.webp',
+    detective: 'assets/art/painted_hub_srs.webp',
+    future:    'assets/art/painted_hub_milestones.webp'
+  };
+
   window.renderStoryBackdropSvg = function (theme = 'zoo') {
+    if (PAINTED_STORY_BG[theme]) {
+      return `<img class="story-bg-painted" src="${ PAINTED_STORY_BG[theme] }" alt="" loading="lazy" decoding="async" draggable="false" aria-hidden="true" />`;
+    }
     const g = nextUid('bg');
     const scenes = {
       zoo: `
@@ -957,31 +781,24 @@
       }
     });
 
-    // 3. 6 Mini-Game Tiles -> Full-Bleed Scenic 3D Storybook Banners
+    // 3. 6 Mini-Game Tiles -> Hand-Painted Storybook Backdrop + 3D Game Cluster
     const gameSceneMap = {
-      'game-tile-memory':      { skyTop: '#FFE8A3', skyBot: '#FFF8E1', hill1: '#FCD34D', hill2: '#F59E0B', main: 'assets/art/game_cards.webp',  left: 'assets/art/mascot_leo.webp',  right: 'assets/art/hub_star.webp' },
-      'game-tile-match':       { skyTop: '#BAE6FD', skyBot: '#F0F9FF', hill1: '#7DD3FC', hill2: '#38BDF8', main: 'assets/art/game_link.webp',   left: 'assets/art/word_apple.webp',  right: 'assets/art/word_cat.webp' },
-      'game-tile-balloon':     { skyTop: '#FBCFE8', skyBot: '#FFF1F2', hill1: '#F9A8D4', hill2: '#EC4899', main: 'assets/art/hub_balloon.webp', left: 'assets/art/hub_star.webp',    right: 'assets/art/hub_sparkles.webp' },
-      'game-tile-sorting':     { skyTop: '#A7F3D0', skyBot: '#ECFDF5', hill1: '#6EE7B7', hill2: '#10B981', main: 'assets/art/game_basket.webp', left: 'assets/art/word_apple.webp',  right: 'assets/art/hub_teddy.webp' },
-      'game-tile-wordbuilder': { skyTop: '#C7D2FE', skyBot: '#EEF2FF', hill1: '#A5B4FC', hill2: '#6366F1', main: 'assets/art/hub_abc.webp',     left: 'assets/art/hub_bird.webp',    right: 'assets/art/hub_star.webp' },
-      'game-tile-sentence':    { skyTop: '#DDD6FE', skyBot: '#F5F3FF', hill1: '#C4B5FD', hill2: '#8B5CF6', main: 'assets/art/game_chat.webp',   left: 'assets/art/mascot_mimi.webp', right: 'assets/art/hub_sparkles.webp' }
+      'game-tile-memory':      { bg: 'assets/art/painted_hub_vocab.webp',      main: 'assets/art/game_cards.webp',  left: 'assets/art/painted_leo.webp',  right: 'assets/art/hub_star.webp' },
+      'game-tile-match':       { bg: 'assets/art/painted_bg_zoo.webp',         main: 'assets/art/game_link.webp',   left: 'assets/art/word_apple.webp',   right: 'assets/art/word_cat.webp' },
+      'game-tile-balloon':     { bg: 'assets/art/painted_hub_games.webp',      main: 'assets/art/hub_balloon.webp', left: 'assets/art/hub_star.webp',     right: 'assets/art/hub_sparkles.webp' },
+      'game-tile-sorting':     { bg: 'assets/art/painted_bg_montessori.webp',  main: 'assets/art/game_basket.webp', left: 'assets/art/word_apple.webp',   right: 'assets/art/hub_teddy.webp' },
+      'game-tile-wordbuilder': { bg: 'assets/art/painted_hub_phonics.webp',    main: 'assets/art/hub_abc.webp',     left: 'assets/art/painted_lulu.webp', right: 'assets/art/hub_star.webp' },
+      'game-tile-sentence':    { bg: 'assets/art/painted_hub_stories.webp',    main: 'assets/art/game_chat.webp',   left: 'assets/art/painted_mimi.webp', right: 'assets/art/hub_sparkles.webp' }
     };
     Object.entries(gameSceneMap).forEach(([id, s]) => {
       const tile = document.getElementById(id);
       const iconBox = tile && tile.querySelector('.game-tile-icon');
       if (tile && iconBox) {
-        const g = nextUid('gm');
         tile.classList.add('is-scenic-game');
         iconBox.classList.add('is-3d-game-icon', 'is-scenic-banner');
         iconBox.innerHTML = `
-          <div class="hub-scenic-banner">
-            <svg class="hub-banner-bg" viewBox="0 0 300 130" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-              <defs><linearGradient id="${ g }bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${ s.skyTop }"/><stop offset="100%" stop-color="${ s.skyBot }"/></linearGradient></defs>
-              <rect width="300" height="130" fill="url(#${ g }bg)"/>
-              <ellipse cx="150" cy="68" rx="76" ry="50" fill="#FFFFFF" opacity="0.58"/>
-              <path d="M0 98 Q90 74 180 94 T300 88 L300 130 L0 130 Z" fill="${ s.hill1 }" opacity="0.58"/>
-              <path d="M0 112 Q115 92 220 108 T300 104 L300 130 L0 130 Z" fill="${ s.hill2 }" opacity="0.45"/>
-            </svg>
+          <div class="hub-scenic-banner is-game-painted">
+            <img class="hub-painted-img is-soft-game-bg" src="${ s.bg }" alt="" draggable="false" aria-hidden="true" />
             <div class="hub-3d-cluster" aria-hidden="true">
               <img class="hub-3d-side is-left" src="${ s.left }" alt="" draggable="false" />
               <img class="hub-3d-main" src="${ s.main }" alt="" draggable="false" />
