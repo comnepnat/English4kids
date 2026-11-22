@@ -122,6 +122,41 @@
             <span class="game-tile-cta">Chơi ngay ➔</span>
           </button>
         </div>
+
+        <!-- Phase 3: ABC & Phonics zone -->
+        <div class="section-title-bar phonics-title-bar">
+          <h2>🔤 Bảng Chữ Cái (ABC) &amp; Ngữ Âm (Phonics)</h2>
+          <span class="phonics-home-badge" id="phonics-home-progress">⭐ Đã thuộc: 0 / 26 chữ</span>
+        </div>
+        <div class="games-grid" id="phonics-home-grid">
+          <button class="game-tile" id="phonics-tile-board" data-phonics-tab="board" type="button" style="--tile-accent:#8B5CF6; --tile-border:#A78BFA; --tile-shadow:#6D28D9; --tile-soft:#F3E8FF;">
+            <div class="game-tile-icon" aria-hidden="true">🅰️</div>
+            <div class="game-tile-info">
+              <h3>Bảng Chữ Cái A–Z</h3>
+              <span class="game-tile-en">Alphabet &amp; Phonics</span>
+              <p>Học 26 chữ cái hoa - thường, phân biệt tên chữ &amp; âm Phonics kèm bài hát!</p>
+            </div>
+            <span class="game-tile-cta">Khám phá ➔</span>
+          </button>
+          <button class="game-tile" id="phonics-tile-blend" data-phonics-tab="blend" type="button" style="--tile-accent:#14B8A6; --tile-border:#2DD4BF; --tile-shadow:#0D9488; --tile-soft:#CCFBF1;">
+            <div class="game-tile-icon" aria-hidden="true">🧩</div>
+            <div class="game-tile-info">
+              <h3>Ghép Âm Đánh Vần</h3>
+              <span class="game-tile-en">CVC Blending</span>
+              <p>Tập ghép 3 âm đơn giản (C-A-T ➔ CAT) giúp bé lớp 1 tự đọc từ mới!</p>
+            </div>
+            <span class="game-tile-cta">Tập ghép ➔</span>
+          </button>
+          <button class="game-tile" id="phonics-tile-quiz" data-phonics-tab="quiz" type="button" style="--tile-accent:#22C55E; --tile-border:#4ADE80; --tile-shadow:#16A34A; --tile-soft:#DCFCE7;">
+            <div class="game-tile-icon" aria-hidden="true">🎯</div>
+            <div class="game-tile-info">
+              <h3>Đố Vui Chữ Cái</h3>
+              <span class="game-tile-en">Phonics Quiz</span>
+              <p>Nghe phát âm chữ cái hoặc âm Phonics và chọn đúng chữ cái bí ẩn!</p>
+            </div>
+            <span class="game-tile-cta">Thử thách ➔</span>
+          </button>
+        </div>
       </section>
 
       <!-- VIEW 2: FLASHCARD DECK LEARNING -->
@@ -340,6 +375,193 @@
           </div>
         </div>
       </section>
+
+      <!-- VIEW 4: ABC & PHONICS (Phase 3) -->
+      <section class="view-section" id="view-phonics" aria-label="Bảng chữ cái ABC và Ngữ âm Phonics">
+        <div class="deck-top-bar">
+          <button class="btn-back" id="btn-phonics-back" type="button">
+            <span class="back-arrow">⬅</span> Về trang chủ
+          </button>
+
+          <div class="topic-badge-header">
+            <span>🔤</span>
+            <span>Bảng Chữ Cái ABC &amp; Phonics</span>
+          </div>
+
+          <div class="mode-switcher" role="tablist" aria-label="Chế độ ABC & Phonics">
+            <button class="mode-tab active" id="tab-phonics-board" type="button" role="tab" aria-selected="true">
+              🔤 Bảng A–Z
+            </button>
+            <button class="mode-tab" id="tab-phonics-blend" type="button" role="tab" aria-selected="false">
+              🧩 Ghép Âm
+            </button>
+            <button class="mode-tab" id="tab-phonics-quiz" type="button" role="tab" aria-selected="false">
+              🎯 Đố Vui
+            </button>
+          </div>
+        </div>
+
+        <!-- TAB 1: ALPHABET A-Z & PHONICS SPOTLIGHT -->
+        <div class="phonics-panel" id="phonics-panel-board">
+          <div class="phonics-toolbar">
+            <div class="phonics-filter-group">
+              <button class="filter-pill active" id="btn-filter-all-letters" type="button">🌈 Tất cả 26 chữ</button>
+              <button class="filter-pill" id="btn-filter-vowels" type="button">🌟 5 Nguyên âm (A, E, I, O, U)</button>
+            </div>
+            <div class="phonics-toolbar-right">
+              <span class="hud-pill" id="phonics-mastered-pill">⭐ Đã thuộc: 0 / 26</span>
+              <button class="btn-abc-song" id="btn-abc-song" type="button">🎶 Hát &amp; Đọc A–Z</button>
+            </div>
+          </div>
+
+          <!-- Spotlight Letter Card -->
+          <div class="phonics-spotlight-card" id="phonics-spotlight-card">
+            <button class="nav-arrow-btn prev-btn" id="btn-prev-letter" type="button" aria-label="Chữ cái trước">❮</button>
+
+            <div class="spotlight-center">
+              <div class="spotlight-top-meta">
+                <span class="letter-type-badge" id="letter-type-badge">🌟 Nguyên âm (Vowel)</span>
+                <span class="learned-status-badge" id="letter-learned-badge">⭐ Đã thuộc</span>
+              </div>
+
+              <div class="spotlight-main-row">
+                <div class="big-letter-box" id="big-letter-box">
+                  <span class="big-upper" id="spotlight-upper">A</span>
+                  <span class="big-lower" id="spotlight-lower">a</span>
+                </div>
+
+                <div class="phonics-sound-panel">
+                  <div class="sound-compare-row">
+                    <div class="sound-info-box">
+                      <span class="sound-label">Tên chữ cái (Letter Name)</span>
+                      <div class="sound-ipa-line">
+                        <strong id="spotlight-name-ipa">/eɪ/</strong>
+                        <span class="vi-cue" id="spotlight-name-vi">(Đọc là "ây")</span>
+                      </div>
+                      <button class="btn-phonics-audio name-btn" id="btn-play-letter-name" type="button">
+                        🔊 Nghe tên chữ
+                      </button>
+                    </div>
+
+                    <div class="sound-info-box phonics-box">
+                      <span class="sound-label">Âm Ngữ Âm (Phonics Sound)</span>
+                      <div class="sound-ipa-line">
+                        <strong id="spotlight-phonics-ipa">/æ/</strong>
+                        <span class="vi-cue" id="spotlight-phonics-vi">(Âm ngắn "e-a")</span>
+                      </div>
+                      <button class="btn-phonics-audio sound-btn" id="btn-play-letter-phonics" type="button">
+                        🗣️ Nghe âm Phonics
+                      </button>
+                    </div>
+                  </div>
+
+                  <p class="phonics-tip-line" id="spotlight-tip">
+                    💡 Mẹo: Chữ A phát âm "e-a" mở rộng miệng, như trong từ <strong>Apple</strong>!
+                  </p>
+                </div>
+              </div>
+
+              <div class="spotlight-examples-wrap">
+                <div class="examples-header">
+                  <span>✨ Từ vựng mẫu bắt đầu bằng chữ <strong id="examples-letter-label">A</strong> (Chạm vào để nghe):</span>
+                  <button class="btn-chant-mini" id="btn-play-letter-chant" type="button">🎵 Nghe câu vần</button>
+                </div>
+                <div class="letter-examples-grid" id="letter-examples-grid">
+                  <!-- 3 example word buttons rendered dynamically -->
+                </div>
+              </div>
+
+              <div class="spotlight-bottom-actions">
+                <button class="btn-action-mastered" id="btn-mark-letter-learned" type="button">
+                  <span id="mark-letter-icon">⭐</span>
+                  <span id="mark-letter-text">Bé đã thuộc chữ này!</span>
+                </button>
+              </div>
+            </div>
+
+            <button class="nav-arrow-btn next-btn" id="btn-next-letter" type="button" aria-label="Chữ cái tiếp theo">❯</button>
+          </div>
+
+          <!-- 26-Letter Interactive Grid -->
+          <div class="alphabet-grid" id="alphabet-grid" aria-label="Bảng 26 chữ cái tiếng Anh">
+            <!-- Populated dynamically by phonics.js -->
+          </div>
+        </div>
+
+        <!-- TAB 2: CVC WORD BLENDING -->
+        <div class="phonics-panel hidden" id="phonics-panel-blend">
+          <div class="blend-stage-card">
+            <div class="blend-header-bar">
+              <span class="quiz-round-pill" id="blend-progress-label">Từ 1 / 10</span>
+              <span class="blend-tip-pill">👆 Chạm từng chữ để nghe âm, rồi ghép lại thành từ!</span>
+            </div>
+
+            <div class="blend-tiles-row" id="blend-tiles-row">
+              <!-- 3 interactive letter tiles generated dynamically -->
+            </div>
+
+            <div class="blend-controls-row">
+              <button class="btn-speak-primary" id="btn-blend-word" type="button">
+                🔊 Ghép âm &amp; Đọc cả từ!
+              </button>
+              <button class="btn-speak-slow" id="btn-blend-slow" type="button">
+                🐢 Đọc chậm từng âm
+              </button>
+            </div>
+
+            <div class="blend-result-preview" id="blend-result-preview">
+              <div class="blend-emoji" id="blend-emoji">🐱</div>
+              <div class="blend-word-info">
+                <div class="blend-full-word" id="blend-full-word">CAT</div>
+                <div class="blend-ipa" id="blend-ipa">/kæt/</div>
+                <div class="blend-vi" id="blend-vi">Con Mèo</div>
+              </div>
+            </div>
+
+            <div class="blend-nav-row">
+              <button class="btn-action-flip" id="btn-blend-prev" type="button">⬅ Từ trước</button>
+              <button class="btn-action-mastered" id="btn-blend-next" type="button">Từ tiếp theo ➔</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 3: PHONICS LISTENING QUIZ -->
+        <div class="phonics-panel hidden" id="phonics-panel-quiz">
+          <div class="quiz-stage-wrapper">
+            <div class="quiz-card-box">
+              <div class="quiz-header-bar">
+                <span class="quiz-round-pill" id="pquiz-progress-label">Câu 1 / 8</span>
+                <span class="quiz-streak-pill" id="pquiz-streak-label">🔥 Chuỗi đúng: 0</span>
+              </div>
+
+              <div class="quiz-prompt-area">
+                <p class="quiz-instruction" id="pquiz-instruction">
+                  👂 Bé hãy lắng nghe âm thanh và chọn đúng chữ cái nhé!
+                </p>
+                <div class="quiz-audio-row">
+                  <button class="btn-quiz-listen" id="btn-pquiz-replay" type="button">
+                    <span class="big-speaker">🔊</span>
+                    <span>Nghe lại</span>
+                  </button>
+                  <button class="btn-quiz-hint" id="btn-pquiz-hint" type="button">
+                    👀 Xem gợi ý hình
+                  </button>
+                </div>
+                <div class="pquiz-hint-box hidden" id="pquiz-hint-box">🍎 Apple (Quả Táo)</div>
+              </div>
+
+              <div class="pquiz-options-grid" id="pquiz-options-grid">
+                <!-- 4 Letter choices generated dynamically -->
+              </div>
+
+              <div class="quiz-feedback-banner hidden" id="pquiz-feedback-banner">
+                <div class="feedback-msg" id="pquiz-feedback-msg">🎉 Chính xác!</div>
+                <button class="btn-next-question" id="btn-pquiz-next" type="button">Câu tiếp theo ➔</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
     </main>
 
     <!-- MODAL: GAME RESULT -->
@@ -372,18 +594,18 @@
               <h3>🃏 Thẻ từ vựng (Flashcards) Hình ảnh &amp; Phát âm chuẩn</h3>
               <p>6 chủ đề gần gũi (Động vật, Màu sắc, Gia đình, Số đếm, Trái cây, Đồ vật), lật thẻ 3D, phát âm chuẩn &amp; đọc chậm từng âm, đánh vần và thử thách nghe nhanh.</p>
             </div>
-            <div class="roadmap-item active-phase">
-              <div class="phase-badge done">Giai đoạn 2 (Mới)</div>
+            <div class="roadmap-item">
+              <div class="phase-badge done">Giai đoạn 2 (Đã xong)</div>
               <h3>🎮 Trò chơi tương tác (Mini-games)</h3>
               <p>Lật thẻ nhớ (Memory Match), Nối hình với chữ, Bắt bóng từ vựng giúp bé ôn bài không nhàm chán.</p>
             </div>
-            <div class="roadmap-item">
-              <div class="phase-badge upcoming">Giai đoạn 3 (Tiếp theo)</div>
+            <div class="roadmap-item active-phase">
+              <div class="phase-badge done">Giai đoạn 3 (Mới)</div>
               <h3>🔤 Bảng chữ cái (ABC) &amp; Ngữ âm cơ bản (Phonics)</h3>
-              <p>Học 26 chữ cái A-Z kèm âm Phonics và bài hát vui nhộn cho bé lớp 1.</p>
+              <p>Học 26 chữ cái A–Z kèm âm Phonics, bài hát vần điệu A–Z, tập ghép âm CVC và đố vui chữ cái.</p>
             </div>
             <div class="roadmap-item">
-              <div class="phase-badge upcoming">Giai đoạn 4</div>
+              <div class="phase-badge upcoming">Giai đoạn 4 (Tiếp theo)</div>
               <h3>🎙️ Luyện nói &amp; Nhận diện giọng nói (AI Speaking)</h3>
               <p>Bé bấm nút micro đọc theo Sư Tử Leo và nhận chấm điểm 3 sao trực tiếp.</p>
             </div>
@@ -407,5 +629,6 @@
 
   <script src="app.js"></script>
   <script src="games.js"></script>
+  <script src="phonics.js"></script>
 </body>
 </html>

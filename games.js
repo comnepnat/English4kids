@@ -515,7 +515,7 @@
      Wiring
      ------------------------------------------------------------------ */
   function bindGameEvents() {
-    document.querySelectorAll('.game-tile').forEach(tile => {
+    document.querySelectorAll('.game-tile[data-game]').forEach(tile => {
       tile.addEventListener('click', () => {
         playSoundEffect('pop');
         openGame(tile.dataset.game);

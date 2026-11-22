@@ -662,6 +662,7 @@ const STORAGE_KEY = 'english4kids_v1_progress';
 const state = {
   stars: 0,
   learnedIds: new Set(),
+  learnedLetters: new Set(),
   soundEnabled: true,
   currentTopicId: 'animals',
   currentCardIndex: 0,
@@ -685,6 +686,9 @@ function loadProgress() {
     if (Array.isArray(parsed.learnedIds)) {
       state.learnedIds = new Set(parsed.learnedIds);
     }
+    if (Array.isArray(parsed.learnedLetters)) {
+      state.learnedLetters = new Set(parsed.learnedLetters);
+    }
     if (typeof parsed.soundEnabled === 'boolean') {
       state.soundEnabled = parsed.soundEnabled;
     }
@@ -698,6 +702,7 @@ function saveProgress() {
     const payload = {
       stars: state.stars,
       learnedIds: Array.from(state.learnedIds),
+      learnedLetters: Array.from(state.learnedLetters),
       soundEnabled: state.soundEnabled
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
@@ -1388,9 +1393,13 @@ function bindEvents() {
   document.getElementById('btn-reset-progress').addEventListener('click', () => {
     state.stars = 0;
     state.learnedIds.clear();
+    state.learnedLetters.clear();
     saveProgress();
     updateHeaderAndMissionUI();
     renderTopicsGrid();
+    if (typeof window.refreshPhonicsUI === 'function') {
+      window.refreshPhonicsUI();
+    }
     closeRoadmap();
   });
 }
