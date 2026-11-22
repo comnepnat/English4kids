@@ -9,10 +9,14 @@
   const AUDIO_CACHE_KEY = 'english4kids_audio_cache_v1';
   const MAX_CACHE_ENTRIES = 600;
 
+  const MIN_SPEED = 0.55;
+  const MAX_SPEED = 1.40;
+  const SPEED_STEP = 0.05;
+
   const DEFAULT_PREFS = {
     nativeWordAudio: true,     // Real human studio MP3 for single words
     accent: 'en-US',           // 'en-US' | 'en-GB'
-    speedMultiplier: 1.0,      // 0.85 | 1.0 | 1.1
+    speedMultiplier: 1.0,      // 0.55 .. 1.40 (step 0.05)
     voiceURI: 'auto',          // 'auto' or specific SpeechSynthesisVoice.voiceURI
     cloudProvider: 'none',     // 'none' | 'google' | 'openai'
     cloudApiKey: ''
@@ -26,13 +30,32 @@
 
   const $ = id => document.getElementById(id);
 
+  function clampSpeed(val) {
+    const num = Number(val);
+    if (!Number.isFinite(num)) return 1.0;
+    const clamped = Math.max(MIN_SPEED, Math.min(MAX_SPEED, num));
+    return +(Math.round(clamped / SPEED_STEP) * SPEED_STEP).toFixed(2);
+  }
+
+  function describeSpeed(val) {
+    const s = clampSpeed(val);
+    if (s <= 0.70) return { emoji: '🐌', label: 'Rất chậm' };
+    if (s <= 0.88) return { emoji: '🐢', label: 'Chậm rõ' };
+    if (s <= 1.05) return { emoji: '✨', label: 'Tự nhiên' };
+    if (s <= 1.22) return { emoji: '🐇', label: 'Nhanh' };
+    return { emoji: '⚡', label: 'Bản xứ nhanh' };
+  }
+
   /* ------------------------------------------------------------------
      Persistence
      ------------------------------------------------------------------ */
   function loadVoicePrefs() {
     try {
       const raw = localStorage.getItem(PREFS_KEY);
-      if (raw) prefs = { ...DEFAULT_PREFS, ...JSON.parse(raw) };
+      if (raw) {
+        prefs = { ...DEFAULT_PREFS, ...JSON.parse(raw) };
+        prefs.speedMultiplier = clampSpeed(prefs.speedMultiplier);
+      }
     } catch (e) { /* ignore */ }
     try {
       const rawCache = localStorage.getItem(AUDIO_CACHE_KEY);
@@ -232,7 +255,7 @@
     } catch (e) { /* ignore */ }
 
     activeAudio.src = url;
-    activeAudio.playbackRate = Math.max(0.6, Math.min(1.25, playbackRate));
+    activeAudio.playbackRate = Math.max(0.5, Math.min(1.5, playbackRate));
     if ('preservesPitch' in activeAudio) activeAudio.preservesPitch = true;
     if ('webkitPreservesPitch' in activeAudio) activeAudio.webkitPreservesPitch = true;
     if ('mozPreservesPitch' in activeAudio) activeAudio.mozPreservesPitch = true;
@@ -270,7 +293,7 @@
 
   async function synthesizeGoogle(text, rate) {
     const url = `https://texttospeech.googleapis.com/v1/text:synthesize?key=${ encodeURIComponent(prefs.cloudApiKey) }`;
-    const speakingRate = Math.max(0.65, Math.min(1.2, rate));
+    const speakingRate = Math.max(0.55, Math.min(1.4, rate));
     // Chirp 3 HD voices sound the most human; Neural2 is the long-standing fallback.
     const voiceNames = prefs.accent === 'en-GB'
       ? ['en-GB-Chirp3-HD-Aoede', 'en-GB-Neural2-A']
@@ -297,14 +320,16 @@
   }
 
   async function synthesizeOpenAI(text, rate) {
+    const speed = Math.max(0.55, Math.min(1.4, rate));
     const attempts = [
       {
         model: 'gpt-4o-mini-tts',
         voice: 'coral',
         input: text,
+        speed,
         instructions: 'Read in a warm, clear and natural voice, like a friendly teacher reading to young children. Do not exaggerate.'
       },
-      { model: 'tts-1', voice: 'nova', input: text, speed: Math.max(0.65, Math.min(1.25, rate)) }
+      { model: 'tts-1', voice: 'nova', input: text, speed }
     ];
     for (let i = cloudVoiceStart.openai; i < attempts.length; i++) {
       const body = attempts[i];
@@ -409,9 +434,9 @@
         if (settled) return;
         const chunks = splitIntoChunks(prepareSpeechText(text));
         const bestVoice = pickBestBrowserVoice();
-        // Calibrate natural rate: avoid overly slow distortion (0.55 -> 0.70; 0.85..0.95 -> ~0.95)
-        const baseRate = requestedRate <= 0.65 ? 0.70 : Math.min(1.05, Math.max(0.90, requestedRate + 0.06));
-        const rate = Math.max(0.62, Math.min(1.2, +(baseRate * prefs.speedMultiplier).toFixed(2)));
+        // Calibrate natural rate while respecting the full 0.55x - 1.40x speed slider
+        const baseRate = requestedRate <= 0.65 ? 0.72 : Math.min(1.04, Math.max(0.92, requestedRate + 0.04));
+        const rate = Math.max(0.48, Math.min(1.5, +(baseRate * prefs.speedMultiplier).toFixed(2)));
 
         setSpeakingVisual(true);
         chunks.forEach((chunk, i) => {
@@ -527,7 +552,8 @@
     const started = Date.now();
     let cancelled = false;
     let timer = null;
-    const capTimer = setTimeout(proceed, max);
+    const scaledMax = Math.max(max, Math.round(max / Math.min(1, prefs.speedMultiplier || 1)));
+    const capTimer = setTimeout(proceed, scaledMax);
     let proceeded = false;
     function proceed() {
       if (proceeded || cancelled) return;
@@ -544,6 +570,56 @@
         clearTimeout(timer);
       }
     };
+  };
+
+  /* ------------------------------------------------------------------
+     Synchronized Speech Speed Sliders (Voice Modal + Flashcards + Stories + SRS)
+     ------------------------------------------------------------------ */
+  function syncSpeedUI() {
+    const speed = clampSpeed(prefs.speedMultiplier);
+    const pct = Math.round(((speed - MIN_SPEED) / (MAX_SPEED - MIN_SPEED)) * 100);
+    const speedStr = `${ speed.toFixed(2) }×`;
+    const shortStr = `${ Number(speed.toFixed(2)) }×`;
+    const desc = describeSpeed(speed);
+
+    document.querySelectorAll('[data-speed-slider]').forEach(el => {
+      el.value = String(speed);
+      el.style.setProperty('--speed-pct', `${ pct }%`);
+    });
+
+    document.querySelectorAll('[data-speed-badge]').forEach(el => {
+      el.textContent = speedStr;
+    });
+
+    const liveTag = $('voice-speed-live-tag');
+    if (liveTag) {
+      liveTag.textContent = `${ desc.emoji } ${ speedStr } • ${ desc.label }`;
+    }
+
+    const headerChip = $('header-speed-chip');
+    if (headerChip) {
+      const isDefault = Math.abs(speed - 1.0) < 0.001;
+      headerChip.textContent = shortStr;
+      headerChip.classList.toggle('hidden', isDefault);
+    }
+
+    document.querySelectorAll('#voice-speed-group [data-speed]').forEach(btn => {
+      btn.classList.toggle('active', Math.abs(Number(btn.dataset.speed) - speed) < 0.005);
+    });
+  }
+
+  window.getSpeechSpeed = function () {
+    return clampSpeed(prefs.speedMultiplier);
+  };
+
+  window.setSpeechSpeed = function (value, { save = true, silent = false } = {}) {
+    prefs.speedMultiplier = clampSpeed(value);
+    if (save) saveVoicePrefs();
+    syncSpeedUI();
+    if (!silent && typeof playSoundEffect === 'function') {
+      playSoundEffect('pop');
+    }
+    return prefs.speedMultiplier;
   };
 
   /* ------------------------------------------------------------------
@@ -601,9 +677,7 @@
     document.querySelectorAll('#voice-accent-group [data-accent]').forEach(btn => {
       btn.classList.toggle('active', btn.dataset.accent === prefs.accent);
     });
-    document.querySelectorAll('#voice-speed-group [data-speed]').forEach(btn => {
-      btn.classList.toggle('active', Number(btn.dataset.speed) === Number(prefs.speedMultiplier));
-    });
+    syncSpeedUI();
 
     const provSel = $('voice-cloud-provider');
     const keyInp = $('voice-cloud-key');
@@ -615,6 +689,7 @@
 
   function bindVoiceModalEvents() {
     loadVoicePrefs();
+    syncSpeedUI();
 
     if ('speechSynthesis' in window) {
       refreshAvailableVoices();
@@ -624,6 +699,24 @@
         populateVoiceSelect();
       };
     }
+
+    // Bind ALL synchronized range sliders (Voice Modal, Flashcards, Stories, SRS)
+    document.querySelectorAll('[data-speed-slider]').forEach(slider => {
+      slider.addEventListener('input', () => {
+        window.setSpeechSpeed(slider.value, { save: false, silent: true });
+      });
+      slider.addEventListener('change', () => {
+        window.setSpeechSpeed(slider.value, { save: true, silent: false });
+      });
+    });
+
+    // Bind 🐢 / 🐇 micro-step buttons (-0.05 / +0.05)
+    document.querySelectorAll('[data-speed-step]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const delta = Number(btn.dataset.speedStep) || 0;
+        window.setSpeechSpeed(prefs.speedMultiplier + delta, { save: true, silent: false });
+      });
+    });
 
     const modal = $('voice-modal');
     if (!modal) return;
@@ -665,13 +758,10 @@
       });
     });
 
-    // Speed toggle
+    // Speed quick preset buttons
     document.querySelectorAll('#voice-speed-group [data-speed]').forEach(btn => {
       btn.addEventListener('click', () => {
-        prefs.speedMultiplier = Number(btn.dataset.speed) || 1.0;
-        saveVoicePrefs();
-        syncVoiceModalControls();
-        playSoundEffect('pop');
+        window.setSpeechSpeed(btn.dataset.speed, { save: true, silent: false });
       });
     });
 

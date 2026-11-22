@@ -96,9 +96,10 @@
           <span class="stat-label">Từ</span>
         </div>
 
-        <button class="btn-icon-action" id="btn-voice-modal" type="button" title="Chọn giọng đọc tự nhiên (Anh-Mỹ / Anh-Anh)">
+        <button class="btn-icon-action" id="btn-voice-modal" type="button" title="Chọn giọng đọc & tốc độ đọc (Anh-Mỹ / Anh-Anh)">
           <span>🎙️</span>
           <span class="btn-text-desktop">Giọng</span>
+          <span class="voice-speed-chip hidden" id="header-speed-chip">1.0×</span>
         </button>
 
         <button class="btn-icon-action" id="btn-backup-modal" type="button" title="Sao lưu & Đồng bộ Google Drive">
@@ -575,6 +576,15 @@
                 <span id="mark-learned-text">Bé đã thuộc từ này!</span>
               </button>
             </div>
+
+            <!-- Inline Reading Speed Slider -->
+            <div class="quick-speed-bar" aria-label="Thanh điều chỉnh tốc độ đọc">
+              <span class="qs-label">⏱️ Tốc độ đọc</span>
+              <button type="button" class="qs-step-btn" data-speed-step="-0.05" aria-label="Đọc chậm hơn" title="Đọc chậm hơn">🐢</button>
+              <input type="range" class="speed-range-input" data-speed-slider min="0.55" max="1.40" step="0.05" value="1" aria-label="Tốc độ đọc tiếng Anh" />
+              <button type="button" class="qs-step-btn" data-speed-step="0.05" aria-label="Đọc nhanh hơn" title="Đọc nhanh hơn">🐇</button>
+              <span class="qs-value-pill" data-speed-badge>1.00×</span>
+            </div>
           </div>
 
           <button class="nav-arrow-btn next-btn" id="btn-next-card" type="button" aria-label="Thẻ tiếp theo">
@@ -965,6 +975,15 @@
             <button class="btn-secondary-pill" id="btn-story-sub-toggle" type="button">🇻🇳 Phụ đề Việt: Bật</button>
             <button class="btn-action-flip" id="btn-story-next" type="button">Cảnh sau ⏭</button>
           </div>
+
+          <!-- Inline Narration Speed Slider -->
+          <div class="quick-speed-bar is-story-speed" aria-label="Thanh điều chỉnh tốc độ kể chuyện">
+            <span class="qs-label">⏱️ Tốc độ đọc</span>
+            <button type="button" class="qs-step-btn" data-speed-step="-0.05" aria-label="Đọc chậm hơn" title="Đọc chậm hơn">🐢</button>
+            <input type="range" class="speed-range-input" data-speed-slider min="0.55" max="1.40" step="0.05" value="1" aria-label="Tốc độ đọc phim tương tác" />
+            <button type="button" class="qs-step-btn" data-speed-step="0.05" aria-label="Đọc nhanh hơn" title="Đọc nhanh hơn">🐇</button>
+            <span class="qs-value-pill" data-speed-badge>1.00×</span>
+          </div>
         </div>
       </section>
 
@@ -1085,6 +1104,13 @@
               <div class="srs-audio-row" id="srs-front-audio-row">
                 <button class="btn-speak-primary" id="btn-srs-speak" type="button">🔊 Nghe phát âm</button>
                 <button class="btn-speak-slow" id="btn-srs-speak-slow" type="button">🐢 Đọc chậm</button>
+              </div>
+              <div class="quick-speed-bar is-compact" aria-label="Thanh điều chỉnh tốc độ đọc ôn tập">
+                <span class="qs-label">⏱️ Tốc độ</span>
+                <button type="button" class="qs-step-btn" data-speed-step="-0.05" aria-label="Đọc chậm hơn" title="Đọc chậm hơn">🐢</button>
+                <input type="range" class="speed-range-input" data-speed-slider min="0.55" max="1.40" step="0.05" value="1" aria-label="Tốc độ đọc thẻ ôn tập" />
+                <button type="button" class="qs-step-btn" data-speed-step="0.05" aria-label="Đọc nhanh hơn" title="Đọc nhanh hơn">🐇</button>
+                <span class="qs-value-pill" data-speed-badge>1.00×</span>
               </div>
             </div>
 
@@ -1452,12 +1478,28 @@
               </div>
             </div>
 
-            <div class="voice-setting-card">
-              <span class="voice-sec-label">⏱️ Tốc độ đọc:</span>
-              <div class="voice-pill-group" id="voice-speed-group">
-                <button type="button" class="filter-pill" data-speed="0.85">🐢 Chậm</button>
-                <button type="button" class="filter-pill active" data-speed="1">✨ Tự nhiên</button>
-                <button type="button" class="filter-pill" data-speed="1.1">⚡ Bản xứ</button>
+            <div class="voice-setting-card voice-speed-card">
+              <div class="speed-card-head">
+                <label class="voice-sec-label" for="voice-speed-slider">⏱️ Thanh điều chỉnh tốc độ đọc:</label>
+                <span class="speed-live-tag" id="voice-speed-live-tag">✨ 1.00× • Tự nhiên</span>
+              </div>
+              <div class="speed-slider-row">
+                <button type="button" class="qs-step-btn is-modal" data-speed-step="-0.05" aria-label="Giảm tốc độ đọc" title="Chậm hơn (-0.05×)">🐢</button>
+                <input type="range" id="voice-speed-slider" class="speed-range-input is-large" data-speed-slider min="0.55" max="1.40" step="0.05" value="1" aria-label="Thanh trượt tốc độ đọc từ 0.55 lần đến 1.40 lần" />
+                <button type="button" class="qs-step-btn is-modal" data-speed-step="0.05" aria-label="Tăng tốc độ đọc" title="Nhanh hơn (+0.05×)">🐇</button>
+              </div>
+              <div class="speed-scale-row" aria-hidden="true">
+                <span>0.55×</span>
+                <span>0.80×</span>
+                <span>1.00×</span>
+                <span>1.20×</span>
+                <span>1.40×</span>
+              </div>
+              <div class="voice-pill-group speed-preset-group" id="voice-speed-group">
+                <button type="button" class="filter-pill" data-speed="0.7">🐌 0.7× Rất chậm</button>
+                <button type="button" class="filter-pill" data-speed="0.85">🐢 0.85× Chậm</button>
+                <button type="button" class="filter-pill active" data-speed="1">✨ 1.0× Tự nhiên</button>
+                <button type="button" class="filter-pill" data-speed="1.2">⚡ 1.2× Nhanh</button>
               </div>
             </div>
           </div>
