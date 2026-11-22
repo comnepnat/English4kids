@@ -2,7 +2,7 @@
  * English4Kids - Ultra-Natural 3-Layer Pronunciation Engine (voice.js)
  * Layer 1: Real Human Native Studio Audio (Free Dictionary API US/UK MP3s) with local cache & pitch-preserved slow playback
  * Layer 2: Smart Ranked Neural Browser Voices (Edge Online Natural, Apple Premium/Enhanced/Siri, Google Neural; penalizes robotic legacy voices; natural pitch 1.0)
- * Layer 3: Optional BYO Cloud AI TTS (Google Cloud Neural2/Journey or OpenAI tts-1) + Interactive Voice Picker Modal
+ * Layer 3: Optional BYO Cloud AI TTS (Google Cloud Chirp 3 HD / Neural2 or OpenAI gpt-4o-mini-tts / tts-1) + Interactive Voice Picker Modal
  */
 (function () {
   const PREFS_KEY = 'english4kids_voice_prefs_v1';
@@ -57,6 +57,22 @@
   }
 
   /* ------------------------------------------------------------------
+     Speech text cleanup: strip emoji/markup and end every phrase with
+     punctuation so TTS engines use a natural falling intonation instead
+     of the flat "list item" tone they give to bare words.
+     ------------------------------------------------------------------ */
+  function prepareSpeechText(text) {
+    let t = String(text || '')
+      .replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}\u{FE0F}\u{200D}]/gu, ' ')
+      .replace(/\s+\/\s+/g, ', ')
+      .replace(/[_*#~]+/g, ' ')
+      .replace(/\s{2,}/g, ' ')
+      .trim();
+    if (t && !/[.!?…]["'”’)]*$/.test(t)) t += '.';
+    return t;
+  }
+
+  /* ------------------------------------------------------------------
      Smart Voice Quality Scoring (Ranks Neural HD Voices First!)
      ------------------------------------------------------------------ */
   function normalizeLang(lang) {
@@ -95,6 +111,8 @@
 
     // Prefer non-local cloud voices (often neural) slightly over compact offline
     if (v.localService === false) score += 22;
+    // Android Chrome exposes Google's high-quality server voices as "...-network"
+    if (/-network\b/i.test(name)) score += 40;
 
     // Heavy Penalty: Legacy Robotic SAPI5, eSpeak, Compact & Novelty Voices
     if (/\b(Zira|David|Mark|Hazel|George|Susan|Richard|Heera|Ravi|eSpeak|Compact|Albert|Bad News|Bahh|Bells|Boing|Bubbles|Cellos|Deranged|Fred|Good News|Hysterical|Jester|Junior|Kathy|Organ|Princess|Ralph|Superstar|Trinoids|Whisper|Wobble|Zarvox|Eddy|Flo|Grandma|Grandpa|Reed|Rocko|Sandy|Shelley)\b/i.test(name)) {
@@ -235,56 +253,97 @@
      Layer 3 (Optional BYO Cloud AI TTS for Sentences & Stories)
      ------------------------------------------------------------------ */
   const cloudBlobCache = new Map();
+  // Remember which cloud voice works so a missing Chirp voice isn't retried on every sentence,
+  // and stop trying the cloud for this session after repeated failures (bad key, no quota, offline).
+  const cloudVoiceStart = { google: 0, openai: 0 };
+  let cloudFailStreak = 0;
 
-  async function tryPlayCloudTts(text, rate, token) {
-    if (prefs.cloudProvider === 'none' || !prefs.cloudApiKey) return false;
+  async function fetchWithTimeout(url, options, ms) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), ms);
+    try {
+      return await fetch(url, { ...options, signal: controller.signal });
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+
+  async function synthesizeGoogle(text, rate) {
+    const url = `https://texttospeech.googleapis.com/v1/text:synthesize?key=${ encodeURIComponent(prefs.cloudApiKey) }`;
+    const speakingRate = Math.max(0.65, Math.min(1.2, rate));
+    // Chirp 3 HD voices sound the most human; Neural2 is the long-standing fallback.
+    const voiceNames = prefs.accent === 'en-GB'
+      ? ['en-GB-Chirp3-HD-Aoede', 'en-GB-Neural2-A']
+      : ['en-US-Chirp3-HD-Aoede', 'en-US-Neural2-F'];
+    for (let i = cloudVoiceStart.google; i < voiceNames.length; i++) {
+      const name = voiceNames[i];
+      const res = await fetchWithTimeout(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          input: { text },
+          voice: { languageCode: prefs.accent, name },
+          audioConfig: { audioEncoding: 'MP3', speakingRate }
+        })
+      }, 7000);
+      if (!res.ok) continue;
+      const data = await res.json();
+      if (data.audioContent) {
+        cloudVoiceStart.google = i;
+        return `data:audio/mp3;base64,${ data.audioContent }`;
+      }
+    }
+    return null;
+  }
+
+  async function synthesizeOpenAI(text, rate) {
+    const attempts = [
+      {
+        model: 'gpt-4o-mini-tts',
+        voice: 'coral',
+        input: text,
+        instructions: 'Read in a warm, clear and natural voice, like a friendly teacher reading to young children. Do not exaggerate.'
+      },
+      { model: 'tts-1', voice: 'nova', input: text, speed: Math.max(0.65, Math.min(1.25, rate)) }
+    ];
+    for (let i = cloudVoiceStart.openai; i < attempts.length; i++) {
+      const body = attempts[i];
+      const res = await fetchWithTimeout('https://api.openai.com/v1/audio/speech', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${ prefs.cloudApiKey }`
+        },
+        body: JSON.stringify(body)
+      }, 9000);
+      if (!res.ok) continue;
+      const blob = await res.blob();
+      cloudVoiceStart.openai = i;
+      return URL.createObjectURL(blob);
+    }
+    return null;
+  }
+
+  async function tryPlayCloudTts(rawText, rate, token) {
+    if (prefs.cloudProvider === 'none' || !prefs.cloudApiKey || cloudFailStreak >= 3) return false;
+    const text = prepareSpeechText(rawText);
     const key = `${ prefs.cloudProvider }:${ prefs.accent }:${ rate.toFixed(2) }:${ text }`;
 
     try {
       let blobUrl = cloudBlobCache.get(key);
       if (!blobUrl) {
-        const controller = new AbortController();
-        const timer = setTimeout(() => controller.abort(), 3500);
-
         if (prefs.cloudProvider === 'google') {
-          const voiceName = prefs.accent === 'en-GB' ? 'en-GB-Neural2-A' : 'en-US-Neural2-F';
-          const res = await fetch(`https://texttospeech.googleapis.com/v1/text:synthesize?key=${ encodeURIComponent(prefs.cloudApiKey) }`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            signal: controller.signal,
-            body: JSON.stringify({
-              input: { text },
-              voice: { languageCode: prefs.accent, name: voiceName },
-              audioConfig: { audioEncoding: 'MP3', speakingRate: Math.max(0.65, Math.min(1.2, rate)) }
-            })
-          });
-          clearTimeout(timer);
-          if (!res.ok) return false;
-          const data = await res.json();
-          if (!data.audioContent) return false;
-          blobUrl = `data:audio/mp3;base64,${ data.audioContent }`;
+          blobUrl = await synthesizeGoogle(text, rate);
         } else if (prefs.cloudProvider === 'openai') {
-          const res = await fetch('https://api.openai.com/v1/audio/speech', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${ prefs.cloudApiKey }`
-            },
-            signal: controller.signal,
-            body: JSON.stringify({
-              model: 'tts-1',
-              voice: 'nova',
-              input: text,
-              speed: Math.max(0.65, Math.min(1.25, rate))
-            })
-          });
-          clearTimeout(timer);
-          if (!res.ok) return false;
-          const blob = await res.blob();
-          blobUrl = URL.createObjectURL(blob);
+          blobUrl = await synthesizeOpenAI(text, rate);
         }
 
-        if (blobUrl) cloudBlobCache.set(key, blobUrl);
+        if (blobUrl) {
+          cloudBlobCache.set(key, blobUrl);
+          cloudFailStreak = 0;
+        } else {
+          cloudFailStreak += 1;
+        }
       }
 
       if (!blobUrl || token !== speakToken) return false;
@@ -300,6 +359,7 @@
         );
       });
     } catch (e) {
+      cloudFailStreak += 1;
       return false;
     }
   }
@@ -319,7 +379,7 @@
     window.speechSynthesis.cancel();
 
     const doSpeak = () => {
-      const utterance = new SpeechSynthesisUtterance(text);
+      const utterance = new SpeechSynthesisUtterance(prepareSpeechText(text));
       const bestVoice = pickBestBrowserVoice();
       if (bestVoice) {
         utterance.voice = bestVoice;
@@ -450,11 +510,14 @@
     const accentLabel = prefs.accent === 'en-GB' ? '🇬🇧 Anh–Anh' : '🇺🇸 Anh–Mỹ';
     const voiceLabel = best ? best.name : 'Giọng mặc định hệ thống';
     const cloudLabel = prefs.cloudProvider !== 'none' && prefs.cloudApiKey
-      ? ` + ☁️ ${ prefs.cloudProvider === 'google' ? 'Google Neural2' : 'OpenAI Nova' }`
+      ? ` + ☁️ ${ prefs.cloudProvider === 'google' ? 'Google Chirp 3 HD' : 'OpenAI GPT-4o TTS' }`
+      : '';
+    const roboticHint = !cloudLabel && (!best || scoreVoice(best, prefs.accent) < 90)
+      ? ' • ⚠️ Giọng trên thiết bị này còn hơi máy móc, xem mẹo bên dưới để tải giọng tự nhiên miễn phí.'
       : '';
     statusEl.textContent = prefs.nativeWordAudio
-      ? `🟢 Từ vựng: Giọng người thật (${ accentLabel }) • Câu & Truyện: ${ voiceLabel }${ cloudLabel }`
-      : `🔊 Đang dùng (${ accentLabel }): ${ voiceLabel }${ cloudLabel }`;
+      ? `🟢 Từ vựng: Giọng người thật (${ accentLabel }) • Câu & Truyện: ${ voiceLabel }${ cloudLabel }${ roboticHint }`
+      : `🔊 Đang dùng (${ accentLabel }): ${ voiceLabel }${ cloudLabel }${ roboticHint }`;
   }
 
   function syncVoiceModalControls() {
@@ -559,7 +622,7 @@
     const testSentBtn = $('btn-voice-test-sentence');
     if (testSentBtn) {
       testSentBtn.addEventListener('click', () => {
-        window.speakEnglish('Look! That is a friendly elephant in the sunny zoo.', 0.95);
+        window.speakEnglish('The elephant drinks water with its long trunk.', 0.95);
       });
     }
 
@@ -569,6 +632,10 @@
       saveCloudBtn.addEventListener('click', () => {
         prefs.cloudProvider = ($('voice-cloud-provider').value || 'none');
         prefs.cloudApiKey = ($('voice-cloud-key').value || '').trim();
+        cloudFailStreak = 0;
+        cloudVoiceStart.google = 0;
+        cloudVoiceStart.openai = 0;
+        cloudBlobCache.clear();
         saveVoicePrefs();
         updateActiveVoiceStatusUI();
         playSoundEffect('star');

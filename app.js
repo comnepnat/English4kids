@@ -297,7 +297,8 @@ function spellWordOutLoud(word) {
     .replace(/[^a-zA-Z]/g, '')
     .toUpperCase()
     .split('');
-  const spelledSequence = `${ letters.join(', ') }. ${ word }!`;
+  // "L. I. O. N." makes engines say letter names (A = "ay", not the article "uh")
+  const spelledSequence = `${ letters.join('. ') }. ${ word }!`;
   speakEnglish(spelledSequence, 0.85);
 }
 
