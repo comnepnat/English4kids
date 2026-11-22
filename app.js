@@ -10,12 +10,35 @@ const LESSON_SIZE = 10;
 const STORAGE_KEY = 'english4kids_v1_progress';
 
 const CEFR_LEVELS = [
-  { id: 'Pre-A1', icon: '🌱', name: 'Pre-A1', subtitle: 'Khởi đầu (6 tuổi)', color: '#22C55E', bg: '#DCFCE7', desc: 'Làm quen 350 từ vựng gần gũi & bảng chữ cái ABC.' },
-  { id: 'A1', icon: '🌿', name: 'A1', subtitle: 'Sơ cấp (Starters)', color: '#0EA5E9', bg: '#E0F2FE', desc: '350 từ giao tiếp hàng ngày, nhà cửa, đồ ăn, xe cộ.' },
-  { id: 'A2', icon: '🌳', name: 'A2', subtitle: 'Cơ bản (Movers/Flyers)', color: '#F59E0B', bg: '#FEF3C7', desc: '300 từ mô tả, cảm xúc, địa điểm & vũ trụ.' },
-  { id: 'B1', icon: '🚀', name: 'B1', subtitle: 'Trung cấp (PET)', color: '#3B82F6', bg: '#DBEAFE', desc: '120 từ khoa học, môi trường, du lịch & thảo luận.' },
-  { id: 'B2', icon: '🏆', name: 'B2', subtitle: 'Trung cao cấp (FCE)', color: '#8B5CF6', bg: '#EDE9FE', desc: '120 từ tư duy phân tích, xã hội, đổi mới & học thuật.' }
+  { id: 'Pre-A1', icon: '🌱', name: 'Pre-A1', subtitle: 'Khởi đầu (6 tuổi)', color: '#22C55E', bg: '#DCFCE7', desc: '400 từ vựng gần gũi, chào hỏi cơ bản & bảng chữ cái ABC.' },
+  { id: 'A1', icon: '🌿', name: 'A1', subtitle: 'Sơ cấp (Starters)', color: '#0EA5E9', bg: '#E0F2FE', desc: '400 từ giao tiếp hàng ngày, nhà cửa, đồ ăn, thể thao & âm nhạc.' },
+  { id: 'A2', icon: '🌳', name: 'A2', subtitle: 'Cơ bản (Movers/Flyers)', color: '#F59E0B', bg: '#FEF3C7', desc: '400 từ mô tả, mua sắm, nghề nghiệp, phố thị & vũ trụ.' },
+  { id: 'B1', icon: '🚀', name: 'B1', subtitle: 'Trung cấp (PET)', color: '#3B82F6', bg: '#DBEAFE', desc: '400 từ khoa học, sức khỏe, nghệ thuật, tài chính & lịch sử.' },
+  { id: 'B2', icon: '🏆', name: 'B2', subtitle: 'Trung cao cấp (FCE)', color: '#8B5CF6', bg: '#EDE9FE', desc: '400 từ tư duy phân tích, tâm lý, kinh tế, thiên văn & học thuật.' }
 ];
+
+let _cachedAllCards = null;
+let _cachedCardMap = null;
+
+window.getAllVocabCards = function () {
+  if (!_cachedAllCards) {
+    _cachedAllCards = [];
+    _cachedCardMap = new Map();
+    TOPICS_DATA.forEach(t => {
+      t.cards.forEach(c => {
+        const enriched = { ...c, topicId: t.id, topicTitleVi: t.titleVi, topicIcon: t.icon, level: t.level };
+        _cachedAllCards.push(enriched);
+        _cachedCardMap.set(c.id, enriched);
+      });
+    });
+  }
+  return _cachedAllCards;
+};
+
+window.getVocabCardById = function (cardId) {
+  if (!_cachedCardMap) window.getAllVocabCards();
+  return _cachedCardMap.get(cardId) || null;
+};
 
 const state = {
   stars: 0,
@@ -25,6 +48,22 @@ const state = {
   lastActivity: null,
   activeCefrFilter: 'all',
   soundEnabled: true,
+  srs: {
+    cards: {},
+    stats: {
+      todayDate: '',
+      reviewedToday: 0,
+      newToday: 0,
+      streakDays: 0,
+      lastStudyDate: null,
+      totalReviews: 0,
+      dailyNewLimit: 20
+    }
+  },
+  milestones: {
+    results: {},
+    placement: null
+  },
   currentTopicId: 'animals',
   currentCardIndex: 0,
   isFlipped: false,
@@ -59,6 +98,18 @@ function loadProgress() {
     if (typeof parsed.soundEnabled === 'boolean') {
       state.soundEnabled = parsed.soundEnabled;
     }
+    if (parsed.srs && typeof parsed.srs === 'object') {
+      state.srs = {
+        cards: parsed.srs.cards && typeof parsed.srs.cards === 'object' ? parsed.srs.cards : {},
+        stats: { ...state.srs.stats, ...(parsed.srs.stats || {}) }
+      };
+    }
+    if (parsed.milestones && typeof parsed.milestones === 'object') {
+      state.milestones = {
+        results: parsed.milestones.results && typeof parsed.milestones.results === 'object' ? parsed.milestones.results : {},
+        placement: parsed.milestones.placement || null
+      };
+    }
   } catch (err) {
     console.warn('Could not read saved progress:', err);
   }
@@ -72,7 +123,9 @@ function saveProgress() {
       learnedLetters: Array.from(state.learnedLetters),
       completedEpisodes: Array.from(state.completedEpisodes),
       lastActivity: state.lastActivity,
-      soundEnabled: state.soundEnabled
+      soundEnabled: state.soundEnabled,
+      srs: state.srs,
+      milestones: state.milestones
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
   } catch (err) {
@@ -205,10 +258,12 @@ function spellWordOutLoud(word) {
    ========================================================================== */
 function getCurrentCefrRank() {
   const count = state.learnedIds.size;
-  if (count >= 900) return '🏆 B2 (Trung cao cấp)';
-  if (count >= 650) return '🚀 B1 (Trung cấp)';
-  if (count >= 350) return '🌳 A2 (Cơ bản)';
-  if (count >= 120) return '🌿 A1 (Sơ cấp)';
+  const passedBoss = (lvl) =>
+    state.milestones && state.milestones.results && state.milestones.results[`m_${ lvl }_boss`] && state.milestones.results[`m_${ lvl }_boss`].passed;
+  if (passedBoss('B2') || count >= 1400) return '🏆 B2 (Trung cao cấp)';
+  if (passedBoss('B1') || count >= 1000) return '🚀 B1 (Trung cấp)';
+  if (passedBoss('A2') || count >= 600) return '🌳 A2 (Cơ bản)';
+  if (passedBoss('A1') || count >= 250) return '🌿 A1 (Sơ cấp)';
   return '🌱 Pre-A1 (Khởi đầu)';
 }
 
@@ -224,16 +279,43 @@ function updateHeaderAndMissionUI() {
   totalStarsEl.textContent = state.stars;
   totalLearnedEl.textContent = learnedCount;
 
-  const dailyGoal = 5;
-  const missionCount = Math.min(learnedCount, dailyGoal);
-  const percent = Math.round((missionCount / dailyGoal) * 100);
-  missionTextEl.textContent = `${ missionCount } / ${ dailyGoal } từ hôm nay`;
+  const srsSum = typeof window.getSrsSummary === 'function' ? window.getSrsSummary() : null;
+  const msSum = typeof window.getMilestonesSummary === 'function' ? window.getMilestonesSummary() : null;
+
+  const dailyGoal = 10;
+  const todayActions = Math.min(dailyGoal, (srsSum ? srsSum.reviewedToday : 0) + Math.min(learnedCount, dailyGoal));
+  const percent = Math.round((todayActions / dailyGoal) * 100);
+  missionTextEl.textContent = `${ todayActions } / ${ dailyGoal } mục tiêu hôm nay`;
   missionBarEl.style.width = `${ percent }%`;
 
   const wordsMetric = document.getElementById('metric-words-val');
   if (wordsMetric) wordsMetric.textContent = `${ learnedCount } / ${ totalWords.toLocaleString('vi-VN') }`;
+
+  const ankiMetric = document.getElementById('metric-anki-val');
+  if (ankiMetric && srsSum) {
+    ankiMetric.textContent = srsSum.dueActionable > 0
+      ? `${ srsSum.dueActionable } cần ôn`
+      : `${ srsSum.newAvailable } thẻ mới`;
+  }
+
+  const msMetric = document.getElementById('metric-milestones-val');
+  if (msMetric && msSum) {
+    msMetric.textContent = `${ msSum.passedTotal } / ${ msSum.totalMilestones } mốc`;
+  }
+
   const videosMetric = document.getElementById('metric-videos-val');
-  if (videosMetric) videosMetric.textContent = `${ state.completedEpisodes.size } / 6`;
+  if (videosMetric) videosMetric.textContent = `${ state.completedEpisodes.size }/6 • ${ state.learnedLetters.size }/26`;
+
+  const hubSrsSub = document.getElementById('hub-srs-sub');
+  if (hubSrsSub && srsSum) {
+    hubSrsSub.textContent = `🔵 ${ srsSum.newAvailable } mới • 🟢 ${ srsSum.dueActionable } cần ôn`;
+  }
+
+  const hubMsSub = document.getElementById('hub-milestones-sub');
+  if (hubMsSub && msSum) {
+    hubMsSub.textContent = `16 Bài thi • Đạt ${ msSum.passedTotal }/${ msSum.totalMilestones } mốc`;
+  }
+
   const cefrBadge = document.getElementById('current-cefr-badge');
   if (cefrBadge) cefrBadge.textContent = getCurrentCefrRank();
 
@@ -252,7 +334,7 @@ function renderRecentActivityCard() {
   if (!act) {
     iconEl.textContent = '🦁';
     titleEl.textContent = 'Động Vật & Thú Cưng (Pre-A1)';
-    subEl.textContent = 'Chạm nút bên dưới để bắt đầu bài học đầu tiên cùng Sư Tử Leo!';
+    subEl.textContent = 'Chạm nút bên dưới để bắt đầu hành trình 2.000 từ cùng Sư Tử Leo!';
     btnEl.textContent = '▶ Bắt đầu học ngay ➔';
     return;
   }
@@ -268,6 +350,8 @@ function renderCefrRoadmap() {
   if (!grid) return;
   grid.innerHTML = '';
 
+  const msResults = (state.milestones && state.milestones.results) || {};
+
   CEFR_LEVELS.forEach(lvl => {
     const levelTopics = TOPICS_DATA.filter(t => t.level === lvl.id);
     const totalInLevel = levelTopics.reduce((s, t) => s + t.cards.length, 0);
@@ -276,23 +360,24 @@ function renderCefrRoadmap() {
       0
     );
     const pct = totalInLevel > 0 ? Math.round((learnedInLevel / totalInLevel) * 100) : 0;
+    const bossPassed = !!(msResults[`m_${ lvl.id }_boss`] && msResults[`m_${ lvl.id }_boss`].passed);
 
     const card = document.createElement('button');
     card.type = 'button';
-    card.className = 'cefr-step-card';
+    card.className = `cefr-step-card ${ bossPassed ? 'is-boss-passed' : '' }`;
     card.id = `cefr-card-${ lvl.id }`;
     card.style.setProperty('--cefr-color', lvl.color);
     card.style.setProperty('--cefr-bg', lvl.bg);
 
     card.innerHTML = `
       <div class="cefr-step-top">
-        <span class="cefr-step-icon">${ lvl.icon }</span>
+        <span class="cefr-step-icon">${ bossPassed ? '👑' : lvl.icon }</span>
         <span class="cefr-step-code">${ lvl.name }</span>
         <span class="cefr-step-pct">${ pct }%</span>
       </div>
       <div class="cefr-step-sub">${ lvl.subtitle }</div>
       <div class="cefr-mini-track"><div class="cefr-mini-fill" style="width:${ pct }%"></div></div>
-      <div class="cefr-step-meta">${ learnedInLevel }/${ totalInLevel } từ • ${ levelTopics.length } chủ đề</div>
+      <div class="cefr-step-meta">${ learnedInLevel }/${ totalInLevel } từ • ${ bossPassed ? 'Đã vượt mốc ✅' : `${ levelTopics.length } chủ đề` }</div>
     `;
 
     card.addEventListener('click', () => {
@@ -533,6 +618,12 @@ function renderCurrentFlashcard(autoSpeak = false) {
 
   // Front side elements
   document.getElementById('card-index-badge').textContent = `${ state.currentCardIndex + 1 } / ${ topic.cards.length }`;
+  const posEl = document.getElementById('card-pos-badge');
+  if (posEl) {
+    const posLabels = { n: 'Danh từ', v: 'Động từ', adj: 'Tính từ', adv: 'Trạng từ', conj: 'Liên từ', num: 'Số đếm', phrase: 'Giao tiếp' };
+    posEl.textContent = posLabels[card.pos] || '';
+    posEl.classList.toggle('hidden', !card.pos);
+  }
 
   const isLearned = state.learnedIds.has(card.id);
   const learnedBadge = document.getElementById('card-learned-badge');
@@ -604,6 +695,9 @@ function toggleMarkCardLearned() {
   if (!state.learnedIds.has(card.id)) {
     state.learnedIds.add(card.id);
     state.stars += 1;
+    if (typeof window.enrollCardInSrs === 'function') {
+      window.enrollCardInSrs(card.id);
+    }
     playSoundEffect('star');
     launchConfettiBurst();
     speakEnglish(`Awesome! ${ card.en }!`, 0.95);
@@ -805,11 +899,32 @@ function bindEvents() {
     openVocabHub();
   });
 
-  // 4 Main Content Hub buttons on Home
+  // 6 Main Content Hub buttons on Home
   document.getElementById('hub-btn-vocab').addEventListener('click', () => {
     playSoundEffect('pop');
     openVocabHub('all');
   });
+  const srsHubBtn = document.getElementById('hub-btn-srs');
+  if (srsHubBtn) {
+    srsHubBtn.addEventListener('click', () => {
+      playSoundEffect('pop');
+      if (typeof window.openSrsHub === 'function') window.openSrsHub();
+    });
+  }
+  const msHubBtn = document.getElementById('hub-btn-milestones');
+  if (msHubBtn) {
+    msHubBtn.addEventListener('click', () => {
+      playSoundEffect('pop');
+      if (typeof window.openMilestonesHub === 'function') window.openMilestonesHub();
+    });
+  }
+  const cefrMsBtn = document.getElementById('btn-cefr-open-milestones');
+  if (cefrMsBtn) {
+    cefrMsBtn.addEventListener('click', () => {
+      playSoundEffect('pop');
+      if (typeof window.openMilestonesHub === 'function') window.openMilestonesHub();
+    });
+  }
   document.getElementById('hub-btn-stories').addEventListener('click', () => {
     playSoundEffect('pop');
     openView('view-stories-hub');
@@ -835,7 +950,11 @@ function bindEvents() {
       openTopicDeck(TOPICS_DATA[0].id, 'learn', 0);
       return;
     }
-    if (act.kind === 'story' && typeof window.openStoryEpisode === 'function') {
+    if (act.kind === 'srs' && typeof window.openSrsHub === 'function') {
+      window.openSrsHub();
+    } else if (act.kind === 'milestone' && typeof window.openMilestonesHub === 'function') {
+      window.openMilestonesHub();
+    } else if (act.kind === 'story' && typeof window.openStoryEpisode === 'function') {
       window.openStoryEpisode(act.epIndex || 0);
     } else if (act.kind === 'game' && typeof window.openMiniGame === 'function') {
       window.openMiniGame(act.gameName || 'memory');
@@ -987,13 +1106,18 @@ function bindEvents() {
     state.learnedLetters.clear();
     state.completedEpisodes.clear();
     state.lastActivity = null;
+    state.srs = {
+      cards: {},
+      stats: { todayDate: '', reviewedToday: 0, newToday: 0, streakDays: 0, lastStudyDate: null, totalReviews: 0, dailyNewLimit: 20 }
+    };
+    state.milestones = { results: {}, placement: null };
     saveProgress();
     updateHeaderAndMissionUI();
     renderRecentActivityCard();
     renderTopicsGrid();
-    if (typeof window.refreshPhonicsUI === 'function') {
-      window.refreshPhonicsUI();
-    }
+    if (typeof window.refreshPhonicsUI === 'function') window.refreshPhonicsUI();
+    if (typeof window.refreshSrsUI === 'function') window.refreshSrsUI();
+    if (typeof window.refreshMilestonesUI === 'function') window.refreshMilestonesUI();
     closeRoadmap();
   });
 }

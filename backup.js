@@ -17,14 +17,16 @@
   function buildBackupPayload() {
     return {
       app: 'English4Kids',
-      version: 2,
+      version: 3,
       exportedAt: new Date().toISOString(),
       stars: state.stars,
       learnedIds: Array.from(state.learnedIds),
       learnedLetters: Array.from(state.learnedLetters),
       completedEpisodes: Array.from(state.completedEpisodes || []),
       lastActivity: state.lastActivity || null,
-      soundEnabled: state.soundEnabled
+      soundEnabled: state.soundEnabled,
+      srs: state.srs || { cards: {}, stats: {} },
+      milestones: state.milestones || { results: {}, placement: null }
     };
   }
 
@@ -38,12 +40,26 @@
     if (Array.isArray(data.completedEpisodes)) state.completedEpisodes = new Set(data.completedEpisodes);
     if (data.lastActivity && typeof data.lastActivity === 'object') state.lastActivity = data.lastActivity;
     if (typeof data.soundEnabled === 'boolean') state.soundEnabled = data.soundEnabled;
+    if (data.srs && typeof data.srs === 'object') {
+      state.srs = {
+        cards: data.srs.cards && typeof data.srs.cards === 'object' ? data.srs.cards : {},
+        stats: { ...(state.srs && state.srs.stats ? state.srs.stats : {}), ...(data.srs.stats || {}) }
+      };
+    }
+    if (data.milestones && typeof data.milestones === 'object') {
+      state.milestones = {
+        results: data.milestones.results && typeof data.milestones.results === 'object' ? data.milestones.results : {},
+        placement: data.milestones.placement || null
+      };
+    }
 
     saveProgress();
     updateHeaderAndMissionUI();
     if (typeof renderRecentActivityCard === 'function') renderRecentActivityCard();
     if (typeof renderTopicsGrid === 'function') renderTopicsGrid();
     if (typeof window.refreshPhonicsUI === 'function') window.refreshPhonicsUI();
+    if (typeof window.refreshSrsUI === 'function') window.refreshSrsUI();
+    if (typeof window.refreshMilestonesUI === 'function') window.refreshMilestonesUI();
   }
 
   function showStatus(msg, isError = false) {

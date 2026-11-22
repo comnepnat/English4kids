@@ -86,38 +86,45 @@
           <div class="dash-card progress-card" id="progress-overview-card">
             <div class="dash-card-head">
               <span class="dash-tag progress-tag">📊 Tiến trình học tập</span>
-              <span class="mission-progress-text" id="daily-mission-text">0 / 5 từ hôm nay</span>
+              <span class="mission-progress-text" id="daily-mission-text">0 / 10 mục tiêu hôm nay</span>
             </div>
             <div class="progress-bar-track">
               <div class="progress-bar-fill" id="daily-mission-bar" style="width: 0%"></div>
             </div>
-            <div class="progress-metrics-row">
+            <div class="progress-metrics-row cols-4">
               <div class="metric-chip">
                 <span class="m-icon">📚</span>
                 <div>
-                  <strong id="metric-words-val">0 / 1.240</strong>
+                  <strong id="metric-words-val">0 / 2.000</strong>
                   <span>Từ vựng</span>
                 </div>
               </div>
               <div class="metric-chip">
-                <span class="m-icon">🔤</span>
+                <span class="m-icon">🧠</span>
                 <div>
-                  <strong id="phonics-home-progress">0 / 26</strong>
-                  <span>Chữ ABC</span>
+                  <strong id="metric-anki-val">20 thẻ mới</strong>
+                  <span>Ôn Anki</span>
+                </div>
+              </div>
+              <div class="metric-chip">
+                <span class="m-icon">🏅</span>
+                <div>
+                  <strong id="metric-milestones-val">0 / 15 mốc</strong>
+                  <span>Vượt mốc</span>
                 </div>
               </div>
               <div class="metric-chip">
                 <span class="m-icon">🎬</span>
                 <div>
-                  <strong id="metric-videos-val">0 / 6</strong>
-                  <span>Tập phim</span>
+                  <strong id="metric-videos-val">0/6 • 0/26</strong>
+                  <span>Phim &amp; ABC</span>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- 4 Main Content Hubs (Clean Outside Navigation) -->
+        <!-- 6 Main Content Hubs (Clean Outside Navigation - 3x2 Tablet Grid) -->
         <div class="section-title-bar compact-bar">
           <h2>🌟 Khám Phá Nội Dung Chính</h2>
         </div>
@@ -125,16 +132,32 @@
           <button class="main-hub-card" id="hub-btn-vocab" type="button" style="--hub-accent:#FF7A00; --hub-border:#FFD24C; --hub-shadow:#D98A00; --hub-soft:#FFF7E0;">
             <div class="hub-icon-wrap">📚</div>
             <h3>Kho Từ Vựng</h3>
-            <span class="hub-sub">28 Chủ đề • 1.240 Từ</span>
-            <p>Thẻ 3D phát âm chuẩn từ Pre-A1 đến B2</p>
+            <span class="hub-sub">40 Chủ đề • 2.000 Từ</span>
+            <p>Thẻ 3D phát âm chuẩn &amp; từ loại từ Pre-A1 đến B2</p>
             <span class="hub-cta">Mở kho từ ➔</span>
+          </button>
+
+          <button class="main-hub-card" id="hub-btn-srs" type="button" style="--hub-accent:#059669; --hub-border:#34D399; --hub-shadow:#047857; --hub-soft:#ECFDF5;">
+            <div class="hub-icon-wrap">🧠</div>
+            <h3>Ôn Tập Anki</h3>
+            <span class="hub-sub" id="hub-srs-sub">🔵 20 mới • 🟢 0 cần ôn</span>
+            <p>Lặp lại ngắt quãng kiểu AnkiDroid giúp nhớ lâu vượt trội</p>
+            <span class="hub-cta">Ôn tập ngay ➔</span>
+          </button>
+
+          <button class="main-hub-card" id="hub-btn-milestones" type="button" style="--hub-accent:#4F46E5; --hub-border:#818CF8; --hub-shadow:#3730A3; --hub-soft:#EEF2FF;">
+            <div class="hub-icon-wrap">🏅</div>
+            <h3>Thi Vượt Mốc</h3>
+            <span class="hub-sub" id="hub-milestones-sub">16 Bài thi • Đạt 0/15 mốc</span>
+            <p>Kiểm tra 4 kỹ năng &amp; xếp lớp chuẩn SuperChinese</p>
+            <span class="hub-cta">Vào phòng thi ➔</span>
           </button>
 
           <button class="main-hub-card" id="hub-btn-stories" type="button" style="--hub-accent:#EC4899; --hub-border:#F472B6; --hub-shadow:#BE185D; --hub-soft:#FCE7F3;">
             <div class="hub-icon-wrap">🎬</div>
             <h3>Phim Tương Tác</h3>
             <span class="hub-sub">6 Tập • Kiểu Khan Kids</span>
-            <p>Hoạt hình chạm trực tiếp &amp; lồng tiếng</p>
+            <p>Hoạt hình chạm trực tiếp &amp; lồng tiếng song ngữ</p>
             <span class="hub-cta">Xem phim ➔</span>
           </button>
 
@@ -158,22 +181,22 @@
         <!-- CEFR Level Progression Path: Pre-A1 -> A1 -> A2 -> B1 -> B2 -->
         <div class="section-title-bar compact-bar cefr-title-bar">
           <h2>📈 Lộ Trình Trình Độ (Pre-A1 ➔ B1, B2)</h2>
-          <span class="count-chip">Chạm vào trình độ để học ngay</span>
+          <button type="button" class="btn-secondary-pill" id="btn-cefr-open-milestones">🏅 Thi Vượt Mốc ➔</button>
         </div>
         <div class="cefr-path-grid" id="cefr-path-grid">
-          <!-- Populated dynamically by app.js with live progress per CEFR level -->
+          <!-- Populated dynamically by app.js with live progress & crown badges per CEFR level -->
         </div>
       </section>
 
-      <!-- VIEW 1B: VOCABULARY LIBRARY (28 Topics • 1,240 Words • CEFR Filter & Search) -->
-      <section class="view-section" id="view-vocab-hub" aria-label="Kho từ vựng 1.240 từ">
+      <!-- VIEW 1B: VOCABULARY LIBRARY (40 Topics • 2,000 Words • CEFR Filter & Search) -->
+      <section class="view-section" id="view-vocab-hub" aria-label="Kho từ vựng 2.000 từ">
         <div class="deck-top-bar">
           <button class="btn-back" id="btn-vocab-hub-back" type="button">
             <span class="back-arrow">⬅</span> Trang chủ
           </button>
           <div class="topic-badge-header">
             <span>📚</span>
-            <span>Kho Từ Vựng (28 Chủ đề • 1.240 Từ)</span>
+            <span>Kho Từ Vựng (40 Chủ đề • 2.000 Từ)</span>
           </div>
           <button class="btn-secondary-pill" id="btn-quick-quiz-all" type="button">
             🎯 Ôn tập nhanh
@@ -182,19 +205,19 @@
 
         <!-- CEFR Level Filter Pills -->
         <div class="cefr-filter-bar" id="cefr-filter-bar" role="group" aria-label="Lọc theo trình độ CEFR">
-          <button class="filter-pill active" data-cefr="all" type="button">🌈 Tất cả (1.240)</button>
-          <button class="filter-pill" data-cefr="Pre-A1" type="button">🌱 Pre-A1 (350)</button>
-          <button class="filter-pill" data-cefr="A1" type="button">🌿 A1 (350)</button>
-          <button class="filter-pill" data-cefr="A2" type="button">🌳 A2 (300)</button>
-          <button class="filter-pill" data-cefr="B1" type="button">🚀 B1 (120)</button>
-          <button class="filter-pill" data-cefr="B2" type="button">🏆 B2 (120)</button>
+          <button class="filter-pill active" data-cefr="all" type="button">🌈 Tất cả (2.000)</button>
+          <button class="filter-pill" data-cefr="Pre-A1" type="button">🌱 Pre-A1 (400)</button>
+          <button class="filter-pill" data-cefr="A1" type="button">🌿 A1 (400)</button>
+          <button class="filter-pill" data-cefr="A2" type="button">🌳 A2 (400)</button>
+          <button class="filter-pill" data-cefr="B1" type="button">🚀 B1 (400)</button>
+          <button class="filter-pill" data-cefr="B2" type="button">🏆 B2 (400)</button>
         </div>
 
-        <!-- Quick Search across 1,240 Words -->
+        <!-- Quick Search across 2,000 Words -->
         <div class="vocab-search-wrap">
           <div class="vocab-search-bar">
             <span class="search-icon" aria-hidden="true">🔍</span>
-            <input type="text" id="vocab-search-input" placeholder="Tìm nhanh trong 1.240 từ (ví dụ: lion, rocket, environment, innovation...)" autocomplete="off" />
+            <input type="text" id="vocab-search-input" placeholder="Tìm nhanh trong 2.000 từ (ví dụ: lion, architect, vaccine, resilience, cosmos...)" autocomplete="off" />
             <button class="btn-clear-search hidden" id="btn-clear-search" type="button" aria-label="Xóa tìm kiếm">✕</button>
           </div>
           <div class="vocab-search-results hidden" id="vocab-search-results"></div>
@@ -304,7 +327,10 @@
               <!-- FRONT SIDE: Vivid Picture + English Word + Audio -->
               <div class="flashcard-face flashcard-front" id="card-front-face">
                 <div class="card-top-meta">
-                  <span class="card-index-badge" id="card-index-badge">1 / 8</span>
+                  <div class="card-meta-left-group">
+                    <span class="card-index-badge" id="card-index-badge">1 / 50</span>
+                    <span class="card-pos-badge" id="card-pos-badge">Danh từ</span>
+                  </div>
                   <span class="learned-status-badge" id="card-learned-badge">⭐ Đã thuộc</span>
                 </div>
 
@@ -747,6 +773,326 @@
           </div>
         </div>
       </section>
+
+      <!-- VIEW 6: ANKIDROID-STYLE SPACED REPETITION REVIEW (SRS) -->
+      <section class="view-section" id="view-srs" aria-label="Ôn tập lặp lại ngắt quãng kiểu AnkiDroid">
+        <!-- SUBVIEW 6A: ANKIDROID DECK OVERVIEW -->
+        <div id="srs-overview">
+          <div class="deck-top-bar">
+            <button class="btn-back" id="btn-srs-back-home" type="button">
+              <span class="back-arrow">⬅</span> Trang chủ
+            </button>
+            <div class="topic-badge-header">
+              <span>🧠</span>
+              <span>Ôn Tập AnkiDroid (SM-2)</span>
+            </div>
+            <button class="btn-secondary-pill" id="btn-srs-cram" type="button">
+              ⚡ Ôn tự do (20 thẻ)
+            </button>
+          </div>
+
+          <!-- Top AnkiDroid Summary Stats -->
+          <div class="srs-stats-strip">
+            <div class="srs-stat-box is-new">
+              <strong id="srs-stat-new">20</strong>
+              <span>🔵 Thẻ mới hôm nay</span>
+            </div>
+            <div class="srs-stat-box is-learn">
+              <strong id="srs-stat-learn">0</strong>
+              <span>🔴 Đang học</span>
+            </div>
+            <div class="srs-stat-box is-due">
+              <strong id="srs-stat-due">0</strong>
+              <span>🟢 Đến hạn ôn</span>
+            </div>
+            <div class="srs-stat-box is-streak">
+              <strong id="srs-stat-streak">0 ngày</strong>
+              <span>🔥 Chuỗi ôn tập</span>
+            </div>
+            <div class="srs-stat-box is-today">
+              <strong id="srs-stat-today">0 thẻ</strong>
+              <span>✅ Đã ôn hôm nay</span>
+            </div>
+            <div class="srs-stat-box is-mature">
+              <strong id="srs-stat-mature">0 / 2.000</strong>
+              <span>🏆 Thuộc lâu (≥21n)</span>
+            </div>
+          </div>
+
+          <!-- Study Settings & Topic Picker -->
+          <div class="srs-controls-card">
+            <div class="srs-control-group">
+              <span class="srs-ctrl-label">🔄 Kiểu mặt thẻ:</span>
+              <div class="srs-dir-bar" id="srs-direction-bar">
+                <button class="filter-pill active" data-dir="en-vi" type="button">🇬🇧 Anh ➔ 🇻🇳 Việt</button>
+                <button class="filter-pill" data-dir="vi-en" type="button">🇻🇳 Việt ➔ 🇬🇧 Anh</button>
+                <button class="filter-pill" data-dir="audio" type="button">🎧 Chỉ Nghe</button>
+              </div>
+            </div>
+            <div class="srs-control-group">
+              <label class="srs-ctrl-label" for="srs-daily-limit">🎯 Thẻ mới/ngày:</label>
+              <select id="srs-daily-limit" class="srs-select">
+                <option value="10">10 từ / ngày</option>
+                <option value="20" selected>20 từ / ngày</option>
+                <option value="30">30 từ / ngày</option>
+                <option value="50">50 từ / ngày</option>
+              </select>
+              <select id="srs-topic-select" class="srs-select srs-topic-select" aria-label="Ôn riêng 1 chủ đề">
+                <option value="">-- Chọn nhanh 1 trong 40 chủ đề --</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- AnkiDroid Deck List -->
+          <div class="srs-deck-header-legend">
+            <span>📂 Danh sách Bộ thẻ (Decks)</span>
+            <div class="srs-legend-cols">
+              <span class="lg-new">Mới</span>
+              <span class="lg-learn">Đang học</span>
+              <span class="lg-due">Cần ôn</span>
+            </div>
+          </div>
+          <div class="srs-deck-list" id="srs-deck-list">
+            <!-- Populated dynamically by srs.js -->
+          </div>
+        </div>
+
+        <!-- SUBVIEW 6B: ACTIVE ANKIDROID STUDY STAGE -->
+        <div id="srs-study" class="hidden">
+          <div class="deck-top-bar">
+            <button class="btn-back" id="btn-srs-back-decks" type="button">
+              <span class="back-arrow">⬅</span> Bộ thẻ
+            </button>
+            <div class="topic-badge-header">
+              <span id="srs-active-deck-name">🧠 Ôn tập Anki</span>
+            </div>
+            <div class="srs-live-counters" aria-label="Số thẻ còn lại">
+              <span class="anki-cnt is-new" id="srs-live-new" title="Mới">0</span>
+              <span class="anki-cnt is-learn" id="srs-live-learn" title="Đang học">0</span>
+              <span class="anki-cnt is-due" id="srs-live-due" title="Cần ôn">0</span>
+              <button class="btn-secondary-pill" id="btn-srs-undo" type="button" disabled title="Hoàn tác (Phím Z)">↩️ Hoàn tác</button>
+            </div>
+          </div>
+
+          <div class="srs-progress-track">
+            <div class="srs-progress-fill" id="srs-session-progress-fill" style="width:0%"></div>
+          </div>
+
+          <div class="srs-card-shell">
+            <div class="srs-card-meta">
+              <span id="srs-card-meta-left">Pre-A1 • Động Vật</span>
+              <span class="srs-pos-chip" id="srs-card-meta-right">Danh từ</span>
+            </div>
+
+            <div class="srs-front-area">
+              <div class="srs-front-visual" id="srs-front-visual"></div>
+              <h2 class="srs-front-prompt" id="srs-front-prompt">Lion</h2>
+              <p class="srs-front-sub" id="srs-front-sub">/ˈlaɪ.ən/</p>
+              <div class="srs-audio-row" id="srs-front-audio-row">
+                <button class="btn-speak-primary" id="btn-srs-speak" type="button">🔊 Nghe phát âm</button>
+                <button class="btn-speak-slow" id="btn-srs-speak-slow" type="button">🐢 Đọc chậm</button>
+              </div>
+            </div>
+
+            <!-- Answer Revealed Panel -->
+            <div class="srs-answer-panel hidden" id="srs-answer-panel">
+              <div class="srs-answer-divider"><span>ĐÁP ÁN</span></div>
+              <div class="srs-ans-main">
+                <div class="srs-ans-en-line">
+                  <strong id="srs-ans-en">Lion</strong>
+                  <span id="srs-ans-ipa">/ˈlaɪ.ən/</span>
+                </div>
+                <div class="srs-ans-vi" id="srs-ans-vi">Con Sư Tử</div>
+              </div>
+              <div class="srs-ans-example">
+                <p class="srs-ans-ex-en" id="srs-ans-ex-en">"Look! That is a lion in the picture."</p>
+                <p class="srs-ans-ex-vi" id="srs-ans-ex-vi">Nhìn kìa! Đó là con sư tử trong bức tranh.</p>
+                <button class="btn-speak-sentence" id="btn-srs-speak-ex" type="button">🔊 Nghe cả câu</button>
+              </div>
+              <div class="srs-ans-stats" id="srs-ans-stats">📊 Đã ôn: 0 lần</div>
+            </div>
+
+            <!-- Reveal Button -->
+            <div class="srs-bottom-controls">
+              <button class="btn-srs-show" id="btn-srs-show-answer" type="button">
+                👁️ Hiện Đáp Án <span class="kbd-hint">(Space)</span>
+              </button>
+
+              <!-- 4 Authentic AnkiDroid Rating Buttons -->
+              <div class="srs-rating-grid hidden" id="srs-rating-bar">
+                <button class="btn-anki-rate rate-again" data-rating="1" type="button">
+                  <span class="rate-iv" id="srs-iv-1">&lt; 1 phút</span>
+                  <strong>1. Học lại</strong>
+                  <small>Quên rồi</small>
+                </button>
+                <button class="btn-anki-rate rate-hard" data-rating="2" type="button">
+                  <span class="rate-iv" id="srs-iv-2">6 phút</span>
+                  <strong>2. Khó</strong>
+                  <small>Nhớ hơi chậm</small>
+                </button>
+                <button class="btn-anki-rate rate-good" data-rating="3" type="button">
+                  <span class="rate-iv" id="srs-iv-3">10 phút</span>
+                  <strong>3. Tốt</strong>
+                  <small>Nhớ đúng</small>
+                </button>
+                <button class="btn-anki-rate rate-easy" data-rating="4" type="button">
+                  <span class="rate-iv" id="srs-iv-4">4 ngày</span>
+                  <strong>4. Dễ</strong>
+                  <small>Quá thuộc!</small>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SUBVIEW 6C: SESSION COMPLETE -->
+        <div id="srs-done" class="hidden">
+          <div class="srs-done-card">
+            <div class="srs-done-emoji">🎉🧠🏆</div>
+            <h2>Hoàn Thành Phiên Ôn Tập Anki!</h2>
+            <p>Tuyệt vời! Não bộ vừa củng cố trí nhớ dài hạn cho các từ vựng hôm nay!</p>
+            <div class="srs-done-metrics">
+              <div><strong id="srs-done-reviewed">0</strong><span>Thẻ đã ôn</span></div>
+              <div><strong id="srs-done-accuracy">100%</strong><span>Tỉ lệ nhớ</span></div>
+              <div><strong id="srs-done-stars">+0 ⭐</strong><span>Thưởng sao</span></div>
+            </div>
+            <p class="srs-done-forecast" id="srs-done-forecast"></p>
+            <div class="srs-done-actions">
+              <button class="btn-action-flip" id="btn-srs-done-decks" type="button">📂 Về danh sách bộ thẻ</button>
+              <button class="btn-action-mastered" id="btn-srs-study-more" type="button">➕ Học thêm 10 thẻ mới</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW 7: SUPERCHINESE-STYLE MILESTONE LEVEL TESTS -->
+      <section class="view-section" id="view-milestones" aria-label="Bài kiểm tra vượt mốc chuẩn SuperChinese">
+        <!-- SUBVIEW 7A: MILESTONE ARENA HUB -->
+        <div id="ms-hub">
+          <div class="deck-top-bar">
+            <button class="btn-back" id="btn-ms-back-home" type="button">
+              <span class="back-arrow">⬅</span> Trang chủ
+            </button>
+            <div class="topic-badge-header">
+              <span>🏅</span>
+              <span>Đấu Trường Vượt Mốc</span>
+            </div>
+            <div class="ms-hub-mini-stats">
+              <span class="hud-pill">🏅 <strong id="ms-hub-passed">0 / 15</strong></span>
+              <span class="hud-pill">👑 <strong id="ms-hub-crowns">0 / 5</strong></span>
+              <span class="hud-pill">⭐ <strong id="ms-hub-stars">0 / 45 ★</strong></span>
+            </div>
+          </div>
+
+          <!-- Placement Test Hero Banner -->
+          <div class="ms-placement-hero">
+            <div class="ms-placement-left">
+              <div class="ms-placement-icon">🧭</div>
+              <div>
+                <span class="ms-hero-tag">CHUẨN SUPERCHINESE • XẾP TRÌNH ĐỘ NHANH</span>
+                <h2>Kiểm Tra Xếp Trình Độ (Pre-A1 ➔ B2)</h2>
+                <p id="ms-placement-meta">15 câu trắc nghiệm nhanh qua 5 trình độ để biết bé đang ở mốc nào!</p>
+              </div>
+            </div>
+            <button type="button" class="btn-ms-placement" id="btn-ms-start-placement">
+              ▶ Bắt đầu kiểm tra trình độ ➔
+            </button>
+          </div>
+
+          <!-- 5 CEFR Chapters with 3-Node Checkpoint Paths -->
+          <div class="ms-chapters-list" id="ms-chapters-list">
+            <!-- Populated dynamically by milestones.js -->
+          </div>
+        </div>
+
+        <!-- SUBVIEW 7B: ACTIVE SUPERCHINESE EXAM -->
+        <div id="ms-exam" class="hidden">
+          <div class="ms-exam-topbar">
+            <button type="button" class="btn-back" id="btn-ms-exit-exam">✕ Thoát</button>
+            <div class="ms-exam-progress-wrap">
+              <div class="ms-exam-title-row">
+                <span id="ms-exam-title">👑 Vượt Mốc Pre-A1</span>
+                <span id="ms-progress-text">Câu 1 / 15</span>
+              </div>
+              <div class="ms-progress-track">
+                <div class="ms-progress-fill" id="ms-progress-fill" style="width:0%"></div>
+              </div>
+            </div>
+            <div class="ms-hud-badges">
+              <span class="ms-hearts-pill" id="ms-hearts-display">❤️❤️❤️❤️❤️</span>
+              <span class="ms-combo-pill" id="ms-combo-pill">🔥 Combo x0</span>
+              <span class="ms-timer-pill">⏱️ <strong id="ms-timer-val">00:00</strong></span>
+            </div>
+          </div>
+
+          <div class="ms-question-stage" id="ms-question-stage">
+            <!-- Dynamic SuperChinese Question rendered here -->
+          </div>
+
+          <!-- Instant Slide-up Feedback Drawer -->
+          <div class="ms-feedback-drawer hidden" id="ms-feedback-drawer">
+            <div class="ms-fb-text">
+              <strong id="ms-fb-title">🎉 Chính xác!</strong>
+              <p id="ms-fb-detail"></p>
+            </div>
+            <button type="button" class="btn-next-question" id="btn-ms-next-q">Tiếp tục ➔</button>
+          </div>
+
+          <!-- Soft Out-of-Hearts Guard -->
+          <div class="ms-hearts-guard hidden" id="ms-hearts-guard">
+            <div class="ms-guard-box">
+              <div class="ms-guard-emoji">💔</div>
+              <h3>Hết 5 tim rồi!</h3>
+              <p>Bé đã cố gắng rất tốt! Bé muốn xem bảng điểm ngay hay chuyển sang chế độ <strong>Luyện tập không mất tim</strong> để làm hết bài?</p>
+              <div class="ms-guard-actions">
+                <button type="button" class="btn-action-flip" id="btn-ms-guard-finish">📊 Xem kết quả ngay</button>
+                <button type="button" class="btn-action-mastered" id="btn-ms-guard-continue">🛡️ Tiếp tục luyện tập</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SUBVIEW 7C: SUPERCHINESE SCORE REPORT & CERTIFICATE -->
+        <div id="ms-report" class="hidden">
+          <div class="ms-report-card">
+            <div class="ms-rep-badge" id="ms-rep-badge">👑</div>
+            <h2 id="ms-rep-title">Chúc Mừng Vượt Mốc Thành Công!</h2>
+            <p class="ms-rep-sub" id="ms-rep-sub"></p>
+            <div class="ms-rep-stars" id="ms-rep-stars">⭐⭐⭐</div>
+
+            <div class="ms-rep-kpis">
+              <div><strong id="ms-rep-score">100%</strong><span>Điểm số</span></div>
+              <div><strong id="ms-rep-correct">15/15</strong><span>Câu đúng</span></div>
+              <div><strong id="ms-rep-time">01:12</strong><span>Thời gian</span></div>
+              <div><strong id="ms-rep-combo">x8</strong><span>Combo cao nhất</span></div>
+              <div class="kpi-reward"><strong id="ms-rep-reward">+25 Sao</strong><span>Thưởng</span></div>
+            </div>
+
+            <!-- Placement Recommendation (only shown for Placement Test) -->
+            <div class="ms-placement-result-box hidden" id="ms-placement-result-box"></div>
+
+            <!-- 4-Skill Breakdown Bars -->
+            <div class="ms-skills-card">
+              <h4>📊 Phân Tích 4 Kỹ Năng</h4>
+              <div id="ms-skills-breakdown"></div>
+            </div>
+
+            <!-- Mistakes Review + 1-Tap Push to AnkiDroid -->
+            <div class="ms-mistakes-section hidden" id="ms-mistakes-section">
+              <div class="ms-mistakes-head">
+                <h4>📌 Các từ cần ôn lại (Chạm để nghe)</h4>
+                <button type="button" class="btn-push-anki" id="btn-ms-push-anki">🧠 Đẩy vào Ôn tập AnkiDroid</button>
+              </div>
+              <div class="ms-mistakes-list" id="ms-mistakes-list"></div>
+            </div>
+
+            <div class="ms-rep-actions">
+              <button type="button" class="btn-action-flip" id="btn-ms-rep-hub">🏅 Về Đấu Trường Mốc</button>
+              <button type="button" class="btn-action-mastered" id="btn-ms-rep-retry">🔄 Thi lại nâng điểm</button>
+            </div>
+          </div>
+        </div>
+      </section>
     </main>
 
     <!-- MODAL: GAME RESULT -->
@@ -772,22 +1118,22 @@
           <button class="btn-close-modal" id="btn-close-roadmap" type="button" aria-label="Đóng">✕</button>
         </div>
         <div class="modal-body">
-          <p class="modal-intro">Ứng dụng được thiết kế theo từng giai đoạn giúp bé 6 tuổi làm quen từ vựng trước, sau đó mở rộng kỹ năng phản xạ và phát âm:</p>
+          <p class="modal-intro">Ứng dụng học tiếng Anh toàn diện theo lộ trình CEFR từ Pre-A1 (6 tuổi) đến B1, B2 với 2.000 từ vựng, ôn tập AnkiDroid &amp; thi vượt mốc chuẩn SuperChinese:</p>
           <div class="roadmap-list">
             <div class="roadmap-item">
-              <div class="phase-badge done">Giai đoạn 1 (1.000 Từ)</div>
-              <h3>🃏 Thẻ từ vựng (20 Chủ đề • 1.000 Từ) &amp; Phim Tương Tác</h3>
-              <p>1.000 từ vựng chia thành các bài nhỏ 10 từ + Tìm kiếm nhanh + 6 tập Phim Hoạt Hình Tương Tác kiểu Khan Academy Kids.</p>
+              <div class="phase-badge done">Đã nâng cấp • 2.000 Từ</div>
+              <h3>📚 2.000 Từ Vựng CEFR (40 Chủ đề), AnkiDroid SRS &amp; Thi Mốc SuperChinese</h3>
+              <p>400 từ/trình độ (Pre-A1 → B2) có từ loại &amp; ví dụ tự nhiên, cơ chế lặp lại ngắt quãng SM-2 kiểu AnkiDroid và 16 bài thi vượt mốc 4 kỹ năng.</p>
             </div>
             <div class="roadmap-item">
-              <div class="phase-badge done">Giai đoạn 2 (Đã mở rộng)</div>
-              <h3>🎮 Trò chơi tương tác (3 Mức độ)</h3>
-              <p>Lật thẻ nhớ (4–8 cặp), Nối hình với chữ, Bắt bóng từ vựng có Bóng Vàng x2 Sao và 3 mức độ Dễ / Vừa / Thử thách.</p>
+              <div class="phase-badge done">Đã hoàn thành</div>
+              <h3>🎬 Phim Hoạt Hình Tương Tác &amp; 🎮 Mini-games 3 Mức Độ</h3>
+              <p>6 tập phim tương tác kiểu Khan Academy Kids cùng 3 trò chơi Lật thẻ nhớ, Nối hình &amp; Bắt bóng vàng.</p>
             </div>
             <div class="roadmap-item active-phase">
-              <div class="phase-badge done">Giai đoạn 3 (Đã mở rộng)</div>
-              <h3>🔤 ABC, 8 Âm Ghép &amp; 33 Từ Ghép Vần</h3>
-              <p>26 chữ cái (104 từ mẫu), 8 âm ghép đôi (sh, ch, th...), 33 từ ghép vần theo nhóm và 3 chế độ đố vui Phonics.</p>
+              <div class="phase-badge done">Đã hoàn thành</div>
+              <h3>🔤 ABC, 8 Âm Ghép &amp; ☁️ Sao Lưu Google Drive</h3>
+              <p>26 chữ cái, 8 âm ghép đôi, 33 từ ghép vần, 3 chế độ đố vui Phonics và sao lưu tiến trình qua file hoặc Google Drive.</p>
             </div>
             <div class="roadmap-item">
               <div class="phase-badge upcoming">Giai đoạn 4 (Tiếp theo)</div>
@@ -887,6 +1233,8 @@
   <script src="games.js"></script>
   <script src="phonics.js"></script>
   <script src="stories.js"></script>
+  <script src="srs.js"></script>
+  <script src="milestones.js"></script>
   <script src="backup.js"></script>
 </body>
 </html>
