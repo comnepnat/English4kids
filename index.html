@@ -42,6 +42,11 @@
           <span class="stat-label">Từ đã thuộc</span>
         </div>
 
+        <button class="btn-icon-action" id="btn-voice-modal" type="button" title="Chọn giọng đọc tự nhiên (Anh-Mỹ / Anh-Anh)">
+          <span>🎙️</span>
+          <span class="btn-text-desktop">Giọng</span>
+        </button>
+
         <button class="btn-icon-action" id="btn-backup-modal" type="button" title="Sao lưu & Đồng bộ Google Drive">
           <span>☁️</span>
           <span class="btn-text-desktop">Sao lưu</span>
@@ -1224,12 +1229,96 @@
       </div>
     </div>
 
+    <!-- MODAL: NATURAL VOICE & PRONUNCIATION SETTINGS -->
+    <div class="modal-backdrop hidden" id="voice-modal" role="dialog" aria-modal="true" aria-labelledby="voice-modal-title">
+      <div class="modal-dialog voice-dialog">
+        <div class="modal-header">
+          <h2 id="voice-modal-title">🎙️ Cài Đặt Giọng Đọc Tự Nhiên</h2>
+          <button class="btn-close-modal" id="btn-close-voice" type="button" aria-label="Đóng">✕</button>
+        </div>
+
+        <div class="modal-body">
+          <div class="voice-active-banner" id="voice-active-summary">
+            🟢 Từ vựng: Giọng người thật (🇺🇸 Anh–Mỹ) • Tự động chọn giọng hay nhất
+          </div>
+
+          <!-- Toggle Native Studio Audio -->
+          <div class="voice-setting-card">
+            <label class="voice-toggle-row" for="chk-native-word-audio">
+              <div>
+                <strong>🎙️ Giọng Người Thật (Studio Từ điển) cho 2.000 từ</strong>
+                <p>Phát file thu âm giọng bản xứ thật (tự động lưu đệm, dự phòng giọng AI nếu mất mạng).</p>
+              </div>
+              <input type="checkbox" id="chk-native-word-audio" checked />
+            </label>
+          </div>
+
+          <!-- Accent & Speed -->
+          <div class="voice-setting-grid">
+            <div class="voice-setting-card">
+              <span class="voice-sec-label">🌍 Giọng vùng miền:</span>
+              <div class="voice-pill-group" id="voice-accent-group">
+                <button type="button" class="filter-pill active" data-accent="en-US">🇺🇸 Anh – Mỹ (US)</button>
+                <button type="button" class="filter-pill" data-accent="en-GB">🇬🇧 Anh – Anh (UK)</button>
+              </div>
+            </div>
+
+            <div class="voice-setting-card">
+              <span class="voice-sec-label">⏱️ Tốc độ đọc:</span>
+              <div class="voice-pill-group" id="voice-speed-group">
+                <button type="button" class="filter-pill" data-speed="0.85">🐢 Chậm</button>
+                <button type="button" class="filter-pill active" data-speed="1">✨ Tự nhiên</button>
+                <button type="button" class="filter-pill" data-speed="1.1">⚡ Bản xứ</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Smart Device Neural Voice Picker -->
+          <div class="voice-setting-card">
+            <label class="voice-sec-label" for="voice-select-dropdown">🗣️ Giọng đọc câu ví dụ &amp; phim tương tác (đã xếp hạng giọng hay nhất lên đầu):</label>
+            <select id="voice-select-dropdown" class="voice-dropdown"></select>
+
+            <div class="voice-test-row">
+              <button type="button" class="btn-backup-primary" id="btn-voice-test-word">🔊 Nghe thử 1 từ (Elephant)</button>
+              <button type="button" class="btn-backup-secondary" id="btn-voice-test-sentence">💬 Nghe thử cả câu</button>
+            </div>
+          </div>
+
+          <!-- Quick Tips for Best Voices on iPad / Windows / Chrome -->
+          <div class="voice-tip-box">
+            <strong>💡 Mẹo để câu dài &amp; phim đọc hay như người thật 100% (Miễn phí):</strong>
+            <ul>
+              <li><strong>Trên iPad / iPhone:</strong> Vào <em>Cài đặt → Trợ năng → Nội dung được đọc → Giọng nói → Tiếng Anh</em> → tải miễn phí giọng <strong>Enhanced / Premium</strong> (<em>Ava, Zoe</em> hoặc <em>Samantha Enhanced</em>).</li>
+              <li><strong>Trên Máy tính:</strong> Mở bằng <strong>Microsoft Edge</strong> (có sẵn giọng <em>Ana / Aria / Jenny Online Natural</em> rất tự nhiên) hoặc <strong>Google Chrome</strong> (<em>Google US English</em>).</li>
+            </ul>
+          </div>
+
+          <!-- Optional BYO Cloud AI TTS -->
+          <details class="gdrive-guide voice-cloud-box">
+            <summary>✨ Nâng cao (Tùy chọn): Kết nối AI TTS (Google Neural2 / OpenAI Nova) cho câu dài</summary>
+            <p class="voice-cloud-desc">Dành cho phụ huynh muốn mọi câu ví dụ &amp; tập phim dùng giọng AI điện ảnh (chỉ lưu key trong máy của bạn):</p>
+            <div class="voice-cloud-form">
+              <select id="voice-cloud-provider" class="srs-select">
+                <option value="none">Tắt (Dùng miễn phí)</option>
+                <option value="google">Google Cloud TTS (Neural2 • Miễn phí 1M ký tự/tháng)</option>
+                <option value="openai">OpenAI TTS (tts-1 • Giọng Nova)</option>
+              </select>
+              <input type="password" id="voice-cloud-key" placeholder="Dán API Key của bạn (nếu muốn dùng)" autocomplete="off" />
+              <button type="button" class="btn-save-cid" id="btn-save-cloud-tts">Lưu</button>
+            </div>
+            <div class="gdrive-last-sync" id="voice-cloud-status"></div>
+          </details>
+        </div>
+      </div>
+    </div>
+
     <!-- Celebration Confetti Canvas -->
     <canvas id="confetti-canvas" aria-hidden="true"></canvas>
   </div>
 
   <script src="vocab-data.js"></script>
   <script src="app.js"></script>
+  <script src="voice.js"></script>
   <script src="games.js"></script>
   <script src="phonics.js"></script>
   <script src="stories.js"></script>

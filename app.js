@@ -249,8 +249,8 @@ function spellWordOutLoud(word) {
     .replace(/[^a-zA-Z]/g, '')
     .toUpperCase()
     .split('');
-  const spelledSequence = `${ letters.join('. ') }. ${ word }!`;
-  speakEnglish(spelledSequence, 0.78);
+  const spelledSequence = `${ letters.join(', ') }. ${ word }!`;
+  speakEnglish(spelledSequence, 0.85);
 }
 
 /* ==========================================================================
@@ -666,8 +666,13 @@ function renderCurrentFlashcard(autoSpeak = false) {
 
   renderCardDots();
 
+  if (typeof window.prefetchWordAudio === 'function') {
+    const nextCard = topic.cards[(state.currentCardIndex + 1) % topic.cards.length];
+    if (nextCard) window.prefetchWordAudio(nextCard.en);
+  }
+
   if (autoSpeak) {
-    setTimeout(() => speakEnglish(card.en, 0.88), 180);
+    setTimeout(() => speakEnglish(card.en, 0.92), 160);
   }
 }
 

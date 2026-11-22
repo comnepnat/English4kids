@@ -556,6 +556,11 @@
       setTimeout(() => speakEnglish(card.en, 0.85), 160);
     }
 
+    if (typeof window.prefetchWordAudio === 'function' && srsSession.queue.length > 0) {
+      const nextCard = window.getVocabCardById(srsSession.queue[0].cardId);
+      if (nextCard) window.prefetchWordAudio(nextCard.en);
+    }
+
     // Populate answer panel (hidden until revealed)
     $('srs-ans-en').textContent = card.en;
     $('srs-ans-ipa').textContent = card.phonetic;
