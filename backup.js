@@ -27,6 +27,7 @@
       soundEnabled: state.soundEnabled,
       srs: state.srs || { cards: {}, stats: {} },
       milestones: state.milestones || { results: {}, placement: null },
+      quest: state.quest || { days: [], stickersSeen: [] },
       familyProfiles: typeof window.getAllProfilesBundle === 'function'
         ? window.getAllProfilesBundle()
         : null
@@ -60,6 +61,13 @@
       state.milestones = {
         results: data.milestones.results && typeof data.milestones.results === 'object' ? data.milestones.results : {},
         placement: data.milestones.placement || null
+      };
+    }
+
+    if (data.quest && typeof data.quest === 'object') {
+      state.quest = {
+        days: Array.isArray(data.quest.days) ? data.quest.days : [],
+        stickersSeen: Array.isArray(data.quest.stickersSeen) ? data.quest.stickersSeen : []
       };
     }
 

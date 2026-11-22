@@ -8,6 +8,15 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#FFC23C" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="English4Kids" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <link rel="icon" type="image/png" sizes="192x192" href="assets/icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png" />
+  <link rel="preconnect" href="https://api.dictionaryapi.dev" crossorigin>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
@@ -178,6 +187,33 @@
         </div>
 
         <!-- 6 Main Content Hubs (Clean Outside Navigation - 3x2 Tablet Grid) -->
+        <!-- Install-as-app banner (shown only when Chrome offers installation) -->
+        <div class="install-banner hidden" id="install-banner">
+          <span class="install-banner-icon" aria-hidden="true">📲</span>
+          <span class="install-banner-text"><strong>Cài English4Kids lên màn hình chính</strong> để mở nhanh như một ứng dụng, dùng được cả khi mất mạng.</span>
+          <button type="button" class="install-banner-btn" id="btn-install-app">Cài app</button>
+          <button type="button" class="install-banner-close" id="btn-install-dismiss" aria-label="Ẩn">✕</button>
+        </div>
+
+        <!-- Leo's Daily Quest + Garden + Sticker album -->
+        <div class="quest-banner" id="quest-banner">
+          <div class="quest-banner-main">
+            <div class="quest-banner-icon" id="quest-banner-icon" aria-hidden="true">🦁</div>
+            <div class="quest-banner-text">
+              <span class="quest-banner-kicker">⭐ Nhiệm vụ của Leo hôm nay</span>
+              <strong id="quest-banner-title">12 thẻ • khoảng 5 phút</strong>
+              <span id="quest-banner-sub">Ôn từ cũ và học vài từ mới bằng trò chơi!</span>
+            </div>
+            <button type="button" class="quest-start-btn" id="btn-start-quest">▶ Bắt đầu</button>
+          </div>
+          <div class="quest-banner-side">
+            <div class="garden-strip" id="garden-strip" aria-label="Khu vườn của Leo tuần này"></div>
+            <button type="button" class="album-open-btn" id="btn-open-album">
+              <span aria-hidden="true">📒</span> Album sticker <strong id="album-count-pill">0</strong>
+            </button>
+          </div>
+        </div>
+
         <div class="section-title-bar compact-bar">
           <h2>🌟 Khám Phá Nội Dung Chính</h2>
         </div>
@@ -380,6 +416,43 @@
       </section>
 
       <!-- VIEW 2: FLASHCARD DECK LEARNING -->
+      <!-- VIEW: LEO'S DAILY QUEST & QUICK CHECK (game-style spaced review) -->
+      <section class="view-section" id="view-quest" aria-label="Nhiệm vụ của Leo">
+        <div class="quest-top-bar">
+          <button class="btn-back" id="btn-quest-exit" type="button">
+            <span class="back-arrow">⬅</span> Thoát
+          </button>
+          <div class="quest-progress-wrap" aria-hidden="true">
+            <div class="quest-progress-track">
+              <div class="quest-progress-fill" id="quest-progress-fill"></div>
+              <span class="quest-progress-runner" id="quest-progress-runner">🦁</span>
+            </div>
+            <span class="quest-progress-goal">🏁</span>
+          </div>
+          <div class="quest-star-pill"><span>⭐</span> <strong id="quest-stars">0</strong></div>
+        </div>
+        <h2 class="quest-mode-title" id="quest-mode-title">⭐ Nhiệm vụ của Leo</h2>
+        <div class="quest-stage" id="quest-stage">
+          <!-- Populated by quest.js -->
+        </div>
+      </section>
+
+      <!-- VIEW: STICKER ALBUM -->
+      <section class="view-section" id="view-stickers" aria-label="Album sticker">
+        <div class="deck-top-bar">
+          <button class="btn-back" id="btn-album-back" type="button">
+            <span class="back-arrow">⬅</span> Trang chủ
+          </button>
+          <div class="topic-badge-header">
+            <span>📒</span>
+            <span>Album Sticker của bé • <strong id="album-total">0</strong> sticker</span>
+          </div>
+        </div>
+        <p class="album-hint">Từ nào bé còn nhớ khi ôn lại vào ngày hôm sau sẽ thành một sticker! 🥚 = đang ấp, sắp nở thành sticker.</p>
+        <div class="cefr-filter-bar album-topic-bar" id="album-topic-bar" role="group" aria-label="Chọn chủ đề album"></div>
+        <div class="album-grid" id="album-grid"></div>
+      </section>
+
       <section class="view-section" id="view-flashcard" aria-label="Học thẻ từ vựng">
         <div class="deck-top-bar">
           <button class="btn-back" id="btn-back-to-home" type="button">
@@ -1493,5 +1566,7 @@
   <script src="srs.js"></script>
   <script src="milestones.js"></script>
   <script src="backup.js"></script>
+  <script src="quest.js"></script>
+  <script src="pwa.js"></script>
 </body>
 </html>
