@@ -52,3 +52,6 @@
 
 ## 🌐 Dùng thử trực tiếp
 https://comnepnat.github.io/English4kids/
+
+## 🙏 Ghi công
+- Hình minh họa emoji vector: [Twemoji](https://github.com/jdecked/twemoji) © Twitter, Inc. và các cộng tác viên, dùng theo giấy phép [CC-BY 4.0](https://creativecommons.org/licenses/by/4.0/).

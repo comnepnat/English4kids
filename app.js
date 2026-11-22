@@ -991,7 +991,13 @@ function renderCurrentFlashcard(autoSpeak = false) {
   artBox.style.setProperty('--card-art-bg', card.artBg || '#FFF5D6');
   artBox.innerHTML = buildCardIllustrationHTML(card);
 
-  document.getElementById('card-en-word').textContent = card.en;
+  const enWordEl = document.getElementById('card-en-word');
+  if (typeof window.renderColorfulWord === 'function') {
+    enWordEl.innerHTML = window.renderColorfulWord(card.en);
+    enWordEl.setAttribute('aria-label', card.en);
+  } else {
+    enWordEl.textContent = card.en;
+  }
   document.getElementById('card-phonetic').textContent = card.phonetic;
 
   const syllablesEl = document.getElementById('card-syllables');
