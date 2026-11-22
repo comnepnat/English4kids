@@ -279,6 +279,8 @@
     const ag = window.getActiveAgeGroup();
     if (!prof) return;
 
+    if (document.body && ag) document.body.dataset.age = ag.id;
+
     if ($('header-profile-avatar')) $('header-profile-avatar').textContent = prof.avatar;
     if ($('header-profile-name')) $('header-profile-name').textContent = prof.name;
     if ($('header-profile-age')) $('header-profile-age').textContent = ag.shortLabel;

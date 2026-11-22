@@ -137,6 +137,9 @@
   }
 
   function cardPicHTML(card) {
+    if (typeof window.renderCardArtHTML === 'function') {
+      return window.renderCardArtHTML(card, 'compact');
+    }
     if (card.colorHex) {
       return `<span class="pic-swatch" style="background:${ card.colorHex }"></span>`;
     }

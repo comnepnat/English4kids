@@ -943,6 +943,9 @@ function renderCardDots() {
 }
 
 function buildCardIllustrationHTML(card) {
+  if (typeof window.renderCardArtHTML === 'function') {
+    return window.renderCardArtHTML(card, 'card');
+  }
   if (card.colorHex) {
     return `
       <div class="color-swatch-giant" style="background: ${ card.colorHex };">
@@ -997,7 +1000,12 @@ function renderCurrentFlashcard(autoSpeak = false) {
     .join('');
 
   // Back side elements
-  document.getElementById('back-mini-illustration').textContent = typeof card.numberVal === 'number' ? card.countIcon : card.emoji;
+  const backMini = document.getElementById('back-mini-illustration');
+  if (typeof window.renderCardArtHTML === 'function') {
+    backMini.innerHTML = window.renderCardArtHTML(card, 'compact');
+  } else {
+    backMini.textContent = typeof card.numberVal === 'number' ? card.countIcon : card.emoji;
+  }
   document.getElementById('back-en-word').textContent = `${ card.en } ${ card.phonetic }`;
   document.getElementById('back-vi-word').textContent = card.vi;
   document.getElementById('card-example-en').textContent = `"${ card.exampleEn }"`;
@@ -1124,11 +1132,13 @@ function renderQuizQuestion() {
     btn.type = 'button';
     btn.className = 'quiz-option-btn';
     btn.dataset.cardId = opt.id;
-    const visualHTML = opt.colorHex
-      ? `<span class="opt-swatch" style="background:${ opt.colorHex }"></span>`
-      : typeof opt.numberVal === 'number'
-        ? `<span class="opt-num-badge">${ opt.numberVal }</span>`
-        : `<span class="opt-emoji">${ opt.emoji }</span>`;
+    const visualHTML = typeof window.renderCardArtHTML === 'function'
+      ? `<span class="opt-art-wrap">${ window.renderCardArtHTML(opt, 'compact') }</span>`
+      : opt.colorHex
+        ? `<span class="opt-swatch" style="background:${ opt.colorHex }"></span>`
+        : typeof opt.numberVal === 'number'
+          ? `<span class="opt-num-badge">${ opt.numberVal }</span>`
+          : `<span class="opt-emoji">${ opt.emoji }</span>`;
     btn.innerHTML = `
       ${ visualHTML }
       <span class="opt-vi-label">${ opt.vi }</span>

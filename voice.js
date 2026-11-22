@@ -370,6 +370,7 @@
   function setSpeakingVisual(isSpeaking) {
     const speakBtn = $('btn-speak-normal');
     if (speakBtn) speakBtn.classList.toggle('speaking', isSpeaking);
+    if (document.body) document.body.classList.toggle('is-speaking', !!isSpeaking);
   }
 
   const IS_ANDROID = /Android/i.test(navigator.userAgent || '');

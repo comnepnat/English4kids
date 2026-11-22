@@ -91,10 +91,16 @@
       card.id = `story-ep-${ ep.id }`;
       card.style.setProperty('--ep-color', ep.color);
       card.style.setProperty('--ep-bg', ep.bgSoft);
+      const hasArt = typeof window.renderStoryBackdropSvg === 'function' && typeof window.renderMascotSvg === 'function';
+      const thumbBg = hasArt ? `<div class="ep-thumb-bg">${ window.renderStoryBackdropSvg(ep.theme) }</div>` : '';
+      const hostMini = hasArt ? `<span class="ep-host-mini">${ window.renderMascotSvg(ep.host, 'wave', true) }</span>` : '';
+
       card.innerHTML = `
-        <div class="ep-thumb">
+        <div class="ep-thumb ${ hasArt ? 'has-scene-art' : '' }">
+          ${ thumbBg }
           <span class="ep-num-badge">${ ep.num }</span>
-          <span class="ep-emoji">${ ep.icon }</span>
+          <span class="ep-emoji">${ typeof window.renderEmojiArt === 'function' ? window.renderEmojiArt(ep.icon, ep.id, 'sm') : ep.icon }</span>
+          ${ hostMini }
           <span class="ep-play-circle">${ watched ? '✓' : '▶' }</span>
         </div>
         <div class="ep-meta">
@@ -122,6 +128,23 @@
   /* ------------------------------------------------------------------
      Open Episode & Timeline Scrubber
      ------------------------------------------------------------------ */
+  function updateStoryHostVisual(hostId, mood) {
+    const actor = $('story-leo-actor');
+    if (!actor) return;
+    actor.className = `story-leo-actor is-svg-actor mood-${ mood || 'wave' }`;
+    const actorEmoji = actor.querySelector('.leo-actor-emoji');
+    const actorName = actor.querySelector('.leo-name-tag');
+    const host = HOSTS[hostId] || HOSTS.leo;
+    if (actorEmoji) {
+      if (typeof window.renderMascotSvg === 'function') {
+        actorEmoji.innerHTML = window.renderMascotSvg(hostId, mood || 'wave', false);
+      } else {
+        actorEmoji.textContent = host.emoji;
+      }
+    }
+    if (actorName) actorName.textContent = host.name;
+  }
+
   function openEpisode(epIdx) {
     if (!EPISODES[epIdx]) epIdx = 0;
     clearStoryTimer();
@@ -141,11 +164,7 @@
     $('story-ep-icon').textContent = ep.icon;
     $('story-ep-title').textContent = `${ ep.num } [${ ep.level }]: ${ ep.titleVi }`;
 
-    // Update animated actor host (Leo / Mimi / Toby / Lulu)
-    const actorEmoji = document.querySelector('#story-leo-actor .leo-actor-emoji');
-    const actorName = document.querySelector('#story-leo-actor .leo-name-tag');
-    if (actorEmoji) actorEmoji.textContent = host.emoji;
-    if (actorName) actorName.textContent = host.name;
+    updateStoryHostVisual(ep.host, 'wave');
 
     if (typeof window.recordActivity === 'function') {
       window.recordActivity({
@@ -303,7 +322,8 @@
 
   function advanceAfterSuccess(scene) {
     sState.waitingForTap = false;
-    $('story-leo-actor').className = 'story-leo-actor mood-celebrate';
+    const ep = EPISODES[sState.epIndex];
+    updateStoryHostVisual(ep ? ep.host : 'leo', 'celebrate');
     $('story-checkpoint-badge').textContent = '🎉 Xuất sắc! (+2 Sao vàng)';
     setSubtitles(scene.successEn, scene.successVi);
 
@@ -320,8 +340,8 @@
     updatePlayPauseBtn();
 
     scheduleAfterNarration(() => {
-      const ep = EPISODES[sState.epIndex];
-      if (sState.sceneIndex < ep.scenes.length - 1) {
+      const curEp = EPISODES[sState.epIndex];
+      if (sState.sceneIndex < curEp.scenes.length - 1) {
         sState.sceneIndex += 1;
         sState.playing = true;
         renderStoryScene();
@@ -347,11 +367,15 @@
     const stage = $('story-stage');
     stage.className = `story-stage theme-${ ep.theme }`;
 
+    const bgLayer = $('story-backdrop-layer');
+    if (bgLayer && typeof window.renderStoryBackdropSvg === 'function') {
+      bgLayer.innerHTML = window.renderStoryBackdropSvg(ep.theme);
+    }
+
     const propsLayer = $('story-props-layer');
     propsLayer.innerHTML = '';
 
-    const leo = $('story-leo-actor');
-    leo.className = `story-leo-actor mood-${ scene.leoMood || 'wave' }`;
+    updateStoryHostVisual(ep.host, scene.leoMood || 'wave');
 
     const badge = $('story-checkpoint-badge');
 
@@ -366,7 +390,11 @@
         el.style.left = `${ p.x }%`;
         el.style.top = `${ p.y }%`;
         el.style.fontSize = `${ p.size || 3 }rem`;
-        el.textContent = p.emoji;
+        if (typeof window.renderEmojiArt === 'function') {
+          el.innerHTML = `<span class="stage-prop-art">${ window.renderEmojiArt(p.emoji, '', 'stage') }</span>`;
+        } else {
+          el.textContent = p.emoji;
+        }
         propsLayer.appendChild(el);
       });
 
@@ -475,7 +503,9 @@
     btn.style.top = `${ item.y }%`;
     const visual = item.colorHex
       ? `<span class="sii-swatch" style="background:${ item.colorHex }">${ item.emoji }</span>`
-      : `<span class="sii-emoji">${ item.emoji }</span>`;
+      : typeof window.renderEmojiArt === 'function'
+        ? `<span class="sii-art-wrap">${ window.renderEmojiArt(item.emoji, item.label, 'stage') }</span>`
+        : `<span class="sii-emoji">${ item.emoji }</span>`;
     btn.innerHTML = `${ visual }<span class="sii-label">${ item.label }</span>`;
     return btn;
   }
