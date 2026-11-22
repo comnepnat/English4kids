@@ -9845,3 +9845,26 @@ body[data-age="age_11_15"] {
   color: var(--text-muted);
   font-size: 1rem;
 }
+
+/* Toast shown when the back gesture is used on the home screen */
+.back-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 28px;
+  z-index: 9999;
+  transform: translate(-50%, 20px);
+  padding: 10px 18px;
+  border-radius: var(--radius-pill);
+  background: rgba(30, 41, 59, 0.92);
+  color: #FFFFFF;
+  font-weight: 800;
+  font-size: 0.95rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.back-toast.is-visible {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
