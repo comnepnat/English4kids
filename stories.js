@@ -1,8 +1,8 @@
 /**
- * English4Kids - Interactive Animated Video Theatre Engine (Khan Academy Kids Style)
- * 18 Multi-Scene Episodes (Pre-A1 -> B2) with 4 Animated Hosts (Leo, Mimi, Toby, Lulu),
- * 4 Interactive Checkpoint Mechanics ('interact', 'count', 'sequence', 'dialogue'),
- * Timeline Scrubber with Checkpoint Stars, Bilingual Toggle & Natural Voiceover!
+ * English4Kids - Multi-Sensory & Montessori Interactive Video Theatre Engine
+ * 24 Multi-Scene Episodes (Pre-A1 -> B2) with 4 Animated Hosts (Leo, Mimi, Toby, Lulu),
+ * 5 Interactive Checkpoint Mechanics ('interact', 'count', 'sequence', 'dialogue', 'classify'),
+ * Scene Key Vocabulary Bar, Timeline Scrubber with Checkpoint Stars, Bilingual Toggle & Natural Voiceover!
  */
 (function () {
   const EPISODES = typeof STORY_EPISODES !== 'undefined' ? STORY_EPISODES : [];
@@ -22,6 +22,7 @@
     showViSubtitles: true,
     // Interactive sub-states
     countedIds: new Set(),
+    classifiedIds: new Set(),
     seqStep: 0,
     timer: null
   };
@@ -156,7 +157,7 @@
     if (!bar) return;
     bar.innerHTML = '';
 
-    const typeIcons = { interact: '⭐', count: '🔢', sequence: '🧩', dialogue: '💬' };
+    const typeIcons = { interact: '⭐', count: '🔢', sequence: '🧩', dialogue: '💬', classify: '🧺' };
 
     ep.scenes.forEach((sc, idx) => {
       const dot = document.createElement('button');
@@ -211,6 +212,83 @@
     }
   }
 
+  /* ------------------------------------------------------------------
+     Scene Key Vocabulary Chips Bar (Tap any word to hear pronunciation)
+     ------------------------------------------------------------------ */
+  let _vocabByLowerEn = null;
+  function getVocabMapByWord() {
+    if (!_vocabByLowerEn && typeof window.getAllVocabCards === 'function') {
+      _vocabByLowerEn = new Map();
+      window.getAllVocabCards().forEach(c => {
+        const key = c.en.toLowerCase().trim();
+        if (!_vocabByLowerEn.has(key)) _vocabByLowerEn.set(key, c);
+      });
+    }
+    return _vocabByLowerEn;
+  }
+
+  function extractSceneVocabChips(scene) {
+    const vMap = getVocabMapByWord();
+    const chips = [];
+    const seen = new Set();
+
+    const addChip = (en, emoji, vi) => {
+      const clean = (en || '').trim();
+      if (!clean) return;
+      const lower = clean.toLowerCase();
+      if (seen.has(lower)) return;
+      seen.add(lower);
+      const found = vMap ? (vMap.get(lower) || vMap.get(lower.split(/\s+/).pop())) : null;
+      chips.push({
+        en: clean,
+        emoji: emoji || (found ? found.emoji : '🔊'),
+        vi: vi || (found ? found.vi : '')
+      });
+    };
+
+    if (Array.isArray(scene.items)) {
+      scene.items.forEach(item => {
+        if (item && item.label) addChip(item.label, item.emoji, '');
+      });
+    }
+
+    const textEn = `${ scene.en || '' } ${ scene.promptEn || '' } ${ scene.successEn || '' }`;
+    const words = textEn.replace(/[^a-zA-Z\s-]/g, ' ').split(/\s+/).filter(w => w.length >= 4);
+    if (vMap) {
+      for (const w of words) {
+        if (chips.length >= 5) break;
+        const lower = w.toLowerCase();
+        const singular = lower.endsWith('s') ? lower.slice(0, -1) : lower;
+        const card = vMap.get(lower) || vMap.get(singular);
+        if (card) addChip(card.en, card.emoji, card.vi);
+      }
+    }
+
+    return chips.slice(0, 5);
+  }
+
+  function renderSceneVocabBar(scene) {
+    const bar = $('story-scene-vocab');
+    if (!bar) return;
+    const chips = extractSceneVocabChips(scene);
+    if (chips.length === 0) {
+      bar.innerHTML = '';
+      return;
+    }
+    bar.innerHTML = `<span class="sv-label">📚 Từ vựng trong cảnh (Chạm để nghe):</span>`;
+    chips.forEach(ch => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'scene-vocab-chip';
+      btn.innerHTML = `<span>${ ch.emoji }</span><strong>${ ch.en }</strong>${ ch.vi ? `<em>${ ch.vi }</em>` : '' }<span>🔊</span>`;
+      btn.addEventListener('click', () => {
+        playSoundEffect('pop');
+        speakEnglish(ch.en, 0.88);
+      });
+      bar.appendChild(btn);
+    });
+  }
+
   function advanceAfterSuccess(scene) {
     sState.waitingForTap = false;
     $('story-leo-actor').className = 'story-leo-actor mood-celebrate';
@@ -242,7 +320,7 @@
   }
 
   /* ------------------------------------------------------------------
-     Scene Renderer (Supports story, interact, count, sequence, dialogue)
+     Scene Renderer (Supports story, interact, count, sequence, dialogue, classify)
      ------------------------------------------------------------------ */
   function renderStoryScene() {
     clearStoryTimer();
@@ -251,6 +329,7 @@
     if (!scene) return;
 
     sState.countedIds = new Set();
+    sState.classifiedIds = new Set();
     sState.seqStep = 0;
 
     const stage = $('story-stage');
@@ -329,6 +408,20 @@
         propsLayer.appendChild(btn);
       });
       speakEnglish(scene.promptEn, 0.90);
+    } else if (scene.type === 'classify') {
+      sState.waitingForTap = true;
+      badge.classList.remove('hidden');
+      const totalNeeded = (scene.targetIds || []).length;
+      badge.textContent = `${ scene.basketLabel || '🧺 PHÂN LOẠI MONTESSORI' } (0 / ${ totalNeeded })`;
+      setSubtitles(scene.promptEn, scene.promptVi);
+
+      scene.items.forEach(item => {
+        const btn = buildStageItemButton(item);
+        btn.classList.add('is-classify-item');
+        btn.addEventListener('click', () => handleClassifyTap(btn, item, scene));
+        propsLayer.appendChild(btn);
+      });
+      speakEnglish(scene.promptEn, 0.90);
     } else if (scene.type === 'dialogue') {
       sState.waitingForTap = true;
       badge.classList.remove('hidden');
@@ -356,6 +449,7 @@
       speakEnglish(scene.promptEn, 0.90);
     }
 
+    renderSceneVocabBar(scene);
     renderStoryTimeline();
     updatePlayPauseBtn();
   }
@@ -381,6 +475,32 @@
       advanceAfterSuccess(scene);
     } else {
       triggerWrongBounce(btn, `Try again! ${ scene.promptEn }`);
+    }
+  }
+
+  function handleClassifyTap(btn, item, scene) {
+    if (!sState.waitingForTap || sState.classifiedIds.has(item.id)) return;
+    const targets = scene.targetIds || [];
+    if (targets.includes(item.id)) {
+      sState.classifiedIds.add(item.id);
+      const done = sState.classifiedIds.size;
+      btn.classList.add('correct-hit');
+      const chkBadge = document.createElement('span');
+      chkBadge.className = 'sii-order-badge';
+      chkBadge.textContent = '✓';
+      btn.appendChild(chkBadge);
+      playSoundEffect('pop');
+
+      const badge = $('story-checkpoint-badge');
+      badge.textContent = `${ scene.basketLabel || '🧺 PHÂN LOẠI MONTESSORI' } (${ done } / ${ targets.length })`;
+
+      if (done >= targets.length) {
+        advanceAfterSuccess(scene);
+      } else {
+        speakEnglish(`${ item.label }!`, 0.95);
+      }
+    } else {
+      triggerWrongBounce(btn, `Hmm, ${ item.label } does not belong in this basket!`);
     }
   }
 

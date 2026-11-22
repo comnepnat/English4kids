@@ -1,7 +1,7 @@
 /**
  * English4Kids - Multi-Profile Family Manager & Age-Based Learning Tiers (profiles.js)
  * Allows multiple children to share one device with completely isolated progress
- * (Stars, 2,000 Vocab, AnkiDroid SRS, SuperChinese Milestones, 18 Stories, ABC Phonics)
+ * (Stars, 2,500 Vocab, Spaced Repetition SRS, CEFR Milestones, 24 Stories, ABC Phonics)
  * and age-appropriate CEFR recommendations, daily goals, and game difficulties.
  */
 (function () {
@@ -15,7 +15,7 @@
       icon: '🐣',
       label: '4–5 tuổi',
       shortLabel: '4–5t',
-      stageName: 'Mầm non (Khám phá)',
+      stageName: 'Mầm non (Khám phá & Giác quan)',
       levels: ['Pre-A1'],
       defaultCefr: 'Pre-A1',
       starterTopicId: 'animals',
@@ -24,7 +24,7 @@
       gameDiff: 'easy',
       color: '#22C55E',
       bg: '#DCFCE7',
-      desc: '400 từ Pre-A1 gần gũi, ABC Phonics, phim tập đếm & trò chơi Dễ.'
+      desc: '500 từ Pre-A1 gần gũi, bài học 3 bước Montessori, ABC Phonics, phim tập đếm & trò chơi Dễ.'
     },
     {
       id: 'age_6_7',
@@ -40,7 +40,7 @@
       gameDiff: 'easy',
       color: '#0EA5E9',
       bg: '#E0F2FE',
-      desc: '800 từ Pre-A1 & A1, ghép vần Phonics, phim tương tác & ôn Anki nhẹ nhàng.'
+      desc: '1.000 từ Pre-A1 & A1, ghép vần Phonics, phim tương tác đa giác quan & ôn tập ghi nhớ nhẹ nhàng.'
     },
     {
       id: 'age_8_10',
@@ -56,7 +56,7 @@
       gameDiff: 'medium',
       color: '#F59E0B',
       bg: '#FEF3C7',
-      desc: 'Chuẩn Cambridge Starters–Movers–Flyers (A1–A2), ôn Anki 20 từ/ngày & thi vượt mốc.'
+      desc: 'Chuẩn Cambridge Starters–Movers–Flyers (A1–A2 • 1.000 từ), ôn tập 20 từ/ngày & thi vượt mốc.'
     },
     {
       id: 'age_11_15',
@@ -72,7 +72,7 @@
       gameDiff: 'hard',
       color: '#8B5CF6',
       bg: '#EDE9FE',
-      desc: '800 từ học thuật B1–B2 (PET/FCE), ôn Anki tăng tốc, phim khoa học & tranh luận.'
+      desc: '1.000 từ học thuật B1–B2 (PET/FCE), ôn tập ngắt quãng tăng tốc, phim khoa học & tranh luận.'
     }
   ];
 

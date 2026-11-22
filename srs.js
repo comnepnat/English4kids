@@ -1,5 +1,5 @@
 /**
- * English4Kids - AnkiDroid-Style Spaced Repetition System (SRS)
+ * English4Kids - Spaced Repetition Memory Review System (SM-2 SRS)
  * Implements SM-2 algorithm with learning steps, learn-ahead queue (20m),
  * dynamic interval previews on 4 rating buttons, deck filters, card directions, and Undo.
  */
@@ -77,7 +77,7 @@
   }
 
   /* ------------------------------------------------------------------
-     Authentic AnkiDroid SM-2 Scheduling & Interval Preview
+     SM-2 Spaced Repetition Scheduling & Interval Preview
      rating: 1 = Again, 2 = Hard, 3 = Good, 4 = Easy
      ------------------------------------------------------------------ */
   function computeNextSchedule(rec, rating, now = Date.now()) {
@@ -276,7 +276,7 @@
       : Math.max(0, srs.stats.dailyNewLimit - srs.stats.newToday);
     const chosenNew = newList.slice(0, cap);
 
-    // AnkiDroid order: Learning due first, then Reviews due, then New cards
+    // SM-2 order: Learning due first, then Reviews due, then New cards
     return [...learningList, ...reviewList, ...chosenNew];
   }
 
@@ -334,7 +334,7 @@
   };
 
   /* ------------------------------------------------------------------
-     UI Rendering: AnkiDroid Deck Overview
+     UI Rendering: Spaced Repetition Deck Overview
      ------------------------------------------------------------------ */
   function renderSrsOverview() {
     const srs = ensureSrsState();
@@ -358,7 +358,7 @@
     // Populate Topic dropdown
     const topicSel = $('srs-topic-select');
     if (topicSel && topicSel.options.length <= 1) {
-      topicSel.innerHTML = '<option value="">-- Chọn nhanh 1 trong 40 chủ đề --</option>';
+      topicSel.innerHTML = '<option value="">-- Chọn nhanh 1 trong 50 chủ đề --</option>';
       TOPICS_DATA.forEach(t => {
         const opt = document.createElement('option');
         opt.value = `topic:${ t.id }`;
@@ -367,18 +367,18 @@
       });
     }
 
-    // Build AnkiDroid Deck List
+    // Build Spaced Repetition Deck List
     const deckList = $('srs-deck-list');
     if (!deckList) return;
     deckList.innerHTML = '';
 
     const deckDefs = [
-      { key: 'all', icon: '🌈', title: 'Tổng Hợp Tất Cả Từ Vựng', sub: '40 Chủ đề • 2.000 Từ (Pre-A1 ➔ B2)', color: '#FF7A00' },
+      { key: 'all', icon: '🌈', title: 'Tổng Hợp Tất Cả Từ Vựng', sub: '50 Chủ đề • 2.500 Từ (Pre-A1 ➔ B2)', color: '#FF7A00' },
       ...CEFR_LEVELS.map(lvl => ({
         key: lvl.id,
         icon: lvl.icon,
         title: `Bộ Thẻ ${ lvl.name } — ${ lvl.subtitle }`,
-        sub: `8 Chủ đề • 400 Từ chuẩn ${ lvl.name }`,
+        sub: `10 Chủ đề • 500 Từ chuẩn ${ lvl.name }`,
         color: lvl.color
       }))
     ];
@@ -398,7 +398,7 @@
             <p>${ deck.sub } • Đã ôn: <strong>${ c.tracked }</strong></p>
           </div>
         </div>
-        <div class="srs-deck-counts" aria-label="Thống kê thẻ Anki">
+        <div class="srs-deck-counts" aria-label="Thống kê thẻ ôn tập">
           <span class="anki-cnt is-new" title="Thẻ mới hôm nay">${ c.newAvailable }</span>
           <span class="anki-cnt is-learn" title="Thẻ đang học">${ c.learningDue }</span>
           <span class="anki-cnt is-due" title="Thẻ đến hạn ôn">${ c.reviewDue }</span>
@@ -420,7 +420,7 @@
   }
 
   /* ------------------------------------------------------------------
-     Active AnkiDroid Review Session
+     Active Spaced Repetition Review Session
      ------------------------------------------------------------------ */
   function startSrsSession(deckKey, options = {}) {
     srsSession.deckKey = deckKey;
@@ -435,7 +435,7 @@
     srsSession.lastUndo = null;
 
     const labelMap = {
-      all: 'Tất cả 2.000 từ',
+      all: 'Tất cả 2.500 từ',
       'Pre-A1': 'Bộ thẻ Pre-A1',
       A1: 'Bộ thẻ A1',
       A2: 'Bộ thẻ A2',
@@ -455,8 +455,8 @@
       kind: 'srs',
       deckKey,
       icon: '🧠',
-      title: `Ôn tập Anki: ${ deckName }`,
-      subtitle: 'Lặp lại ngắt quãng SM-2 ghi nhớ từ vựng siêu lâu!'
+      title: `Ôn tập ghi nhớ: ${ deckName }`,
+      subtitle: 'Lặp lại ngắt quãng thông minh ghi nhớ từ vựng siêu lâu!'
     });
 
     $('srs-overview').classList.add('hidden');
@@ -572,7 +572,7 @@
     const easePct = Math.round((rec.ease || 2.5) * 100);
     $('srs-ans-stats').textContent = `📊 Đã ôn: ${ rec.reps || 0 } lần • Hệ số nhớ (Ease): ${ easePct }% • Khoảng cách: ${ rec.interval >= 1 ? formatIntervalVi(rec.interval) : 'Thẻ mới/đang học' }`;
 
-    // Precompute exact AnkiDroid interval labels for 4 buttons
+    // Precompute exact SM-2 interval labels for 4 buttons
     const preview1 = computeNextSchedule(rec, 1);
     const preview2 = computeNextSchedule(rec, 2);
     const preview3 = computeNextSchedule(rec, 3);
@@ -654,7 +654,7 @@
       playSoundEffect('wrong');
     }
 
-    // AnkiDroid Learn-Ahead re-queue inside the same session!
+    // Learn-Ahead re-queue inside the same session!
     if (scheduled.requeueInSession && !srsSession.cramMode) {
       const insertAt = Math.min(srsSession.queue.length, rating === 1 ? 2 : 4);
       srsSession.queue.splice(insertAt, 0, { cardId, bucket: 'learning' });

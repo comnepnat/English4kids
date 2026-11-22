@@ -1,14 +1,14 @@
 /**
- * English4Kids - SuperChinese-Style Milestone Level Tests & Placement Exam
+ * English4Kids - CEFR Milestone Level Tests & Placement Exam
  * Features:
  * - 1 Placement Test (Pre-A1 -> B2) + 15 Structured Milestone Checkpoints (3 per CEFR Level)
  * - 5 Mixed Interactive Question Types: Listening, Reading, Sentence Cloze, Spelling Tiles, Speed True/False
- * - SuperChinese HUD: Progress Bar, 5 Hearts, Combo Streak, Timer, Instant Feedback Drawer
- * - 4-Skill Score Report, CEFR Certificates, and 1-Tap Push Mistakes to AnkiDroid SRS
+ * - Gamified HUD: Progress Bar, 5 Hearts, Combo Streak, Timer, Instant Feedback Drawer
+ * - 4-Skill Score Report, CEFR Certificates, and 1-Tap Push Mistakes to Spaced Repetition SRS
  */
 (function () {
   const MAX_HEARTS = 5;
-  const PASS_THRESHOLD = 80; // 80% to pass a SuperChinese Milestone
+  const PASS_THRESHOLD = 80; // 80% to pass a CEFR Milestone
 
   const exam = {
     active: false,
@@ -50,8 +50,9 @@
     const list = [];
     CEFR_LEVELS.forEach(lvl => {
       const lvlTopics = TOPICS_DATA.filter(t => t.level === lvl.id);
-      const firstHalf = lvlTopics.slice(0, 4);
-      const secondHalf = lvlTopics.slice(4, 8);
+      const mid = Math.ceil(lvlTopics.length / 2);
+      const firstHalf = lvlTopics.slice(0, mid);
+      const secondHalf = lvlTopics.slice(mid);
       const firstCards = firstHalf.flatMap(t => t.cards.map(c => ({ ...c, level: lvl.id, topicTitleVi: t.titleVi })));
       const secondCards = secondHalf.flatMap(t => t.cards.map(c => ({ ...c, level: lvl.id, topicTitleVi: t.titleVi })));
       const allCards = [...firstCards, ...secondCards];
@@ -63,7 +64,7 @@
         title: `Mốc ${ lvl.name } — Chặng 1`,
         shortLabel: 'Mốc 1',
         icon: '🚩',
-        subtitle: firstHalf.map(t => t.icon).join(' ') + ' (4 chủ đề đầu • 200 từ)',
+        subtitle: firstHalf.map(t => t.icon).join(' ') + ` (${ firstHalf.length } chủ đề đầu • ${ firstCards.length } từ)`,
         questionCount: 10,
         rewardStars: 10,
         pool: firstCards,
@@ -78,7 +79,7 @@
         title: `Mốc ${ lvl.name } — Chặng 2`,
         shortLabel: 'Mốc 2',
         icon: '🏁',
-        subtitle: secondHalf.map(t => t.icon).join(' ') + ' (4 chủ đề sau • 200 từ)',
+        subtitle: secondHalf.map(t => t.icon).join(' ') + ` (${ secondHalf.length } chủ đề sau • ${ secondCards.length } từ)`,
         questionCount: 10,
         rewardStars: 10,
         pool: secondCards,
@@ -93,7 +94,7 @@
         title: `Vượt Mốc Trình Độ ${ lvl.name }`,
         shortLabel: `Thi Vượt Mốc ${ lvl.name }`,
         icon: '👑',
-        subtitle: `Tổng hợp toàn bộ 400 từ chuẩn ${ lvl.name } (${ lvl.subtitle })`,
+        subtitle: `Tổng hợp toàn bộ ${ allCards.length } từ chuẩn ${ lvl.name } (${ lvl.subtitle })`,
         questionCount: 15,
         rewardStars: 25,
         pool: allCards,
@@ -112,7 +113,7 @@
       title: 'Kiểm Tra Xếp Trình Độ (Pre-A1 ➔ B2)',
       shortLabel: '🧭 Xếp Trình Độ',
       icon: '🧭',
-      subtitle: '15 câu phân tầng chuẩn SuperChinese giúp xác định ngay trình độ phù hợp nhất!',
+      subtitle: '15 câu phân tầng đa kỹ năng giúp xác định ngay trình độ phù hợp nhất!',
       questionCount: 15,
       rewardStars: 15,
       color: '#4F46E5',
@@ -138,7 +139,7 @@
   };
 
   /* ------------------------------------------------------------------
-     Question Generator (5 SuperChinese Exercise Formats)
+     Question Generator (5 Multi-Skill Exercise Formats)
      ------------------------------------------------------------------ */
   function pickDistractors(target, pool, count = 3) {
     const candidates = pool.filter(c => c.id !== target.id && c.en.toLowerCase() !== target.en.toLowerCase());
@@ -186,7 +187,7 @@
       chosenCards = shuffleArray(def.pool).slice(0, def.questionCount);
     }
 
-    // Balanced rotation of 5 SuperChinese formats
+    // Balanced rotation of 5 multi-skill formats
     const typePattern = ['listening', 'reading', 'context', 'spelling', 'truefalse'];
 
     return chosenCards.map((card, idx) => {
@@ -255,7 +256,7 @@
   }
 
   /* ------------------------------------------------------------------
-     UI Rendering: SuperChinese Milestone Arena Hub
+     UI Rendering: Milestone Arena Hub
      ------------------------------------------------------------------ */
   function renderMilestonesHub() {
     const ms = ensureMilestoneState();
@@ -348,7 +349,7 @@
   }
 
   /* ------------------------------------------------------------------
-     Active SuperChinese Exam Flow
+     Active Milestone Exam Flow
      ------------------------------------------------------------------ */
   function stopExamTimer() {
     if (exam.timerId) {
@@ -391,7 +392,7 @@
       milestoneId: def.id,
       icon: def.icon,
       title: def.title,
-      subtitle: 'Bài kiểm tra vượt mốc chuẩn SuperChinese!'
+      subtitle: 'Bài kiểm tra vượt mốc 4 kỹ năng CEFR!'
     });
 
     $('ms-hub').classList.add('hidden');
@@ -748,7 +749,7 @@
   }
 
   /* ------------------------------------------------------------------
-     SuperChinese Score Report, Certificates & Push Mistakes to AnkiDroid
+     Score Report, Certificates & Push Mistakes to Spaced Repetition
      ------------------------------------------------------------------ */
   function finishMilestoneExam() {
     stopExamTimer();
@@ -869,7 +870,7 @@
       `;
     }).join('');
 
-    // Mistakes Section + Push to AnkiDroid SRS button
+    // Mistakes Section + Push to Spaced Repetition SRS button
     const uniqueMistakes = [];
     const seenM = new Set();
     exam.mistakes.forEach(c => {
@@ -894,12 +895,12 @@
         mistakesList.appendChild(chip);
       });
       pushBtn.disabled = false;
-      pushBtn.textContent = `🧠 Đẩy ${ uniqueMistakes.length } từ sai vào Ôn tập AnkiDroid`;
+      pushBtn.textContent = `🧠 Đẩy ${ uniqueMistakes.length } từ sai vào Ôn tập ghi nhớ`;
       pushBtn.onclick = () => {
         const pushed = window.queueMistakesToSrs(uniqueMistakes.map(c => c.id));
         playSoundEffect('star');
         pushBtn.disabled = true;
-        pushBtn.textContent = `✅ Đã đưa ${ pushed } từ vào hàng đợi Ôn tập AnkiDroid!`;
+        pushBtn.textContent = `✅ Đã đưa ${ pushed } từ vào hàng đợi Ôn tập ghi nhớ!`;
       };
     } else {
       mistakesBox.classList.add('hidden');

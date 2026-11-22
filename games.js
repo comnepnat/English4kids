@@ -1,8 +1,11 @@
 /**
- * English4Kids - Phase 2 (Expanded): Mini-games with 3 Difficulty Levels
- * - Memory Match (4, 6, or 8 pairs)
- * - Picture Match (2x4, 3x4, or 4x5 rounds)
- * - Balloon Catch (60s/slow, 45s/medium, 45s/fast + Golden Bonus Balloons x2 stars & Combo)
+ * English4Kids - 6 Interactive Mini-Games with 3 Difficulty Levels & Montessori Methodology
+ * 1. Memory Match (4, 6, or 8 pairs)
+ * 2. Picture Match (2x4, 3x4, or 4x5 rounds)
+ * 3. Balloon Catch (60s/slow, 45s/medium, 45s/fast + Golden Bonus Balloons x2 stars & Combo)
+ * 4. Montessori Category Baskets (Phân Loại Giỏ Montessori - 2 or 3 baskets)
+ * 5. Montessori Moveable Alphabet (Bảng Chữ Cái Rời Montessori - color-coded vowels & consonants)
+ * 6. Context Sentence Builder (Ghép Câu Giao Tiếp - audio & contextual sentence completion)
  */
 (function () {
   const GAMES_META = {
@@ -14,12 +17,27 @@
     match: {
       icon: '🔗',
       title: 'Nối Hình Với Chữ',
-      instruction: 'Chạm vào một hình, nghe Leo đọc, rồi chạm vào chữ tiếng Anh đúng với hình đó!'
+      instruction: 'Chạm vào một hình, nghe đọc phát âm, rồi chạm vào chữ tiếng Anh đúng với hình đó!'
     },
     balloon: {
       icon: '🎈',
       title: 'Bắt Bóng Từ Vựng',
       instruction: 'Nghe từ tiếng Anh và chạm thật nhanh vào quả bóng đúng! Bóng Vàng 🌟 thưởng +2 Sao!'
+    },
+    sorting: {
+      icon: '🧺',
+      title: 'Phân Loại Giỏ Montessori',
+      instruction: 'Quan sát thẻ từ vựng ở khay giữa và chạm vào đúng Giỏ Chủ Đề Montessori để phân loại nhé!'
+    },
+    wordbuilder: {
+      icon: '🔤',
+      title: 'Bảng Chữ Cái Rời Montessori',
+      instruction: 'Chạm vào các thẻ chữ cái rời Montessori (Nguyên âm Xanh dương • Phụ âm Đỏ hồng) để ghép thành từ đúng!'
+    },
+    sentence: {
+      icon: '💬',
+      title: 'Ghép Câu Giao Tiếp',
+      instruction: 'Nghe câu giao tiếp thực tế và chọn từ vựng đúng nhất để hoàn thành chỗ trống trong câu!'
     }
   };
 
@@ -31,7 +49,12 @@
       balloonSeconds: 60,
       balloonDuration: [7.6, 9.4],
       balloonInterval: 1450,
-      goldenChance: 0.15
+      goldenChance: 0.15,
+      sortingBaskets: 2,
+      sortingItems: 6,
+      wbRounds: 4,
+      wbExtraLetters: 0,
+      sentenceRounds: 5
     },
     medium: {
       memoryPairs: 6,
@@ -40,7 +63,12 @@
       balloonSeconds: 45,
       balloonDuration: [5.8, 7.6],
       balloonInterval: 1120,
-      goldenChance: 0.2
+      goldenChance: 0.2,
+      sortingBaskets: 3,
+      sortingItems: 8,
+      wbRounds: 6,
+      wbExtraLetters: 2,
+      sentenceRounds: 7
     },
     hard: {
       memoryPairs: 8,
@@ -49,7 +77,12 @@
       balloonSeconds: 45,
       balloonDuration: [4.2, 5.6],
       balloonInterval: 920,
-      goldenChance: 0.28
+      goldenChance: 0.28,
+      sortingBaskets: 3,
+      sortingItems: 10,
+      wbRounds: 8,
+      wbExtraLetters: 3,
+      sentenceRounds: 10
     }
   };
 
@@ -62,6 +95,7 @@
   ];
 
   const BALLOON_COLORS = ['#FF6B6B', '#FFB020', '#4ADE80', '#38BDF8', '#F472B6', '#A78BFA', '#FB923C'];
+  const VOWELS_SET = new Set(['A', 'E', 'I', 'O', 'U']);
 
   const g = {
     current: null,
@@ -70,7 +104,10 @@
     timers: [],
     memory: {},
     match: {},
-    balloon: {}
+    balloon: {},
+    sorting: {},
+    wordbuilder: {},
+    sentence: {}
   };
 
   const $ = id => document.getElementById(id);
@@ -79,10 +116,10 @@
      Shared helpers
      ------------------------------------------------------------------ */
   function getPool() {
-    const all = TOPICS_DATA.flatMap(t => t.cards);
+    const all = TOPICS_DATA.flatMap(t => t.cards.map(c => ({ ...c, topicId: t.id, topicTitleVi: t.titleVi, topicIcon: t.icon })));
     if (g.topicId === 'all') return all;
     const topic = TOPICS_DATA.find(t => t.id === g.topicId);
-    return topic ? topic.cards : all;
+    return topic ? topic.cards.map(c => ({ ...c, topicId: topic.id, topicTitleVi: topic.titleVi, topicIcon: topic.icon })) : all;
   }
 
   function uniquePool() {
@@ -182,6 +219,7 @@
   }
 
   function openGame(name) {
+    if (!GAMES_META[name]) name = 'memory';
     g.current = name;
     document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
     $('view-games').classList.add('active');
@@ -198,12 +236,13 @@
         gameName: name,
         icon: meta.icon,
         title: meta.title,
-        subtitle: 'Khu trò chơi Mini-games • Chơi tiếp để nhận sao!'
+        subtitle: 'Khu trò chơi tương tác • Chơi tiếp để nhận sao!'
       });
     }
 
-    ['memory', 'match', 'balloon'].forEach(n => {
-      $(`game-${ n }`).classList.toggle('hidden', n !== name);
+    ['memory', 'match', 'balloon', 'sorting', 'wordbuilder', 'sentence'].forEach(n => {
+      const board = $(`game-${ n }`);
+      if (board) board.classList.toggle('hidden', n !== name);
     });
 
     startCurrent();
@@ -217,6 +256,9 @@
     if (g.current === 'memory') startMemory();
     else if (g.current === 'match') startMatch();
     else if (g.current === 'balloon') startBalloon();
+    else if (g.current === 'sorting') startSorting();
+    else if (g.current === 'wordbuilder') startWordBuilder();
+    else if (g.current === 'sentence') startSentenceGame();
   }
 
   function goHomeFromGames() {
@@ -578,6 +620,481 @@
       earned,
       title: score > 0 ? 'Hết giờ rồi!' : 'Cố lên bé ơi!',
       text: `Bé đã bắt được ${ score } quả bóng đúng và giành được ${ earned } sao thưởng!`
+    });
+  }
+
+  /* ------------------------------------------------------------------
+     Game 4: Montessori Category Baskets (Phân Loại Giỏ Montessori)
+     ------------------------------------------------------------------ */
+  function startSorting() {
+    const cfg = DIFF_CONFIG[g.difficulty];
+    const basketCount = cfg.sortingBaskets; // 2 or 3
+    const totalItems = cfg.sortingItems;    // 6, 8, or 10
+
+    // Choose 2 or 3 distinct topics to serve as Montessori Category Baskets
+    const ag = typeof window.getActiveAgeGroup === 'function' ? window.getActiveAgeGroup() : null;
+    let topicCandidates = TOPICS_DATA;
+    if (g.topicId !== 'all') {
+      const selectedTopic = TOPICS_DATA.find(t => t.id === g.topicId);
+      const others = shuffleArray(TOPICS_DATA.filter(t => t.id !== g.topicId));
+      topicCandidates = selectedTopic ? [selectedTopic, ...others] : TOPICS_DATA;
+    } else if (ag && ag.levels && ag.levels.length > 0) {
+      const ageFit = TOPICS_DATA.filter(t => ag.levels.includes(t.level));
+      if (ageFit.length >= basketCount) topicCandidates = shuffleArray(ageFit);
+    } else {
+      topicCandidates = shuffleArray(TOPICS_DATA);
+    }
+
+    const baskets = topicCandidates.slice(0, basketCount).map(t => ({
+      id: t.id,
+      icon: t.icon,
+      titleVi: t.titleVi,
+      titleEn: t.titleEn,
+      color: t.theme ? t.theme.accent : '#FF7A00',
+      bg: t.theme ? t.theme.bgSoft : '#FFF4D6',
+      sorted: []
+    }));
+
+    // Build mixed item queue from the chosen basket topics
+    const rawItems = [];
+    baskets.forEach(b => {
+      const topicObj = TOPICS_DATA.find(t => t.id === b.id);
+      if (topicObj) {
+        const picks = shuffleArray(topicObj.cards).slice(0, Math.ceil(totalItems / basketCount) + 1);
+        picks.forEach(c => rawItems.push({ ...c, basketId: b.id, basketTitle: b.titleVi }));
+      }
+    });
+
+    const queue = shuffleArray(rawItems).slice(0, totalItems);
+    g.sorting = {
+      baskets,
+      queue,
+      index: 0,
+      mistakes: 0,
+      combo: 0
+    };
+
+    renderSortingRound();
+  }
+
+  function updateSortingHud() {
+    const s = g.sorting;
+    setHud(
+      `🧺 Thẻ ${ Math.min(s.index + 1, s.queue.length) } / ${ s.queue.length }`,
+      `🔥 Combo: ${ s.combo }`,
+      `❌ Nhầm: ${ s.mistakes }`
+    );
+  }
+
+  function renderSortingRound() {
+    const s = g.sorting;
+    updateSortingHud();
+    const card = s.queue[s.index];
+    if (!card) {
+      finishSorting();
+      return;
+    }
+
+    const stage = $('sorting-stage');
+    if (!stage) return;
+
+    stage.innerHTML = `
+      <div class="sorting-current-tray">
+        <div class="sorting-card-preview" id="sorting-active-card">
+          <div class="sorting-card-pic">${ cardPicHTML(card) }</div>
+          <div class="sorting-card-words">
+            <strong class="sorting-en">${ card.en }</strong>
+            <span class="sorting-ipa">${ card.phonetic || '' }</span>
+            <span class="sorting-vi">${ card.vi }</span>
+          </div>
+          <button type="button" class="btn-speak-slow" id="btn-sorting-audio">🔊 Nghe</button>
+        </div>
+        <p class="sorting-prompt-hint">👇 Chạm vào đúng <strong>Giỏ Chủ Đề Montessori</strong> bên dưới để cất thẻ này vào giỏ:</p>
+      </div>
+      <div class="sorting-baskets-grid cols-${ s.baskets.length }" id="sorting-baskets-grid"></div>
+    `;
+
+    $('btn-sorting-audio').addEventListener('click', () => speakEnglish(card.en, 0.88));
+
+    const grid = $('sorting-baskets-grid');
+    s.baskets.forEach(b => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'sorting-basket-btn';
+      btn.dataset.basketId = b.id;
+      btn.style.setProperty('--basket-color', b.color);
+      btn.style.setProperty('--basket-bg', b.bg);
+
+      const miniChips = b.sorted.slice(-4).map(c => `<span class="basket-mini-chip">${ c.emoji } ${ c.en }</span>`).join('');
+      btn.innerHTML = `
+        <div class="basket-top">
+          <span class="basket-icon">🧺 ${ b.icon }</span>
+          <span class="basket-count">${ b.sorted.length } thẻ</span>
+        </div>
+        <div class="basket-title">${ b.titleVi }</div>
+        <div class="basket-sub">${ b.titleEn }</div>
+        <div class="basket-items-tray">${ miniChips || '<span class="basket-empty-hint">Chạm để bỏ thẻ vào giỏ</span>' }</div>
+      `;
+      btn.addEventListener('click', () => handleSortingTap(btn, b, card));
+      grid.appendChild(btn);
+    });
+
+    speakEnglish(card.en, 0.88);
+  }
+
+  function handleSortingTap(btn, basket, card) {
+    const s = g.sorting;
+    if (basket.id === card.basketId) {
+      basket.sorted.push(card);
+      s.combo += 1;
+      btn.classList.add('correct');
+      playSoundEffect('correct');
+      state.learnedIds.add(card.id);
+      saveProgress();
+      updateHeaderAndMissionUI();
+      later(() => {
+        s.index += 1;
+        renderSortingRound();
+      }, 480);
+    } else {
+      s.mistakes += 1;
+      s.combo = 0;
+      btn.classList.remove('wrong');
+      void btn.offsetWidth;
+      btn.classList.add('wrong');
+      playSoundEffect('wrong');
+      updateSortingHud();
+      speakEnglish(card.en, 0.85);
+    }
+  }
+
+  function finishSorting() {
+    const s = g.sorting;
+    const rating = s.mistakes === 0 ? 3 : s.mistakes <= 2 ? 2 : 1;
+    const earned = rating + (g.difficulty === 'hard' ? 2 : g.difficulty === 'medium' ? 1 : 0);
+    showResult({
+      rating,
+      earned,
+      title: 'Phân loại giỏ Montessori xuất sắc!',
+      text: `Bé đã phân loại đúng ${ s.queue.length } thẻ từ vựng vào các giỏ chủ đề với ${ s.mistakes } lần nhầm!`
+    });
+  }
+
+  /* ------------------------------------------------------------------
+     Game 5: Montessori Moveable Alphabet (Bảng Chữ Cái Rời Montessori)
+     ------------------------------------------------------------------ */
+  function startWordBuilder() {
+    const cfg = DIFF_CONFIG[g.difficulty];
+    const candidates = uniquePool().filter(c => /^[a-zA-Z]{3,9}$/.test(c.en.trim()));
+    const fallback = TOPICS_DATA.flatMap(t => t.cards).filter(c => /^[a-zA-Z]{3,9}$/.test(c.en.trim()));
+    const source = candidates.length >= cfg.wbRounds ? candidates : fallback;
+    const queue = shuffleArray(source).slice(0, cfg.wbRounds);
+
+    g.wordbuilder = {
+      queue,
+      index: 0,
+      mistakes: 0,
+      extraLetters: cfg.wbExtraLetters,
+      placed: [],
+      tiles: []
+    };
+
+    setupWordBuilderRound();
+  }
+
+  function setupWordBuilderRound() {
+    const wb = g.wordbuilder;
+    const card = wb.queue[wb.index];
+    if (!card) {
+      finishWordBuilder();
+      return;
+    }
+
+    const letters = card.en.trim().toUpperCase().split('');
+    const distractors = 'AEIOUBCDFGHJKLMNPRSTVWYZ'.split('').filter(ch => !letters.includes(ch));
+    const extras = shuffleArray(distractors).slice(0, wb.extraLetters);
+    const allChars = shuffleArray([...letters, ...extras]);
+
+    wb.targetLetters = letters;
+    wb.placed = [];
+    wb.tiles = allChars.map((ch, idx) => ({
+      id: `tile_${ idx }`,
+      ch,
+      isVowel: VOWELS_SET.has(ch),
+      used: false
+    }));
+
+    renderWordBuilderUI();
+    speakEnglish(card.en, 0.88);
+  }
+
+  function updateWordBuilderHud() {
+    const wb = g.wordbuilder;
+    setHud(
+      `🔤 Từ ${ Math.min(wb.index + 1, wb.queue.length) } / ${ wb.queue.length }`,
+      `🔵 Nguyên âm • 🔴 Phụ âm`,
+      `❌ Nhầm: ${ wb.mistakes }`
+    );
+  }
+
+  function renderWordBuilderUI() {
+    const wb = g.wordbuilder;
+    const card = wb.queue[wb.index];
+    if (!card) return;
+    updateWordBuilderHud();
+
+    const stage = $('wordbuilder-stage');
+    if (!stage) return;
+
+    stage.innerHTML = `
+      <div class="wb-prompt-card">
+        <div class="wb-pic">${ cardPicHTML(card) }</div>
+        <div class="wb-cue-info">
+          <div class="wb-vi">${ card.vi }</div>
+          <div class="wb-ipa">${ card.phonetic || '' }</div>
+          <div class="wb-audio-btns">
+            <button type="button" class="btn-speak-primary" id="btn-wb-speak">🔊 Nghe từ</button>
+            <button type="button" class="btn-secondary-pill" id="btn-wb-hint">💡 Gợi ý 1 chữ</button>
+            <button type="button" class="btn-secondary-pill" id="btn-wb-clear">🔄 Xếp lại</button>
+          </div>
+        </div>
+      </div>
+      <div class="wb-montessori-mat">
+        <div class="wb-slots-row" id="wb-slots-row"></div>
+        <div class="wb-tiles-bank" id="wb-tiles-bank"></div>
+      </div>
+    `;
+
+    $('btn-wb-speak').addEventListener('click', () => speakEnglish(card.en, 0.86));
+    $('btn-wb-clear').addEventListener('click', () => {
+      playSoundEffect('pop');
+      wb.placed = [];
+      wb.tiles.forEach(t => { t.used = false; });
+      renderWordBuilderUI();
+    });
+    $('btn-wb-hint').addEventListener('click', () => {
+      const nextPos = wb.placed.length;
+      if (nextPos >= wb.targetLetters.length) return;
+      const neededChar = wb.targetLetters[nextPos];
+      const tile = wb.tiles.find(t => !t.used && t.ch === neededChar);
+      if (tile) {
+        handleWordBuilderTileTap(tile);
+      }
+    });
+
+    const slotsRow = $('wb-slots-row');
+    wb.targetLetters.forEach((targetCh, idx) => {
+      const placedTile = wb.placed[idx];
+      const slot = document.createElement('button');
+      slot.type = 'button';
+      const vowelClass = placedTile ? (placedTile.isVowel ? 'is-vowel' : 'is-consonant') : '';
+      slot.className = `wb-letter-slot ${ placedTile ? 'filled' : '' } ${ vowelClass }`;
+      slot.textContent = placedTile ? placedTile.ch : '_';
+      if (placedTile && idx === wb.placed.length - 1) {
+        slot.addEventListener('click', () => {
+          playSoundEffect('pop');
+          placedTile.used = false;
+          wb.placed.pop();
+          renderWordBuilderUI();
+        });
+      }
+      slotsRow.appendChild(slot);
+    });
+
+    const bank = $('wb-tiles-bank');
+    wb.tiles.forEach(tile => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = `wb-letter-tile ${ tile.isVowel ? 'is-vowel' : 'is-consonant' } ${ tile.used ? 'used' : '' }`;
+      btn.dataset.letter = tile.ch;
+      btn.textContent = tile.ch;
+      btn.disabled = tile.used;
+      btn.addEventListener('click', () => handleWordBuilderTileTap(tile, btn));
+      bank.appendChild(btn);
+    });
+  }
+
+  function handleWordBuilderTileTap(tile, btnEl) {
+    const wb = g.wordbuilder;
+    const card = wb.queue[wb.index];
+    const nextPos = wb.placed.length;
+    if (!card || nextPos >= wb.targetLetters.length || tile.used) return;
+
+    const expectedChar = wb.targetLetters[nextPos];
+    if (tile.ch === expectedChar) {
+      tile.used = true;
+      wb.placed.push(tile);
+      playSoundEffect('pop');
+      renderWordBuilderUI();
+
+      if (wb.placed.length === wb.targetLetters.length) {
+        playSoundEffect('correct');
+        state.learnedIds.add(card.id);
+        saveProgress();
+        updateHeaderAndMissionUI();
+        speakEnglish(`${ card.en }!`, 0.92);
+        later(() => {
+          wb.index += 1;
+          setupWordBuilderRound();
+        }, 780);
+      }
+    } else {
+      wb.mistakes += 1;
+      playSoundEffect('wrong');
+      if (btnEl) {
+        btnEl.classList.remove('wrong');
+        void btnEl.offsetWidth;
+        btnEl.classList.add('wrong');
+      }
+      updateWordBuilderHud();
+    }
+  }
+
+  function finishWordBuilder() {
+    const wb = g.wordbuilder;
+    const rating = wb.mistakes === 0 ? 3 : wb.mistakes <= 3 ? 2 : 1;
+    const earned = rating + (g.difficulty === 'hard' ? 2 : g.difficulty === 'medium' ? 1 : 0);
+    showResult({
+      rating,
+      earned,
+      title: 'Ghép chữ Montessori siêu chuẩn!',
+      text: `Bé đã ghép đúng ${ wb.queue.length } từ tiếng Anh bằng Bảng Chữ Cái Rời với ${ wb.mistakes } lần nhầm!`
+    });
+  }
+
+  /* ------------------------------------------------------------------
+     Game 6: Context Sentence Builder (Ghép Câu Giao Tiếp)
+     ------------------------------------------------------------------ */
+  function maskSentenceTarget(sentence, word) {
+    const escaped = word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const regex = new RegExp(`\\b${ escaped }\\b`, 'i');
+    if (regex.test(sentence)) {
+      return sentence.replace(regex, '_______');
+    }
+    return `${ sentence } (_______)`;
+  }
+
+  function startSentenceGame() {
+    const cfg = DIFF_CONFIG[g.difficulty];
+    const pool = uniquePool().filter(c => c.exampleEn && c.exampleEn.length > 8);
+    const queue = shuffleArray(pool).slice(0, cfg.sentenceRounds);
+
+    g.sentence = {
+      queue,
+      index: 0,
+      mistakes: 0,
+      combo: 0,
+      locked: false
+    };
+
+    renderSentenceRound();
+  }
+
+  function updateSentenceHud() {
+    const st = g.sentence;
+    setHud(
+      `💬 Câu ${ Math.min(st.index + 1, st.queue.length) } / ${ st.queue.length }`,
+      `🔥 Combo: ${ st.combo }`,
+      `❌ Nhầm: ${ st.mistakes }`
+    );
+  }
+
+  function renderSentenceRound() {
+    const st = g.sentence;
+    const card = st.queue[st.index];
+    if (!card) {
+      finishSentenceGame();
+      return;
+    }
+    st.locked = false;
+    updateSentenceHud();
+
+    const stage = $('sentence-stage');
+    if (!stage) return;
+
+    const all = uniquePool();
+    const distractors = shuffleArray(all.filter(c => c.id !== card.id)).slice(0, 3);
+    const options = shuffleArray([card, ...distractors]);
+    const masked = maskSentenceTarget(card.exampleEn, card.en);
+
+    stage.innerHTML = `
+      <div class="sent-prompt-card">
+        <div class="sent-card-top">
+          <span class="sent-topic-tag">${ card.topicIcon || '💬' } ${ card.topicTitleVi || 'Giao tiếp' }</span>
+          <button type="button" class="btn-speak-primary" id="btn-sent-listen">🔊 Nghe cả câu</button>
+        </div>
+        <div class="sent-en-line" id="sent-en-line">${ masked.replace('_______', '<span class="sent-blank-pill">_______</span>') }</div>
+        <div class="sent-vi-line">🇻🇳 ${ card.exampleVi }</div>
+      </div>
+      <div class="sent-options-grid" id="sent-options-grid"></div>
+    `;
+
+    $('btn-sent-listen').addEventListener('click', () => speakEnglish(card.exampleEn, 0.88));
+
+    const grid = $('sent-options-grid');
+    options.forEach(opt => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'sent-option-btn';
+      btn.dataset.cardId = opt.id;
+      btn.innerHTML = `
+        <span class="sent-opt-emoji">${ opt.emoji }</span>
+        <div class="sent-opt-texts">
+          <strong>${ opt.en }</strong>
+          <small>${ opt.vi }</small>
+        </div>
+      `;
+      btn.addEventListener('click', () => handleSentenceOptionTap(btn, opt, card));
+      grid.appendChild(btn);
+    });
+
+    speakEnglish(card.exampleEn, 0.88);
+  }
+
+  function handleSentenceOptionTap(btn, chosen, target) {
+    const st = g.sentence;
+    if (st.locked) return;
+
+    if (chosen.id === target.id) {
+      st.locked = true;
+      st.combo += 1;
+      btn.classList.add('correct');
+      const enLine = $('sent-en-line');
+      if (enLine) {
+        enLine.innerHTML = target.exampleEn.replace(
+          new RegExp(`\\b${ target.en.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') }\\b`, 'i'),
+          `<span class="sent-filled-pill">${ target.en }</span>`
+        );
+      }
+      playSoundEffect('correct');
+      state.learnedIds.add(target.id);
+      saveProgress();
+      updateHeaderAndMissionUI();
+      speakEnglish(target.exampleEn, 0.92);
+      later(() => {
+        st.index += 1;
+        renderSentenceRound();
+      }, 900);
+    } else {
+      st.mistakes += 1;
+      st.combo = 0;
+      btn.classList.add('wrong');
+      btn.disabled = true;
+      playSoundEffect('wrong');
+      updateSentenceHud();
+      speakEnglish(target.en, 0.86);
+    }
+  }
+
+  function finishSentenceGame() {
+    const st = g.sentence;
+    const rating = st.mistakes === 0 ? 3 : st.mistakes <= 2 ? 2 : 1;
+    const earned = rating + (g.difficulty === 'hard' ? 2 : g.difficulty === 'medium' ? 1 : 0);
+    showResult({
+      rating,
+      earned,
+      title: 'Ghép câu giao tiếp xuất sắc!',
+      text: `Bé đã hoàn thành ${ st.queue.length } câu giao tiếp tiếng Anh với ${ st.mistakes } lần nhầm!`
     });
   }
 

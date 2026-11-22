@@ -1,7 +1,7 @@
 /**
- * English4Kids - 18 Interactive Animated Episodes (Khan Academy Kids Style)
+ * English4Kids - 24 Multi-Sensory & Montessori Interactive Animated Episodes
  * Spans Pre-A1 -> B2 with 4 Animated Hosts (Leo, Mimi, Toby, Lulu)
- * and 4 Interactive Scene Types: 'interact', 'count', 'sequence', 'dialogue'.
+ * and 5 Interactive Scene Types: 'interact', 'count', 'sequence', 'dialogue', 'classify'.
  */
 const STORY_HOSTS = {
   leo:  { name: 'Leo',  emoji: '🦁', role: 'Nhà Thám Hiểm' },
@@ -1502,5 +1502,507 @@ const STORY_EPISODES = [
         durationMs: 4400
       }
     ]
+  },
+
+  /* ======================= MONTESSORI & MULTI-SENSORY SERIES (6 EPISODES) ======================= */
+  {
+    id: 'montessori_sensory',
+    num: 'Tập 19',
+    level: 'Pre-A1',
+    host: 'mimi',
+    titleVi: 'Hộp Giác Quan Montessori',
+    titleEn: 'Montessori Sensory Box',
+    icon: '🧸',
+    duration: '2.5 phút • 3 thử thách',
+    theme: 'room',
+    color: '#D97706',
+    bgSoft: '#FEF3C7',
+    scenes: [
+      {
+        type: 'story',
+        leoMood: 'wave',
+        props: [
+          { emoji: '🧸', x: 24, y: 56, size: 3.3, anim: 'bob' },
+          { emoji: '🪨', x: 54, y: 58, size: 3.1 },
+          { emoji: '🪶', x: 80, y: 46, size: 3.2, anim: 'float' }
+        ],
+        en: 'Welcome to our Montessori Sensory Table! Let us touch, feel, and compare!',
+        vi: 'Chào mừng đến Bàn Giác Quan Montessori! Cùng chạm, cảm nhận và phân biệt đồ vật nhé!',
+        durationMs: 4300
+      },
+      {
+        type: 'classify',
+        leoMood: 'ask',
+        promptEn: 'Montessori Sorting! Tap the TWO SOFT objects to put in the Soft Basket!',
+        promptVi: 'Phân loại Montessori! Bé hãy chạm vào 2 đồ vật MỀM MẠI (Soft) để xếp vào giỏ nhé!',
+        basketLabel: '🧺 Giỏ Đồ Vật Mềm (Soft)',
+        targetIds: ['pillow', 'feather'],
+        successEn: 'Wonderful sensory work! Both the Pillow and the Feather are soft and gentle!',
+        successVi: 'Cảm nhận giác quan tuyệt vời! Cả Chiếc Gối (Pillow) và Lông Vũ (Feather) đều rất mềm mại!',
+        items: [
+          { id: 'pillow', emoji: '🛋️', label: 'Soft Pillow', x: 20, y: 56 },
+          { id: 'rock', emoji: '🪨', label: 'Hard Rock', x: 43, y: 58 },
+          { id: 'feather', emoji: '🪶', label: 'Soft Feather', x: 66, y: 54 },
+          { id: 'brick', emoji: '🧱', label: 'Hard Brick', x: 86, y: 58 }
+        ]
+      },
+      {
+        type: 'interact',
+        leoMood: 'ask',
+        promptEn: 'Which object feels COLD like winter ice? Tap the Ice Cube!',
+        promptVi: 'Vật nào chạm vào thấy LẠNH (Cold) như băng mùa đông nhỉ? Chạm vào Viên Đá Lạnh (Ice)!',
+        targetId: 'ice',
+        successEn: 'Brrr! The Ice Cube is cold and smooth!',
+        successVi: 'Lạnh quá! Viên Đá Lạnh (Ice) vừa mát lạnh vừa trơn láng!',
+        items: [
+          { id: 'soup', emoji: '🍲', label: 'Warm Soup', x: 26, y: 58 },
+          { id: 'ice', emoji: '🧊', label: 'Cold Ice', x: 54, y: 56 },
+          { id: 'lamp', emoji: '🪔', label: 'Warm Lamp', x: 82, y: 58 }
+        ]
+      },
+      {
+        type: 'sequence',
+        leoMood: 'ask',
+        promptEn: 'Build the Montessori Pink Tower from Small, to Medium, to Large!',
+        promptVi: 'Xếp Tháp Hồng Montessori theo đúng thứ tự: Nhỏ (Small) ➔ Vừa (Medium) ➔ Lớn (Large)!',
+        order: ['small', 'medium', 'large'],
+        successEn: 'Perfect visual discrimination! Small, Medium, and Large blocks in harmony!',
+        successVi: 'Quan sát kích thước chuẩn xác! Nhỏ, Vừa và Lớn xếp thẳng hàng thật đẹp!',
+        items: [
+          { id: 'large', emoji: '🟥', label: 'Large', x: 80, y: 58 },
+          { id: 'small', emoji: '🔸', label: 'Small', x: 26, y: 58 },
+          { id: 'medium', emoji: '🟧', label: 'Medium', x: 53, y: 58 }
+        ]
+      },
+      {
+        type: 'story',
+        leoMood: 'celebrate',
+        props: [
+          { emoji: '🧸', x: 26, y: 56, size: 3.1, anim: 'bob' },
+          { emoji: '🌟', x: 54, y: 42, size: 3.6, anim: 'float' },
+          { emoji: '🧊', x: 80, y: 56, size: 3.1, anim: 'bob' }
+        ],
+        en: 'Your hands and eyes are sharp explorers! Great Montessori work!',
+        vi: 'Đôi bàn tay và đôi mắt của bé thật tinh anh! Hoàn thành xuất sắc bài học Giác quan!',
+        durationMs: 4200
+      }
+    ]
+  },
+  {
+    id: 'practical_life_room',
+    num: 'Tập 20',
+    level: 'Pre-A1',
+    host: 'lulu',
+    titleVi: 'Bé Tự Lập Góc Học Tập',
+    titleEn: 'Montessori Practical Life',
+    icon: '🧹',
+    duration: '2.5 phút • 3 thử thách',
+    theme: 'room',
+    color: '#059669',
+    bgSoft: '#D1FAE5',
+    scenes: [
+      {
+        type: 'story',
+        leoMood: 'wave',
+        props: [
+          { emoji: '🧹', x: 24, y: 58, size: 3.3, anim: 'bob' },
+          { emoji: '🪴', x: 54, y: 54, size: 3.5, anim: 'float' },
+          { emoji: '🧺', x: 80, y: 58, size: 3.2 }
+        ],
+        en: 'In Montessori Practical Life, we care for ourselves and our classroom!',
+        vi: 'Trong Thực hành Cuộc sống Montessori, chúng mình tự chăm sóc bản thân và giữ phòng học ngăn nắp!',
+        durationMs: 4400
+      },
+      {
+        type: 'classify',
+        leoMood: 'ask',
+        promptEn: 'Time to tidy up! Tap the TWO CLEANING TOOLS to put in our Tidy Basket!',
+        promptVi: 'Đến giờ dọn dẹp rồi! Chạm vào 2 DỤNG CỤ LÀM SẠCH để cất vào Giỏ Ngăn Nắp nhé!',
+        basketLabel: '🧺 Giỏ Dụng Cụ Làm Sạch',
+        targetIds: ['broom', 'sponge'],
+        successEn: 'So independent! The Broom and Sponge keep our table and floor sparkling clean!',
+        successVi: 'Tự lập giỏi quá! Chổi (Broom) và Miếng Bọt Biển (Sponge) giúp bàn và sàn nhà sạch bóng!',
+        items: [
+          { id: 'broom', emoji: '🧹', label: 'Broom', x: 20, y: 58 },
+          { id: 'cookie', emoji: '🍪', label: 'Cookie', x: 43, y: 58 },
+          { id: 'sponge', emoji: '🧽', label: 'Sponge', x: 66, y: 58 },
+          { id: 'balloon', emoji: '🎈', label: 'Balloon', x: 86, y: 54 }
+        ]
+      },
+      {
+        type: 'sequence',
+        leoMood: 'ask',
+        promptEn: 'Let us water our indoor plant! Tap Pour Water, Wipe Spill, then Put Away!',
+        promptVi: 'Thực hành chăm sóc cây theo 3 bước: Tưới nước (Pour) ➔ Lau khô (Wipe) ➔ Cất giáo cụ (Put Away)!',
+        order: ['pour', 'wipe', 'putaway'],
+        successEn: 'Wonderful order! Returning tools to the shelf helps everyone in the classroom!',
+        successVi: 'Chuẩn quy trình Montessori! Cất giáo cụ về kệ ngay ngắn sau khi dùng thật đáng khen!',
+        items: [
+          { id: 'putaway', emoji: '🧺', label: 'Put Away', x: 80, y: 58 },
+          { id: 'pour', emoji: '🚿', label: 'Pour Water', x: 26, y: 58 },
+          { id: 'wipe', emoji: '🧻', label: 'Wipe Dry', x: 53, y: 58 }
+        ]
+      },
+      {
+        type: 'dialogue',
+        leoMood: 'ask',
+        promptEn: 'Your friend is working quietly on a Montessori mat. How do you walk past?',
+        promptVi: 'Bạn đang tập trung làm việc trên thảm học. Bé sẽ đi qua và nói thế nào cho lịch sự?',
+        targetId: 'excuse',
+        successEn: 'Excuse me, may I walk by? Peaceful and respectful!',
+        successVi: 'Xin phép bạn cho tớ đi qua nhé! Thật nhẹ nhàng và tôn trọng không gian của bạn!',
+        options: [
+          { id: 'excuse', emoji: '🙏', en: 'Walk gently and say: Excuse me!', vi: 'Đi nhẹ nhàng vòng qua thảm: Xin phép bạn!' },
+          { id: 'step', emoji: '👟', en: 'Step right on the work mat!', vi: 'Giẫm thẳng lên thảm của bạn!' },
+          { id: 'yell', emoji: '📢', en: 'Shout loudly in their ear!', vi: 'Hét thật to bên tai bạn!' }
+        ]
+      },
+      {
+        type: 'story',
+        leoMood: 'celebrate',
+        props: [
+          { emoji: '🪴', x: 26, y: 56, size: 3.2, anim: 'bob' },
+          { emoji: '🏆', x: 54, y: 46, size: 3.6, anim: 'float' },
+          { emoji: '😊', x: 80, y: 56, size: 3.1, anim: 'bob' }
+        ],
+        en: 'I can do it myself! You are a responsible Montessori helper!',
+        vi: 'Con tự làm được! Bé đúng là một em bé Montessori tự lập và trách nhiệm!',
+        durationMs: 4200
+      }
+    ]
+  },
+  {
+    id: 'botany_garden',
+    num: 'Tập 21',
+    level: 'A1',
+    host: 'mimi',
+    titleVi: 'Vườn Thực Vật & Đời Sống Cây Xanh',
+    titleEn: 'Montessori Botany Garden',
+    icon: '🌻',
+    duration: '2.5 phút • 3 thử thách',
+    theme: 'park',
+    color: '#16A34A',
+    bgSoft: '#DCFCE7',
+    scenes: [
+      {
+        type: 'story',
+        leoMood: 'wave',
+        props: [
+          { emoji: '🌱', x: 24, y: 60, size: 3.1, anim: 'bob' },
+          { emoji: '🌻', x: 54, y: 52, size: 3.8, anim: 'float' },
+          { emoji: '🐝', x: 80, y: 36, size: 2.8, anim: 'float' }
+        ],
+        en: 'Welcome to our Botany Garden! Let us discover how plants grow and breathe!',
+        vi: 'Chào mừng đến Vườn Thực Vật Montessori! Cùng khám phá cấu tạo và vòng đời của cây xanh nhé!',
+        durationMs: 4300
+      },
+      {
+        type: 'sequence',
+        leoMood: 'ask',
+        promptEn: 'Trace the plant life cycle! Tap Seed, then Sprout, then Sunflower Blossom!',
+        promptVi: 'Sắp xếp Vòng Đời Cây Xanh: Hạt giống (Seed) ➔ Nảy mầm (Sprout) ➔ Nở hoa (Blossom)!',
+        order: ['seed', 'sprout', 'blossom'],
+        successEn: 'Amazing! A tiny seed sprouts roots and grows into a golden blossom!',
+        successVi: 'Kỳ diệu quá! Từ hạt giống nhỏ bé mọc mầm xanh rồi nở thành bông hoa hướng dương rực rỡ!',
+        items: [
+          { id: 'blossom', emoji: '🌻', label: 'Blossom', x: 80, y: 56 },
+          { id: 'seed', emoji: '🫘', label: 'Seed', x: 26, y: 60 },
+          { id: 'sprout', emoji: '🌱', label: 'Sprout', x: 53, y: 58 }
+        ]
+      },
+      {
+        type: 'classify',
+        leoMood: 'ask',
+        promptEn: 'Botany Puzzle! Tap the TWO PLANT PARTS to place on our Botany Chart!',
+        promptVi: 'Đố vui Thực vật học! Hãy chạm vào 2 BỘ PHẬN CỦA CÂY để gắn lên Bảng Thực Vật nhé!',
+        basketLabel: '🌿 Bảng Bộ Phận Cây Xanh',
+        targetIds: ['leaf', 'petal'],
+        successEn: 'Great botanist! Green Leaves make food from sunlight, and Petals attract bees!',
+        successVi: 'Nhà thực vật nhí siêu quá! Lá xanh (Leaf) quang hợp ánh nắng và Cánh hoa (Petal) thu hút ong!',
+        items: [
+          { id: 'leaf', emoji: '🍃', label: 'Green Leaf', x: 20, y: 56 },
+          { id: 'wheel', emoji: '🛞', label: 'Car Wheel', x: 43, y: 58 },
+          { id: 'petal', emoji: '🌸', label: 'Flower Petal', x: 66, y: 56 },
+          { id: 'helmet', emoji: '⛑️', label: 'Helmet', x: 86, y: 58 }
+        ]
+      },
+      {
+        type: 'count',
+        leoMood: 'ask',
+        promptEn: 'Pollinators at work! Tap to count all four busy Honeybees in the garden!',
+        promptVi: 'Các bạn ong đang thụ phấn cho hoa! Chạm đếm đủ 4 bạn Ong Mật (Honeybees) chăm chỉ nào!',
+        itemNoun: 'bees',
+        successEn: 'Buzz buzz! Four honeybees helping flowers turn into sweet fruits!',
+        successVi: 'Vo ve! 4 bạn ong mật giúp hoa kết thành những trái ngọt lành!',
+        items: [
+          { id: 'b1', emoji: '🐝', label: 'Bee', x: 22, y: 46 },
+          { id: 'b2', emoji: '🐝', label: 'Bee', x: 43, y: 56 },
+          { id: 'b3', emoji: '🐝', label: 'Bee', x: 64, y: 44 },
+          { id: 'b4', emoji: '🐝', label: 'Bee', x: 84, y: 54 }
+        ]
+      },
+      {
+        type: 'story',
+        leoMood: 'celebrate',
+        props: [
+          { emoji: '🌻', x: 24, y: 56, size: 3.3, anim: 'bob' },
+          { emoji: '🌳', x: 54, y: 50, size: 3.8, anim: 'float' },
+          { emoji: '🦋', x: 82, y: 42, size: 3.0, anim: 'float' }
+        ],
+        en: 'Nature is full of wonders! Thank you for caring for our Botany Garden!',
+        vi: 'Thiên nhiên thật diệu kỳ! Cảm ơn nhà thực vật học nhí đã chăm sóc khu vườn xanh!',
+        durationMs: 4200
+      }
+    ]
+  },
+  {
+    id: 'continents_globe',
+    num: 'Tập 22',
+    level: 'A2',
+    host: 'leo',
+    titleVi: 'Quả Địa Cầu & Châu Lục Montessori',
+    titleEn: 'Montessori Continents Globe',
+    icon: '🌍',
+    duration: '2.5 phút • 3 thử thách',
+    theme: 'city',
+    color: '#0284C7',
+    bgSoft: '#E0F2FE',
+    scenes: [
+      {
+        type: 'story',
+        leoMood: 'wave',
+        props: [
+          { emoji: '🌍', x: 52, y: 46, size: 4.0, anim: 'float' },
+          { emoji: '🧭', x: 24, y: 56, size: 3.1, anim: 'bob' },
+          { emoji: '🏔️', x: 80, y: 58, size: 3.2 }
+        ],
+        en: 'Spin the Montessori Continents Globe! Let us explore landforms and oceans!',
+        vi: 'Xoay Quả Địa Cầu Châu Lục Montessori nào! Cùng Leo khám phá các dạng địa hình và đại dương!',
+        durationMs: 4400
+      },
+      {
+        type: 'interact',
+        leoMood: 'ask',
+        promptEn: 'Which instrument always points North to guide explorers? Tap the Compass!',
+        promptVi: 'Dụng cụ nào luôn chỉ hướng Bắc giúp nhà thám hiểm định hướng? Chạm vào La Bàn (Compass)!',
+        targetId: 'compass',
+        successEn: 'North, South, East, West! The Compass guides our expedition!',
+        successVi: 'Đông, Tây, Nam, Bắc! Chiếc La Bàn (Compass) dẫn lối cho chuyến thám hiểm của chúng ta!',
+        items: [
+          { id: 'compass', emoji: '🧭', label: 'Compass', x: 26, y: 56 },
+          { id: 'toaster', emoji: '🍞', label: 'Toaster', x: 54, y: 58 },
+          { id: 'pillow', emoji: '🛏️', label: 'Pillow', x: 82, y: 58 }
+        ]
+      },
+      {
+        type: 'classify',
+        leoMood: 'ask',
+        promptEn: 'Geography Sorting! Tap the TWO WATER LANDFORMS to place on the Blue Ocean Tray!',
+        promptVi: 'Phân loại Địa lý! Chạm vào 2 THỦY VỰC (Vùng Nước) để đặt lên Khay Đại Dương Xanh nhé!',
+        basketLabel: '🌊 Khay Thủy Vực & Đại Dương',
+        targetIds: ['waterfall', 'ocean'],
+        successEn: 'Excellent geography skills! Waterfalls and Oceans shape our blue planet!',
+        successVi: 'Kiến thức địa lý xuất sắc! Thác Nước (Waterfall) và Đại Dương (Ocean) tạo nên hành tinh xanh!',
+        items: [
+          { id: 'waterfall', emoji: '💦', label: 'Waterfall', x: 20, y: 56 },
+          { id: 'desert', emoji: '🏜️', label: 'Dry Desert', x: 43, y: 58 },
+          { id: 'ocean', emoji: '🌊', label: 'Deep Ocean', x: 66, y: 56 },
+          { id: 'canyon', emoji: '🪨', label: 'Rock Canyon', x: 86, y: 58 }
+        ]
+      },
+      {
+        type: 'dialogue',
+        leoMood: 'ask',
+        promptEn: 'What is the difference between an Island and a Peninsula?',
+        promptVi: 'Sự khác biệt thú vị giữa Hòn Đảo (Island) và Bán Đảo (Peninsula) là gì nhỉ?',
+        targetId: 'island',
+        successEn: 'Spot on! An Island is completely surrounded by water on all sides!',
+        successVi: 'Chính xác! Hòn Đảo (Island) được bao quanh hoàn toàn bởi nước ở mọi phía!',
+        options: [
+          { id: 'island', emoji: '🏝️', en: 'An island is surrounded by water on all sides.', vi: 'Hòn đảo được nước bao quanh ở tất cả các phía.' },
+          { id: 'sky', emoji: '☁️', en: 'An island floats high in the clouds.', vi: 'Hòn đảo bay lơ lửng trên mây.' },
+          { id: 'sand', emoji: '🏜️', en: 'An island has zero water nearby.', vi: 'Hòn đảo không có chút nước nào xung quanh.' }
+        ]
+      },
+      {
+        type: 'story',
+        leoMood: 'celebrate',
+        props: [
+          { emoji: '🌍', x: 54, y: 46, size: 3.8, anim: 'float' },
+          { emoji: '🏝️', x: 24, y: 58, size: 3.1, anim: 'bob' },
+          { emoji: '🧭', x: 80, y: 56, size: 3.1, anim: 'bob' }
+        ],
+        en: 'From high mountains to deep oceans, you know our Earth inside out!',
+        vi: 'Từ đỉnh núi cao đến đại dương sâu thẳm, bạn đã nắm vững địa lý Trái Đất rồi!',
+        durationMs: 4200
+      }
+    ]
+  },
+  {
+    id: 'eco_food_chain',
+    num: 'Tập 23',
+    level: 'B1',
+    host: 'mimi',
+    titleVi: 'Chuỗi Thức Ăn & Cân Bằng Sinh Thái',
+    titleEn: 'Food Chain & Biodiversity',
+    icon: '🌿',
+    duration: '3 phút • 3 thử thách',
+    theme: 'eco',
+    color: '#0D9488',
+    bgSoft: '#CCFBF1',
+    scenes: [
+      {
+        type: 'story',
+        leoMood: 'wave',
+        props: [
+          { emoji: '☀️', x: 22, y: 32, size: 3.2, anim: 'float' },
+          { emoji: '🌿', x: 52, y: 56, size: 3.5, anim: 'bob' },
+          { emoji: '🦌', x: 80, y: 54, size: 3.4, anim: 'bob' }
+        ],
+        en: 'In Montessori Cosmic Education, every living organism is connected in an ecosystem!',
+        vi: 'Trong Giáo dục Vũ trụ Montessori, mọi sinh vật sống đều gắn kết chặt chẽ trong hệ sinh thái!',
+        durationMs: 4500
+      },
+      {
+        type: 'sequence',
+        leoMood: 'ask',
+        promptEn: 'Build the Food Chain energy flow! Tap Photosynthesis, Herbivore, then Decomposer!',
+        promptVi: 'Sắp xếp dòng năng lượng Sinh thái: Quang hợp (Thực vật) ➔ Động vật ăn cỏ ➔ Sinh vật phân hủy!',
+        order: ['plant', 'herbivore', 'decomposer'],
+        successEn: 'Complete ecological cycle! Plants produce energy, herbivores graze, and decomposers enrich the soil!',
+        successVi: 'Vòng tuần hoàn hoàn chỉnh! Cây quang hợp, động vật ăn cỏ hấp thụ và nấm phân hủy làm màu mỡ đất!',
+        items: [
+          { id: 'decomposer', emoji: '🍄', label: 'Decomposer', x: 80, y: 58 },
+          { id: 'plant', emoji: '🌿', label: 'Photosynthesis', x: 26, y: 58 },
+          { id: 'herbivore', emoji: '🦌', label: 'Herbivore', x: 53, y: 58 }
+        ]
+      },
+      {
+        type: 'classify',
+        leoMood: 'ask',
+        promptEn: 'Conservation Mission! Tap the TWO RENEWABLE ENERGY sources for our Green Grid!',
+        promptVi: 'Sứ mệnh Bảo tồn B1! Chạm vào 2 NGUỒN NĂNG LƯỢNG TÁI TẠO để đưa vào Lưới Điện Xanh!',
+        basketLabel: '⚡ Lưới Năng Lượng Tái Tạo',
+        targetIds: ['solar', 'wind'],
+        successEn: 'Sustainable choice! Solar panels and Wind turbines generate clean electricity without carbon emissions!',
+        successVi: 'Lựa chọn bền vững! Điện mặt trời (Solar) và Tua-bin gió (Wind) tạo điện sạch không phát thải!',
+        items: [
+          { id: 'solar', emoji: '☀️', label: 'Solar Energy', x: 20, y: 56 },
+          { id: 'coal', emoji: '🪨', label: 'Coal Smoke', x: 43, y: 58 },
+          { id: 'wind', emoji: '🌬️', label: 'Wind Turbine', x: 66, y: 56 },
+          { id: 'oil', emoji: '🛢️', label: 'Fossil Fuel', x: 86, y: 58 }
+        ]
+      },
+      {
+        type: 'dialogue',
+        leoMood: 'ask',
+        promptEn: 'Why is protecting biodiversity essential for the planet?',
+        promptVi: 'Vì sao bảo vệ đa dạng sinh học (Biodiversity) lại sống còn đối với hành tinh?',
+        targetId: 'balance',
+        successEn: 'Precisely! Diverse species keep ecosystems resilient and balanced!',
+        successVi: 'Chính xác! Đa dạng loài giúp hệ sinh thái vững vàng và cân bằng tự nhiên!',
+        options: [
+          { id: 'balance', emoji: '🌍', en: 'Because diverse species keep ecosystems resilient and balanced.', vi: 'Vì sự đa dạng loài giúp hệ sinh thái cân bằng và bền vững.' },
+          { id: 'one', emoji: '🐜', en: 'Because Earth only needs one single species.', vi: 'Vì Trái Đất chỉ cần duy nhất một loài sinh vật.' },
+          { id: 'none', emoji: '🚫', en: 'Because plants do not produce oxygen.', vi: 'Vì cây xanh không tạo ra khí ô-xy.' }
+        ]
+      },
+      {
+        type: 'story',
+        leoMood: 'celebrate',
+        props: [
+          { emoji: '🌿', x: 24, y: 56, size: 3.1, anim: 'bob' },
+          { emoji: '🌍', x: 54, y: 44, size: 3.8, anim: 'float' },
+          { emoji: '🐝', x: 82, y: 42, size: 3.0, anim: 'float' }
+        ],
+        en: 'You understand the web of life! Keep protecting our planet!',
+        vi: 'Bạn đã thấu hiểu mạng lưới sự sống kỳ diệu! Hãy luôn bảo vệ hành tinh xanh nhé!',
+        durationMs: 4300
+      }
+    ]
+  },
+  {
+    id: 'young_inventors',
+    num: 'Tập 24',
+    level: 'B2',
+    host: 'toby',
+    titleVi: 'Xưởng Phát Minh & Tư Duy Khoa Học',
+    titleEn: 'Inventors & Scientific Inquiry',
+    icon: '💡',
+    duration: '3 phút • 3 thử thách',
+    theme: 'future',
+    color: '#6366F1',
+    bgSoft: '#E0E7FF',
+    scenes: [
+      {
+        type: 'story',
+        leoMood: 'wave',
+        props: [
+          { emoji: '💡', x: 52, y: 38, size: 3.8, anim: 'float' },
+          { emoji: '⚙️', x: 24, y: 58, size: 3.3, anim: 'bob' },
+          { emoji: '📐', x: 80, y: 58, size: 3.2 }
+        ],
+        en: 'Welcome to the Inventors Workshop! Great breakthroughs start with curiosity and rigorous testing!',
+        vi: 'Chào mừng đến Xưởng Phát Minh B2! Mọi đột phá vĩ đại đều bắt đầu từ sự tò mò và thử nghiệm nghiêm túc!',
+        durationMs: 4600
+      },
+      {
+        type: 'sequence',
+        leoMood: 'ask',
+        promptEn: 'Follow the Scientific Method! Tap Hypothesis, Empirical Test, then Synthesis!',
+        promptVi: 'Thực hiện Phương Pháp Nghiên Cứu Khoa Học: Đặt giả thuyết ➔ Thử nghiệm thực chứng ➔ Tổng hợp kết luận!',
+        order: ['hypothesis', 'experiment', 'synthesis'],
+        successEn: 'Rigorous methodology! Testing hypotheses with real data leads to valid discoveries!',
+        successVi: 'Phương pháp chuẩn mực! Kiểm chứng giả thuyết bằng dữ liệu thực tế dẫn tới khám phá chính xác!',
+        items: [
+          { id: 'synthesis', emoji: '📊', label: 'Synthesis', x: 80, y: 58 },
+          { id: 'hypothesis', emoji: '💭', label: 'Hypothesis', x: 26, y: 58 },
+          { id: 'experiment', emoji: '🔬', label: 'Empirical Test', x: 53, y: 58 }
+        ]
+      },
+      {
+        type: 'classify',
+        leoMood: 'ask',
+        promptEn: 'Academic Integrity! Tap the TWO SCIENTIFIC MINDSET pillars for our Innovation Lab!',
+        promptVi: 'Tư duy học thuật B2! Chạm vào 2 PHẨM CHẤT KHOA HỌC để đưa vào Phòng Sáng Tạo!',
+        basketLabel: '🧠 Trụ Cột Tư Duy Khoa Học',
+        targetIds: ['objective', 'resilience'],
+        successEn: 'Outstanding! Objectivity and Resilience empower inventors to overcome failures!',
+        successVi: 'Xuất sắc! Tính khách quan (Objectivity) và Sự bền bỉ (Resilience) giúp nhà phát minh vượt qua thất bại!',
+        items: [
+          { id: 'objective', emoji: '⚖️', label: 'Objectivity', x: 20, y: 56 },
+          { id: 'prejudice', emoji: '🙈', label: 'Blind Bias', x: 43, y: 58 },
+          { id: 'resilience', emoji: '🛡️', label: 'Resilience', x: 66, y: 56 },
+          { id: 'rumor', emoji: '🗯️', label: 'Unverified Rumor', x: 86, y: 58 }
+        ]
+      },
+      {
+        type: 'dialogue',
+        leoMood: 'ask',
+        promptEn: 'When a prototype fails on the first test, how does a resilient engineer respond?',
+        promptVi: 'Khi nguyên mẫu thất bại ở lần thử đầu tiên, một kỹ sư bản lĩnh sẽ phản hồi thế nào?',
+        targetId: 'iterate',
+        successEn: 'That is the spirit of innovation! Analyze the flaw, refine the mechanism, and iterate!',
+        successVi: 'Đó chính là tinh thần sáng tạo! Phân tích nguyên nhân, tinh chỉnh cơ chế và thử nghiệm lại!',
+        options: [
+          { id: 'iterate', emoji: '⚙️', en: 'Analyze the flaw, refine the design, and test again.', vi: 'Phân tích lỗi, tinh chỉnh thiết kế và thử nghiệm lại.' },
+          { id: 'quit', emoji: '🏳️', en: 'Abandon science forever after one mistake.', vi: 'Từ bỏ khoa học mãi mãi chỉ sau một lần lỗi.' },
+          { id: 'hide', emoji: '🗑️', en: 'Hide the data and pretend it worked.', vi: 'Giấu dữ liệu đi và giả vờ như đã thành công.' }
+        ]
+      },
+      {
+        type: 'story',
+        leoMood: 'celebrate',
+        props: [
+          { emoji: '💡', x: 54, y: 42, size: 3.8, anim: 'float' },
+          { emoji: '🏆', x: 24, y: 56, size: 3.2, anim: 'bob' },
+          { emoji: '🚀', x: 82, y: 48, size: 3.3, anim: 'float' }
+        ],
+        en: 'Brilliant work, Young Inventor! Your curiosity and critical thinking will change the world!',
+        vi: 'Tuyệt vời lắm, Nhà Phát Minh Trẻ! Sự tò mò và tư duy phản biện của bạn sẽ thay đổi thế giới!',
+        durationMs: 4400
+      }
+    ]
   }
 ];
+

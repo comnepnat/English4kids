@@ -1,6 +1,6 @@
 /**
- * English4Kids - Core Flashcards & Interactive Audio Learning Engine (Age 6)
- * Vocabulary data (20 Topics x 50 Words = 1,000 Words) is loaded from vocab-data.js (TOPICS_DATA).
+ * English4Kids - Core Flashcards, Montessori 3-Period Lesson & Interactive Audio Learning Engine
+ * Vocabulary data (50 Topics x 50 Words = 2,500 Words) is loaded from vocab-data.js (TOPICS_DATA).
  */
 const LESSON_SIZE = 10;
 
@@ -10,11 +10,11 @@ const LESSON_SIZE = 10;
 const STORAGE_KEY = 'english4kids_v1_progress';
 
 const CEFR_LEVELS = [
-  { id: 'Pre-A1', icon: '🌱', name: 'Pre-A1', subtitle: 'Khởi đầu (6 tuổi)', color: '#22C55E', bg: '#DCFCE7', desc: '400 từ vựng gần gũi, chào hỏi cơ bản & bảng chữ cái ABC.' },
-  { id: 'A1', icon: '🌿', name: 'A1', subtitle: 'Sơ cấp (Starters)', color: '#0EA5E9', bg: '#E0F2FE', desc: '400 từ giao tiếp hàng ngày, nhà cửa, đồ ăn, thể thao & âm nhạc.' },
-  { id: 'A2', icon: '🌳', name: 'A2', subtitle: 'Cơ bản (Movers/Flyers)', color: '#F59E0B', bg: '#FEF3C7', desc: '400 từ mô tả, mua sắm, nghề nghiệp, phố thị & vũ trụ.' },
-  { id: 'B1', icon: '🚀', name: 'B1', subtitle: 'Trung cấp (PET)', color: '#3B82F6', bg: '#DBEAFE', desc: '400 từ khoa học, sức khỏe, nghệ thuật, tài chính & lịch sử.' },
-  { id: 'B2', icon: '🏆', name: 'B2', subtitle: 'Trung cao cấp (FCE)', color: '#8B5CF6', bg: '#EDE9FE', desc: '400 từ tư duy phân tích, tâm lý, kinh tế, thiên văn & học thuật.' }
+  { id: 'Pre-A1', icon: '🌱', name: 'Pre-A1', subtitle: 'Khởi đầu (4–6 tuổi)', color: '#22C55E', bg: '#DCFCE7', desc: '500 từ vựng gần gũi, giác quan & thực hành cuộc sống Montessori.' },
+  { id: 'A1', icon: '🌿', name: 'A1', subtitle: 'Sơ cấp (Starters)', color: '#0EA5E9', bg: '#E0F2FE', desc: '500 từ giao tiếp hàng ngày, thực vật học, thủ công, thể thao & âm nhạc.' },
+  { id: 'A2', icon: '🌳', name: 'A2', subtitle: 'Cơ bản (Movers/Flyers)', color: '#F59E0B', bg: '#FEF3C7', desc: '500 từ mô tả, địa lý châu lục, toán hình học, nghề nghiệp & vũ trụ.' },
+  { id: 'B1', icon: '🚀', name: 'B1', subtitle: 'Trung cấp (PET)', color: '#3B82F6', bg: '#DBEAFE', desc: '500 từ sinh thái học, phát minh kỹ thuật, khoa học, sức khỏe & lịch sử.' },
+  { id: 'B2', icon: '🏆', name: 'B2', subtitle: 'Trung cao cấp (FCE)', color: '#8B5CF6', bg: '#EDE9FE', desc: '500 từ tư duy phản biện, văn học hùng biện, lãnh đạo toàn cầu & học thuật.' }
 ];
 
 let _cachedAllCards = null;
@@ -67,7 +67,13 @@ const state = {
   currentTopicId: 'animals',
   currentCardIndex: 0,
   isFlipped: false,
-  activeMode: 'learn', // 'learn' | 'quiz'
+  activeMode: 'learn', // 'learn' | 'montessori' | 'quiz'
+  montessori: {
+    triad: [],
+    period: 1, // 1 = Naming ("This is..."), 2 = Recognition ("Show me..."), 3 = Recall ("What is this?")
+    touchedSet: new Set(),
+    stepIndex: 0
+  },
   quiz: {
     pool: [],
     currentIndex: 0,
@@ -346,7 +352,7 @@ function updateHeaderAndMissionUI() {
     msMetric.textContent = `${ msSum.passedTotal } / ${ msSum.totalMilestones } mốc`;
   }
 
-  const totalEpisodes = typeof window.getStoriesTotalCount === 'function' ? window.getStoriesTotalCount() : 18;
+  const totalEpisodes = typeof window.getStoriesTotalCount === 'function' ? window.getStoriesTotalCount() : 24;
   const videosMetric = document.getElementById('metric-videos-val');
   if (videosMetric) videosMetric.textContent = `${ state.completedEpisodes.size }/${ totalEpisodes } • ${ state.learnedLetters.size }/26`;
 
@@ -383,7 +389,7 @@ function renderRecentActivityCard() {
     titleEl.textContent = `${ starter.titleVi } (${ starter.level })`;
     subEl.textContent = prof && ag
       ? `Bài gợi ý cho ${ prof.name } (${ ag.label } • ${ ag.levels.join('–') })!`
-      : 'Chạm nút bên dưới để bắt đầu hành trình 2.000 từ cùng Sư Tử Leo!';
+      : 'Chạm nút bên dưới để bắt đầu hành trình 2.500 từ cùng Sư Tử Leo!';
     btnEl.textContent = '▶ Bắt đầu học ngay ➔';
     return;
   }
@@ -553,37 +559,320 @@ function openTopicDeck(topicId, initialMode = 'learn', startIndex = 0) {
 function switchMode(mode) {
   state.activeMode = mode;
   const tabLearn = document.getElementById('tab-mode-learn');
+  const tabMontessori = document.getElementById('tab-mode-montessori');
   const tabQuiz = document.getElementById('tab-mode-quiz');
   const subviewLearn = document.getElementById('subview-learn');
+  const subviewMontessori = document.getElementById('subview-montessori');
   const subviewQuiz = document.getElementById('subview-quiz');
   const dotsBar = document.getElementById('card-dots-bar');
   const lessonBar = document.getElementById('lesson-sets-bar');
 
+  [tabLearn, tabMontessori, tabQuiz].forEach(t => {
+    if (!t) return;
+    t.classList.remove('active');
+    t.setAttribute('aria-selected', 'false');
+  });
+
   if (mode === 'learn') {
     tabLearn.classList.add('active');
     tabLearn.setAttribute('aria-selected', 'true');
-    tabQuiz.classList.remove('active');
-    tabQuiz.setAttribute('aria-selected', 'false');
 
     subviewLearn.classList.remove('hidden');
+    if (subviewMontessori) subviewMontessori.classList.add('hidden');
+    subviewQuiz.classList.add('hidden');
     dotsBar.classList.remove('hidden');
     if (lessonBar) lessonBar.classList.remove('hidden');
-    subviewQuiz.classList.add('hidden');
 
     renderCurrentFlashcard(true);
+  } else if (mode === 'montessori') {
+    if (tabMontessori) {
+      tabMontessori.classList.add('active');
+      tabMontessori.setAttribute('aria-selected', 'true');
+    }
+
+    subviewLearn.classList.add('hidden');
+    if (subviewMontessori) subviewMontessori.classList.remove('hidden');
+    subviewQuiz.classList.add('hidden');
+    dotsBar.classList.add('hidden');
+    if (lessonBar) lessonBar.classList.remove('hidden');
+
+    startMontessoriLesson();
   } else {
     tabQuiz.classList.add('active');
     tabQuiz.setAttribute('aria-selected', 'true');
-    tabLearn.classList.remove('active');
-    tabLearn.setAttribute('aria-selected', 'false');
 
     subviewLearn.classList.add('hidden');
+    if (subviewMontessori) subviewMontessori.classList.add('hidden');
+    subviewQuiz.classList.remove('hidden');
     dotsBar.classList.add('hidden');
     if (lessonBar) lessonBar.classList.add('hidden');
-    subviewQuiz.classList.remove('hidden');
 
     startTopicQuiz(getCurrentTopic().cards);
   }
+}
+
+/* ==========================================================================
+   Montessori 3-Period Lesson Mode (Bài Học 3 Bước Montessori)
+   Period 1: Naming ("This is...")
+   Period 2: Recognition & Action ("Show me...")
+   Period 3: Recall ("What is this?")
+   ========================================================================== */
+function startMontessoriLesson(customStartIdx = null) {
+  const topic = getCurrentTopic();
+  const total = topic.cards.length;
+  if (typeof customStartIdx === 'number') {
+    state.currentCardIndex = customStartIdx % total;
+  }
+  const baseIdx = state.currentCardIndex;
+  const triad = [
+    topic.cards[baseIdx % total],
+    topic.cards[(baseIdx + 1) % total],
+    topic.cards[(baseIdx + 2) % total]
+  ];
+
+  state.montessori = {
+    triad,
+    period: 1,
+    touchedSet: new Set(),
+    stepIndex: 0,
+    orderP2: shuffleArray([0, 1, 2]),
+    orderP3: shuffleArray([0, 1, 2])
+  };
+
+  renderCardDots();
+  renderMontessoriPeriod();
+}
+
+function renderMontessoriPeriod() {
+  const box = document.getElementById('montessori-stage-box');
+  if (!box) return;
+  const m = state.montessori;
+  const triad = m.triad;
+
+  const stepPillsHTML = `
+    <div class="mont-steps-header">
+      <span class="mont-step-pill ${ m.period === 1 ? 'active' : m.period > 1 ? 'done' : '' }">1️⃣ Bước 1: Giới thiệu (This is...)</span>
+      <span class="mont-step-pill ${ m.period === 2 ? 'active' : m.period > 2 ? 'done' : '' }">2️⃣ Bước 2: Nhận diện (Show me...)</span>
+      <span class="mont-step-pill ${ m.period === 3 ? 'active' : m.period > 3 ? 'done' : '' }">3️⃣ Bước 3: Phản xạ (What is this?)</span>
+    </div>
+  `;
+
+  if (m.period === 1) {
+    box.innerHTML = `
+      ${ stepPillsHTML }
+      <div class="mont-instruction-banner">
+        <strong>🌿 Bước 1 — Làm quen đa giác quan (Naming):</strong>
+        <p>Bé hãy chạm lần lượt vào cả 3 thẻ trên thảm Montessori để nghe <em>"This is..."</em> và quan sát hình ảnh nhé!</p>
+      </div>
+      <div class="mont-triad-grid" id="mont-triad-grid"></div>
+      <div class="mont-footer-bar">
+        <span class="mont-progress-note" id="mont-p1-note">Đã chạm cảm nhận: ${ m.touchedSet.size } / 3 thẻ</span>
+        <button type="button" class="btn-action-mastered" id="btn-mont-to-p2">Sang Bước 2: Nhận diện ➔</button>
+      </div>
+    `;
+
+    const grid = document.getElementById('mont-triad-grid');
+    triad.forEach((card, idx) => {
+      const touched = m.touchedSet.has(card.id);
+      const cardEl = document.createElement('button');
+      cardEl.type = 'button';
+      cardEl.className = `mont-card-item ${ touched ? 'is-touched' : '' }`;
+      cardEl.dataset.cardId = card.id;
+      cardEl.innerHTML = `
+        <span class="mont-card-status">${ touched ? '✅ Đã nghe' : '👆 Chạm nghe' }</span>
+        <div class="mont-card-pic">${ buildCardIllustrationHTML(card) }</div>
+        <h3 class="mont-card-en">${ card.en }</h3>
+        <span class="mont-card-ipa">${ card.phonetic || '' }</span>
+        <span class="mont-card-vi">${ card.vi }</span>
+      `;
+      cardEl.addEventListener('click', () => {
+        m.touchedSet.add(card.id);
+        cardEl.classList.add('is-touched');
+        cardEl.querySelector('.mont-card-status').textContent = '✅ Đã nghe';
+        const note = document.getElementById('mont-p1-note');
+        if (note) note.textContent = `Đã chạm cảm nhận: ${ m.touchedSet.size } / 3 thẻ`;
+        playSoundEffect('pop');
+        speakEnglish(`This is ${ card.en }. ${ card.en }!`, 0.88);
+      });
+      grid.appendChild(cardEl);
+    });
+
+    document.getElementById('btn-mont-to-p2').addEventListener('click', () => {
+      playSoundEffect('pop');
+      m.period = 2;
+      m.stepIndex = 0;
+      renderMontessoriPeriod();
+    });
+
+    // Auto-speak the first card gently
+    if (m.touchedSet.size === 0 && triad[0]) {
+      setTimeout(() => speakEnglish(`This is ${ triad[0].en }.`, 0.88), 180);
+    }
+    return;
+  }
+
+  if (m.period === 2) {
+    const targetIdx = m.orderP2[m.stepIndex];
+    const targetCard = triad[targetIdx];
+    const promptEn = `Show me ${ targetCard.en }!`;
+
+    box.innerHTML = `
+      ${ stepPillsHTML }
+      <div class="mont-instruction-banner is-p2">
+        <div class="mont-prompt-row">
+          <div>
+            <strong>🎯 Bước 2 — Nhận diện &amp; Thao tác (${ m.stepIndex + 1 } / 3):</strong>
+            <p class="mont-big-prompt">"${ promptEn }" <span>(Hãy chỉ vào thẻ <strong>${ targetCard.vi }</strong>)</span></p>
+          </div>
+          <button type="button" class="btn-speak-primary" id="btn-mont-p2-replay">🔊 Nghe lại</button>
+        </div>
+      </div>
+      <div class="mont-triad-grid" id="mont-triad-grid"></div>
+    `;
+
+    document.getElementById('btn-mont-p2-replay').addEventListener('click', () => {
+      speakEnglish(promptEn, 0.88);
+    });
+
+    const grid = document.getElementById('mont-triad-grid');
+    shuffleArray(triad).forEach(card => {
+      const cardEl = document.createElement('button');
+      cardEl.type = 'button';
+      cardEl.className = 'mont-card-item';
+      cardEl.dataset.cardId = card.id;
+      cardEl.innerHTML = `
+        <div class="mont-card-pic">${ buildCardIllustrationHTML(card) }</div>
+        <h3 class="mont-card-en">${ card.en }</h3>
+        <span class="mont-card-ipa">${ card.phonetic || '' }</span>
+      `;
+      cardEl.addEventListener('click', () => {
+        if (card.id === targetCard.id) {
+          cardEl.classList.add('correct');
+          playSoundEffect('correct');
+          speakEnglish(`Yes! That is ${ targetCard.en }!`, 0.92);
+          setTimeout(() => {
+            if (m.stepIndex < 2) {
+              m.stepIndex += 1;
+              renderMontessoriPeriod();
+            } else {
+              m.period = 3;
+              m.stepIndex = 0;
+              renderMontessoriPeriod();
+            }
+          }, 700);
+        } else {
+          cardEl.classList.remove('wrong');
+          void cardEl.offsetWidth;
+          cardEl.classList.add('wrong');
+          playSoundEffect('wrong');
+          speakEnglish(promptEn, 0.86);
+        }
+      });
+      grid.appendChild(cardEl);
+    });
+
+    setTimeout(() => speakEnglish(promptEn, 0.88), 160);
+    return;
+  }
+
+  if (m.period === 3) {
+    const targetIdx = m.orderP3[m.stepIndex];
+    const targetCard = triad[targetIdx];
+
+    box.innerHTML = `
+      ${ stepPillsHTML }
+      <div class="mont-instruction-banner is-p3">
+        <strong>🗣️ Bước 3 — Phản xạ &amp; Gọi tên (${ m.stepIndex + 1 } / 3): "What is this?"</strong>
+        <p>Quan sát hình ảnh và nghĩa Tiếng Việt, đọc to từ tiếng Anh rồi chạm vào đáp án đúng nhé!</p>
+      </div>
+      <div class="mont-p3-spotlight">
+        <div class="mont-card-pic">${ buildCardIllustrationHTML(targetCard) }</div>
+        <div class="mont-p3-meta">
+          <span class="mont-p3-question">❓ What is this? (Đây là gì?)</span>
+          <strong class="mont-p3-vi">${ targetCard.vi }</strong>
+          <button type="button" class="btn-speak-slow" id="btn-mont-p3-hint">🔊 Nghe gợi ý phát âm</button>
+        </div>
+      </div>
+      <div class="mont-p3-choices" id="mont-p3-choices"></div>
+    `;
+
+    document.getElementById('btn-mont-p3-hint').addEventListener('click', () => {
+      speakEnglish(targetCard.en, 0.85);
+    });
+
+    const choicesBox = document.getElementById('mont-p3-choices');
+    shuffleArray(triad).forEach(opt => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'mont-p3-choice-btn';
+      btn.dataset.cardId = opt.id;
+      btn.innerHTML = `<strong>${ opt.en }</strong><span>${ opt.phonetic || '' }</span>`;
+      btn.addEventListener('click', () => {
+        if (opt.id === targetCard.id) {
+          btn.classList.add('correct');
+          playSoundEffect('correct');
+          speakEnglish(`${ targetCard.en }! ${ targetCard.exampleEn }`, 0.92);
+          setTimeout(() => {
+            if (m.stepIndex < 2) {
+              m.stepIndex += 1;
+              renderMontessoriPeriod();
+            } else {
+              m.period = 4;
+              // Award +3 stars and mark all 3 cards learned
+              triad.forEach(c => {
+                state.learnedIds.add(c.id);
+                if (typeof window.enrollCardInSrs === 'function') window.enrollCardInSrs(c.id);
+              });
+              state.stars += 3;
+              saveProgress();
+              updateHeaderAndMissionUI();
+              playSoundEffect('star');
+              launchConfettiBurst();
+              renderMontessoriPeriod();
+            }
+          }, 800);
+        } else {
+          btn.classList.add('wrong');
+          btn.disabled = true;
+          playSoundEffect('wrong');
+          speakEnglish('What is this? Try again!', 0.88);
+        }
+      });
+      choicesBox.appendChild(btn);
+    });
+
+    setTimeout(() => speakEnglish('What is this?', 0.90), 160);
+    return;
+  }
+
+  // Period 4: Triad Completed Screen
+  box.innerHTML = `
+    ${ stepPillsHTML }
+    <div class="mont-complete-card">
+      <div class="mont-complete-emoji">🌿🏆⭐</div>
+      <h3>Hoàn Thành Bài Học 3 Bước Montessori! (+3 Sao vàng)</h3>
+      <p>Bé đã nắm vững cả 3 từ qua quy trình: <strong>Giới thiệu ➔ Nhận diện ➔ Phản xạ gọi tên</strong>:</p>
+      <div class="mont-summary-chips">
+        ${ triad.map(c => `<button type="button" class="mont-sum-chip" data-en="${ c.en }"><span>${ c.emoji }</span><strong>${ c.en }</strong><em>${ c.vi }</em><span>🔊</span></button>`).join('') }
+      </div>
+      <div class="mont-complete-actions">
+        <button type="button" class="btn-action-flip" id="btn-mont-replay-triad">🔄 Học lại 3 từ này</button>
+        <button type="button" class="btn-action-mastered" id="btn-mont-next-triad">🌿 Học nhóm 3 từ tiếp theo ➔</button>
+      </div>
+    </div>
+  `;
+
+  box.querySelectorAll('.mont-sum-chip').forEach(chip => {
+    chip.addEventListener('click', () => speakEnglish(chip.dataset.en, 0.88));
+  });
+  document.getElementById('btn-mont-replay-triad').addEventListener('click', () => {
+    playSoundEffect('pop');
+    startMontessoriLesson(state.currentCardIndex);
+  });
+  document.getElementById('btn-mont-next-triad').addEventListener('click', () => {
+    playSoundEffect('pop');
+    startMontessoriLesson(state.currentCardIndex + 3);
+  });
 }
 
 function renderCardDots() {
@@ -609,7 +898,11 @@ function renderCardDots() {
           playSoundEffect('pop');
           state.currentCardIndex = start;
           state.isFlipped = false;
-          renderCurrentFlashcard(true);
+          if (state.activeMode === 'montessori') {
+            startMontessoriLesson(start);
+          } else {
+            renderCurrentFlashcard(true);
+          }
         });
         lessonBar.appendChild(pill);
       }
@@ -1061,6 +1354,14 @@ function bindEvents() {
     playSoundEffect('pop');
     switchMode('learn');
   });
+
+  const tabMont = document.getElementById('tab-mode-montessori');
+  if (tabMont) {
+    tabMont.addEventListener('click', () => {
+      playSoundEffect('pop');
+      switchMode('montessori');
+    });
+  }
 
   document.getElementById('tab-mode-quiz').addEventListener('click', () => {
     playSoundEffect('pop');
