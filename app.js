@@ -86,6 +86,11 @@ const state = {
     results: {},
     placement: null
   },
+  // Leo's daily quest: days completed (garden flowers) and stickers already celebrated
+  quest: {
+    days: [],
+    stickersSeen: []
+  },
   currentTopicId: 'animals',
   currentCardIndex: 0,
   isFlipped: false,
@@ -133,6 +138,7 @@ function resetStateInMemory() {
     }
   };
   state.milestones = { results: {}, placement: null };
+  state.quest = { days: [], stickersSeen: [] };
 }
 
 function loadProgress() {
@@ -169,6 +175,12 @@ function loadProgress() {
         placement: parsed.milestones.placement || null
       };
     }
+    if (parsed.quest && typeof parsed.quest === 'object') {
+      state.quest = {
+        days: Array.isArray(parsed.quest.days) ? parsed.quest.days.filter(d => typeof d === 'string') : [],
+        stickersSeen: Array.isArray(parsed.quest.stickersSeen) ? parsed.quest.stickersSeen.filter(d => typeof d === 'string') : []
+      };
+    }
   } catch (err) {
     console.warn('Could not read saved progress:', err);
   }
@@ -184,7 +196,8 @@ function saveProgress() {
       lastActivity: state.lastActivity,
       soundEnabled: state.soundEnabled,
       srs: state.srs,
-      milestones: state.milestones
+      milestones: state.milestones,
+      quest: state.quest
     };
     localStorage.setItem(getProgressStorageKey(), JSON.stringify(payload));
   } catch (err) {
@@ -201,6 +214,7 @@ window.reloadActiveProfileState = function () {
   if (typeof window.refreshStoriesUI === 'function') window.refreshStoriesUI();
   if (typeof window.refreshSrsUI === 'function') window.refreshSrsUI();
   if (typeof window.refreshMilestonesUI === 'function') window.refreshMilestonesUI();
+  if (typeof window.refreshQuestUI === 'function') window.refreshQuestUI();
 };
 
 window.recordActivity = function (activity) {
@@ -476,6 +490,7 @@ function openView(viewId) {
   const target = document.getElementById(viewId);
   if (target) target.classList.add('active');
   window.scrollTo({ top: 0, behavior: 'smooth' });
+  if (viewId === 'view-home' && typeof window.refreshQuestUI === 'function') window.refreshQuestUI();
 }
 
 function openVocabHub(cefrLevel = null) {
@@ -1082,9 +1097,33 @@ function flipFlashcard() {
   flashcard3d.classList.toggle('is-flipped', state.isFlipped);
 }
 
+// Lessons (10 cards) that already had their quick check in this visit
+const quickCheckedLessons = new Set();
+
 function navigateCard(delta) {
   const topic = getCurrentTopic();
   const count = topic.cards.length;
+
+  // Finishing a 10-card lesson: a 1-minute quick check before moving on
+  const lessonIdx = Math.floor(state.currentCardIndex / LESSON_SIZE);
+  const lessonEnd = Math.min((lessonIdx + 1) * LESSON_SIZE, count) - 1;
+  const lessonKey = `${ topic.id }:${ lessonIdx }`;
+  if (delta === 1 && state.activeMode === 'learn' && state.currentCardIndex === lessonEnd &&
+      !quickCheckedLessons.has(lessonKey) && typeof window.startQuickCheck === 'function') {
+    quickCheckedLessons.add(lessonKey);
+    const lessonIds = topic.cards.slice(lessonIdx * LESSON_SIZE, lessonEnd + 1).map(c => c.id);
+    playSoundEffect('pop');
+    window.startQuickCheck(lessonIds, choice => {
+      if (choice === 'next') {
+        state.currentCardIndex = (lessonEnd + 1) % count;
+      }
+      state.isFlipped = false;
+      openView('view-flashcard');
+      renderCurrentFlashcard(choice === 'next');
+    });
+    return;
+  }
+
   state.currentCardIndex = (state.currentCardIndex + delta + count) % count;
   state.isFlipped = false;
   playSoundEffect('pop');

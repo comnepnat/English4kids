@@ -295,6 +295,38 @@
     };
   };
 
+  /**
+   * Record an answer from a game-style review (Leo's daily quest, quick checks):
+   * applies the SM-2 schedule, daily stats and streak. Stars/sounds are left to the caller.
+   * rating: 1 = wrong, 2 = right after a mistake, 3 = right first time.
+   */
+  window.srsRecordAnswer = function (cardId, rating) {
+    const srs = ensureSrsState();
+    const prev = srs.cards[cardId];
+    const wasNew = !prev || prev.state === 'new';
+    const scheduled = computeNextSchedule(getCardRecord(cardId), rating);
+    srs.cards[cardId] = scheduled.record;
+
+    const today = todayStr();
+    if (srs.stats.lastStudyDate !== today) {
+      const prevDate = srs.stats.lastStudyDate ? new Date(`${ srs.stats.lastStudyDate }T00:00:00`) : null;
+      const curDate = new Date(`${ today }T00:00:00`);
+      const diff = prevDate ? Math.round((curDate - prevDate) / DAY_MS) : 0;
+      srs.stats.streakDays = diff === 1 ? (srs.stats.streakDays || 0) + 1 : 1;
+      srs.stats.lastStudyDate = today;
+    }
+    srs.stats.reviewedToday += 1;
+    srs.stats.totalReviews += 1;
+    if (wasNew) srs.stats.newToday += 1;
+    if (rating >= 3) state.learnedIds.add(cardId);
+    return scheduled.record;
+  };
+
+  window.getSrsRecord = function (cardId) {
+    ensureSrsState();
+    return state.srs.cards[cardId] || null;
+  };
+
   window.enrollCardInSrs = function (cardId) {
     const srs = ensureSrsState();
     if (!srs.cards[cardId]) {
