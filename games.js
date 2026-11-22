@@ -192,12 +192,24 @@
     $('game-title-text').textContent = meta.title;
     $('game-instruction').textContent = meta.instruction;
 
+    if (typeof window.recordActivity === 'function') {
+      window.recordActivity({
+        kind: 'game',
+        gameName: name,
+        icon: meta.icon,
+        title: meta.title,
+        subtitle: 'Khu trò chơi Mini-games • Chơi tiếp để nhận sao!'
+      });
+    }
+
     ['memory', 'match', 'balloon'].forEach(n => {
       $(`game-${ n }`).classList.toggle('hidden', n !== name);
     });
 
     startCurrent();
   }
+
+  window.openMiniGame = openGame;
 
   function startCurrent() {
     stopAll();
@@ -211,8 +223,7 @@
     stopAll();
     hideResult();
     document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
-    $('view-home').classList.add('active');
-    renderTopicsGrid();
+    $('view-games-hub').classList.add('active');
   }
 
   /* ------------------------------------------------------------------

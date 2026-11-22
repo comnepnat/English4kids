@@ -55,49 +55,141 @@
 
     <!-- Main Dynamic Views -->
     <main class="main-stage">
-      <!-- VIEW 1: HOME / TOPIC SELECTION -->
+      <!-- VIEW 1: CLEAN TABLET-FIRST HOME DASHBOARD -->
       <section class="view-section active" id="view-home" aria-labelledby="home-heading">
-        <div class="hero-welcome-card">
-          <div class="mascot-speech-avatar">
-            <div class="leo-avatar-circle">🦁</div>
-            <div class="speech-bubble">
-              <h1 id="home-heading">Chào bé yêu! Hôm nay mình học chủ đề nào nhỉ? 🌟</h1>
-              <p>Chạm vào một chủ đề bên dưới để mở thẻ hình ảnh và nghe phát âm tiếng Anh chuẩn nhé!</p>
+        <!-- Top Dashboard Row: Continue Learning + Learning Progress -->
+        <div class="home-dashboard-grid">
+          <!-- Card A: Bài mới nhất vừa học (Continue Learning) -->
+          <div class="dash-card recent-card" id="recent-activity-card">
+            <div class="dash-card-head">
+              <span class="dash-tag recent-tag">▶️ Bài mới nhất vừa học</span>
+              <span class="cefr-pill-mini" id="current-cefr-badge">🌱 Trình độ: Pre-A1</span>
             </div>
+            <div class="recent-body">
+              <div class="recent-icon-box" id="recent-icon">🦁</div>
+              <div class="recent-info">
+                <h1 id="home-heading" class="recent-title">Động Vật &amp; Thú Cưng</h1>
+                <p id="recent-subtitle">Bắt đầu hành trình chinh phục từ Pre-A1 tới B2 cùng Sư Tử Leo!</p>
+              </div>
+            </div>
+            <button class="btn-continue-primary" id="btn-continue-recent" type="button">
+              ▶ Tiếp tục học ngay ➔
+            </button>
           </div>
-          <div class="daily-mission-box">
-            <div class="mission-header">
-              <span class="mission-title">🎯 Nhiệm vụ hôm nay</span>
-              <span class="mission-progress-text" id="daily-mission-text">0 / 5 từ</span>
+
+          <!-- Card B: Tiến trình học tập (Progress Overview) -->
+          <div class="dash-card progress-card" id="progress-overview-card">
+            <div class="dash-card-head">
+              <span class="dash-tag progress-tag">📊 Tiến trình học tập</span>
+              <span class="mission-progress-text" id="daily-mission-text">0 / 5 từ hôm nay</span>
             </div>
             <div class="progress-bar-track">
               <div class="progress-bar-fill" id="daily-mission-bar" style="width: 0%"></div>
             </div>
-            <p class="mission-sub">Học thuộc 5 từ mới để nhận Huy Hiệu Siêu Sao!</p>
+            <div class="progress-metrics-row">
+              <div class="metric-chip">
+                <span class="m-icon">📚</span>
+                <div>
+                  <strong id="metric-words-val">0 / 1.240</strong>
+                  <span>Từ vựng</span>
+                </div>
+              </div>
+              <div class="metric-chip">
+                <span class="m-icon">🔤</span>
+                <div>
+                  <strong id="phonics-home-progress">0 / 26</strong>
+                  <span>Chữ ABC</span>
+                </div>
+              </div>
+              <div class="metric-chip">
+                <span class="m-icon">🎬</span>
+                <div>
+                  <strong id="metric-videos-val">0 / 6</strong>
+                  <span>Tập phim</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
-        <!-- Interactive Animated Video Theatre (Khan Academy Kids Style) -->
-        <div class="section-title-bar stories-title-bar">
-          <h2>🎬 Phim Hoạt Hình Tương Tác <span class="count-chip pink-chip">6 Tập • Kiểu Khan Kids</span></h2>
+        <!-- 4 Main Content Hubs (Clean Outside Navigation) -->
+        <div class="section-title-bar compact-bar">
+          <h2>🌟 Khám Phá Nội Dung Chính</h2>
         </div>
-        <div class="stories-home-grid" id="stories-home-grid">
-          <!-- Populated dynamically by stories.js -->
-        </div>
+        <div class="main-hubs-grid" id="main-hubs-grid">
+          <button class="main-hub-card" id="hub-btn-vocab" type="button" style="--hub-accent:#FF7A00; --hub-border:#FFD24C; --hub-shadow:#D98A00; --hub-soft:#FFF7E0;">
+            <div class="hub-icon-wrap">📚</div>
+            <h3>Kho Từ Vựng</h3>
+            <span class="hub-sub">28 Chủ đề • 1.240 Từ</span>
+            <p>Thẻ 3D phát âm chuẩn từ Pre-A1 đến B2</p>
+            <span class="hub-cta">Mở kho từ ➔</span>
+          </button>
 
-        <!-- Topic Grid -->
-        <div class="section-title-bar topics-title-bar">
-          <h2>📚 Chủ Đề Thẻ Từ Vựng <span class="count-chip">20 Chủ đề • 1.000 Từ</span></h2>
-          <button class="btn-secondary-pill" id="btn-quick-quiz-all" type="button">
-            🎮 Ôn tập nhanh tất cả
+          <button class="main-hub-card" id="hub-btn-stories" type="button" style="--hub-accent:#EC4899; --hub-border:#F472B6; --hub-shadow:#BE185D; --hub-soft:#FCE7F3;">
+            <div class="hub-icon-wrap">🎬</div>
+            <h3>Phim Tương Tác</h3>
+            <span class="hub-sub">6 Tập • Kiểu Khan Kids</span>
+            <p>Hoạt hình chạm trực tiếp &amp; lồng tiếng</p>
+            <span class="hub-cta">Xem phim ➔</span>
+          </button>
+
+          <button class="main-hub-card" id="hub-btn-games" type="button" style="--hub-accent:#22A2F2; --hub-border:#60A5FA; --hub-shadow:#1D4ED8; --hub-soft:#E0F2FE;">
+            <div class="hub-icon-wrap">🎮</div>
+            <h3>Khu Trò Chơi</h3>
+            <span class="hub-sub">3 Trò • 3 Mức độ</span>
+            <p>Lật thẻ nhớ, Nối hình &amp; Bắt bóng vàng</p>
+            <span class="hub-cta">Chơi ngay ➔</span>
+          </button>
+
+          <button class="main-hub-card" id="hub-btn-phonics" type="button" style="--hub-accent:#8B5CF6; --hub-border:#A78BFA; --hub-shadow:#6D28D9; --hub-soft:#F3E8FF;">
+            <div class="hub-icon-wrap">🔤</div>
+            <h3>ABC &amp; Phonics</h3>
+            <span class="hub-sub">26 Chữ • 8 Âm ghép</span>
+            <p>Hát A–Z, ghép vần 33 từ &amp; 3 kiểu đố vui</p>
+            <span class="hub-cta">Học âm ➔</span>
           </button>
         </div>
 
-        <!-- Quick Search across 1,000 Words -->
+        <!-- CEFR Level Progression Path: Pre-A1 -> A1 -> A2 -> B1 -> B2 -->
+        <div class="section-title-bar compact-bar cefr-title-bar">
+          <h2>📈 Lộ Trình Trình Độ (Pre-A1 ➔ B1, B2)</h2>
+          <span class="count-chip">Chạm vào trình độ để học ngay</span>
+        </div>
+        <div class="cefr-path-grid" id="cefr-path-grid">
+          <!-- Populated dynamically by app.js with live progress per CEFR level -->
+        </div>
+      </section>
+
+      <!-- VIEW 1B: VOCABULARY LIBRARY (28 Topics • 1,240 Words • CEFR Filter & Search) -->
+      <section class="view-section" id="view-vocab-hub" aria-label="Kho từ vựng 1.240 từ">
+        <div class="deck-top-bar">
+          <button class="btn-back" id="btn-vocab-hub-back" type="button">
+            <span class="back-arrow">⬅</span> Trang chủ
+          </button>
+          <div class="topic-badge-header">
+            <span>📚</span>
+            <span>Kho Từ Vựng (28 Chủ đề • 1.240 Từ)</span>
+          </div>
+          <button class="btn-secondary-pill" id="btn-quick-quiz-all" type="button">
+            🎯 Ôn tập nhanh
+          </button>
+        </div>
+
+        <!-- CEFR Level Filter Pills -->
+        <div class="cefr-filter-bar" id="cefr-filter-bar" role="group" aria-label="Lọc theo trình độ CEFR">
+          <button class="filter-pill active" data-cefr="all" type="button">🌈 Tất cả (1.240)</button>
+          <button class="filter-pill" data-cefr="Pre-A1" type="button">🌱 Pre-A1 (350)</button>
+          <button class="filter-pill" data-cefr="A1" type="button">🌿 A1 (350)</button>
+          <button class="filter-pill" data-cefr="A2" type="button">🌳 A2 (300)</button>
+          <button class="filter-pill" data-cefr="B1" type="button">🚀 B1 (120)</button>
+          <button class="filter-pill" data-cefr="B2" type="button">🏆 B2 (120)</button>
+        </div>
+
+        <!-- Quick Search across 1,240 Words -->
         <div class="vocab-search-wrap">
           <div class="vocab-search-bar">
             <span class="search-icon" aria-hidden="true">🔍</span>
-            <input type="text" id="vocab-search-input" placeholder="Tìm nhanh trong 1.000 từ (ví dụ: lion, táo, rocket, bác sĩ...)" autocomplete="off" />
+            <input type="text" id="vocab-search-input" placeholder="Tìm nhanh trong 1.240 từ (ví dụ: lion, rocket, environment, innovation...)" autocomplete="off" />
             <button class="btn-clear-search hidden" id="btn-clear-search" type="button" aria-label="Xóa tìm kiếm">✕</button>
           </div>
           <div class="vocab-search-results hidden" id="vocab-search-results"></div>
@@ -106,10 +198,34 @@
         <div class="topics-grid" id="topics-grid">
           <!-- Populated dynamically by app.js -->
         </div>
+      </section>
 
-        <!-- Phase 2: Mini-games zone -->
-        <div class="section-title-bar games-title-bar">
-          <h2>🎮 Khu Trò Chơi Vui Nhộn <span class="count-chip">3 Mức độ: Dễ • Vừa • Thử thách</span></h2>
+      <!-- VIEW 1C: INTERACTIVE STORIES LIBRARY -->
+      <section class="view-section" id="view-stories-hub" aria-label="Thư viện phim hoạt hình tương tác">
+        <div class="deck-top-bar">
+          <button class="btn-back" id="btn-stories-hub-back" type="button">
+            <span class="back-arrow">⬅</span> Trang chủ
+          </button>
+          <div class="topic-badge-header">
+            <span>🎬</span>
+            <span>Phim Hoạt Hình Tương Tác (Kiểu Khan Kids)</span>
+          </div>
+        </div>
+        <div class="stories-home-grid" id="stories-home-grid">
+          <!-- Populated dynamically by stories.js -->
+        </div>
+      </section>
+
+      <!-- VIEW 1D: MINI-GAMES LIBRARY -->
+      <section class="view-section" id="view-games-hub" aria-label="Khu trò chơi Mini-games">
+        <div class="deck-top-bar">
+          <button class="btn-back" id="btn-games-hub-back" type="button">
+            <span class="back-arrow">⬅</span> Trang chủ
+          </button>
+          <div class="topic-badge-header">
+            <span>🎮</span>
+            <span>Khu Trò Chơi Vui Nhộn (3 Mức độ)</span>
+          </div>
         </div>
         <div class="games-grid" id="games-grid">
           <button class="game-tile" id="game-tile-memory" data-game="memory" type="button" style="--tile-accent:#FF7A00; --tile-border:#FFD24C; --tile-shadow:#E5B21D; --tile-soft:#FFF4D6;">
@@ -117,7 +233,7 @@
             <div class="game-tile-info">
               <h3>Lật Thẻ Nhớ</h3>
               <span class="game-tile-en">Memory Match</span>
-              <p>Lật 2 thẻ tìm cặp hình và chữ tiếng Anh! Tùy chọn 4, 6 hoặc 8 cặp thẻ.</p>
+              <p>Lật 2 thẻ tìm cặp hình và chữ! Tùy chọn 4, 6 hoặc 8 cặp thẻ.</p>
             </div>
             <span class="game-tile-cta">Chơi ngay ➔</span>
           </button>
@@ -138,41 +254,6 @@
               <p>Nghe từ tiếng Anh, chạm nhanh vào bóng đúng &amp; săn Bóng Vàng x2 Sao!</p>
             </div>
             <span class="game-tile-cta">Chơi ngay ➔</span>
-          </button>
-        </div>
-
-        <!-- Phase 3: ABC & Phonics zone -->
-        <div class="section-title-bar phonics-title-bar">
-          <h2>🔤 Bảng Chữ Cái (ABC) &amp; Ngữ Âm (Phonics)</h2>
-          <span class="phonics-home-badge" id="phonics-home-progress">⭐ Đã thuộc: 0 / 26 chữ</span>
-        </div>
-        <div class="games-grid" id="phonics-home-grid">
-          <button class="game-tile" id="phonics-tile-board" data-phonics-tab="board" type="button" style="--tile-accent:#8B5CF6; --tile-border:#A78BFA; --tile-shadow:#6D28D9; --tile-soft:#F3E8FF;">
-            <div class="game-tile-icon" aria-hidden="true">🅰️</div>
-            <div class="game-tile-info">
-              <h3>Bảng Chữ Cái &amp; Âm Ghép</h3>
-              <span class="game-tile-en">26 Chữ + 8 Âm Ghép</span>
-              <p>26 chữ cái A–Z, 8 âm ghép đôi (sh, ch, th...) cùng hơn 130 từ mẫu &amp; bài hát ABC!</p>
-            </div>
-            <span class="game-tile-cta">Khám phá ➔</span>
-          </button>
-          <button class="game-tile" id="phonics-tile-blend" data-phonics-tab="blend" type="button" style="--tile-accent:#14B8A6; --tile-border:#2DD4BF; --tile-shadow:#0D9488; --tile-soft:#CCFBF1;">
-            <div class="game-tile-icon" aria-hidden="true">🧩</div>
-            <div class="game-tile-info">
-              <h3>Ghép Âm Theo Nhóm Vần</h3>
-              <span class="game-tile-en">33 Từ CVC &amp; Word Families</span>
-              <p>Tập ghép vần (-at, -og, -un, -ig, -ed, sh/ch/th) giúp bé lớp 1 tự đọc từ mới!</p>
-            </div>
-            <span class="game-tile-cta">Tập ghép ➔</span>
-          </button>
-          <button class="game-tile" id="phonics-tile-quiz" data-phonics-tab="quiz" type="button" style="--tile-accent:#22C55E; --tile-border:#4ADE80; --tile-shadow:#16A34A; --tile-soft:#DCFCE7;">
-            <div class="game-tile-icon" aria-hidden="true">🎯</div>
-            <div class="game-tile-info">
-              <h3>Đố Vui Ngữ Âm</h3>
-              <span class="game-tile-en">3 Chế Độ Thử Thách</span>
-              <p>Nghe chọn chữ cái, tìm âm đầu còn thiếu (_at) và tìm từ cùng vần (Rhyming)!</p>
-            </div>
-            <span class="game-tile-cta">Thử thách ➔</span>
           </button>
         </div>
       </section>

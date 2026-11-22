@@ -525,7 +525,7 @@
     const letterCount = ALPHABET_DATA.filter(x => state.learnedLetters.has(x.letter)).length;
     const totalCount = state.learnedLetters.size;
     const homeBadge = $('phonics-home-progress');
-    if (homeBadge) homeBadge.textContent = `⭐ Đã thuộc: ${ letterCount } / 26 chữ`;
+    if (homeBadge) homeBadge.textContent = `${ letterCount } / 26`;
     const pill = $('phonics-mastered-pill');
     if (pill) pill.textContent = `⭐ Đã thuộc: ${ totalCount } / ${ ALPHABET_DATA.length + DIGRAPHS_DATA.length }`;
   }
@@ -539,8 +539,19 @@
     document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
     $('view-phonics').classList.add('active');
     window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (typeof window.recordActivity === 'function') {
+      window.recordActivity({
+        kind: 'phonics',
+        tab: initialTab,
+        icon: '🔤',
+        title: 'Bảng Chữ Cái ABC & Phonics',
+        subtitle: '26 chữ cái, 8 âm ghép đôi & 33 từ ghép vần'
+      });
+    }
     switchPhonicsTab(initialTab);
   }
+
+  window.openPhonicsView = openPhonics;
 
   function switchPhonicsTab(tab) {
     stopAbcSong();

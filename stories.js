@@ -559,9 +559,21 @@
     $('story-ep-icon').textContent = ep.icon;
     $('story-ep-title').textContent = `${ ep.num }: ${ ep.titleVi } (${ ep.titleEn })`;
 
+    if (typeof window.recordActivity === 'function') {
+      window.recordActivity({
+        kind: 'story',
+        epIndex: epIdx,
+        icon: ep.icon,
+        title: `${ ep.num }: ${ ep.titleVi }`,
+        subtitle: `Phim hoạt hình tương tác • ${ ep.titleEn }`
+      });
+    }
+
     renderStoryTimeline();
     renderStoryScene();
   }
+
+  window.openStoryEpisode = openEpisode;
 
   function renderStoryTimeline() {
     const ep = EPISODES[sState.epIndex];
@@ -728,6 +740,10 @@
     clearStoryTimer();
     sState.playing = false;
     sState.waitingForTap = false;
+    const ep = EPISODES[sState.epIndex];
+    if (ep && state.completedEpisodes) {
+      state.completedEpisodes.add(ep.id);
+    }
     state.stars += 3;
     saveProgress();
     updateHeaderAndMissionUI();
@@ -752,8 +768,7 @@
       stopStories();
       playSoundEffect('pop');
       document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
-      $('view-home').classList.add('active');
-      renderTopicsGrid();
+      $('view-stories-hub').classList.add('active');
     });
 
     $('btn-home-logo').addEventListener('click', stopStories);

@@ -9,10 +9,21 @@ const LESSON_SIZE = 10;
    ========================================================================== */
 const STORAGE_KEY = 'english4kids_v1_progress';
 
+const CEFR_LEVELS = [
+  { id: 'Pre-A1', icon: '🌱', name: 'Pre-A1', subtitle: 'Khởi đầu (6 tuổi)', color: '#22C55E', bg: '#DCFCE7', desc: 'Làm quen 350 từ vựng gần gũi & bảng chữ cái ABC.' },
+  { id: 'A1', icon: '🌿', name: 'A1', subtitle: 'Sơ cấp (Starters)', color: '#0EA5E9', bg: '#E0F2FE', desc: '350 từ giao tiếp hàng ngày, nhà cửa, đồ ăn, xe cộ.' },
+  { id: 'A2', icon: '🌳', name: 'A2', subtitle: 'Cơ bản (Movers/Flyers)', color: '#F59E0B', bg: '#FEF3C7', desc: '300 từ mô tả, cảm xúc, địa điểm & vũ trụ.' },
+  { id: 'B1', icon: '🚀', name: 'B1', subtitle: 'Trung cấp (PET)', color: '#3B82F6', bg: '#DBEAFE', desc: '120 từ khoa học, môi trường, du lịch & thảo luận.' },
+  { id: 'B2', icon: '🏆', name: 'B2', subtitle: 'Trung cao cấp (FCE)', color: '#8B5CF6', bg: '#EDE9FE', desc: '120 từ tư duy phân tích, xã hội, đổi mới & học thuật.' }
+];
+
 const state = {
   stars: 0,
   learnedIds: new Set(),
   learnedLetters: new Set(),
+  completedEpisodes: new Set(),
+  lastActivity: null,
+  activeCefrFilter: 'all',
   soundEnabled: true,
   currentTopicId: 'animals',
   currentCardIndex: 0,
@@ -39,6 +50,12 @@ function loadProgress() {
     if (Array.isArray(parsed.learnedLetters)) {
       state.learnedLetters = new Set(parsed.learnedLetters);
     }
+    if (Array.isArray(parsed.completedEpisodes)) {
+      state.completedEpisodes = new Set(parsed.completedEpisodes);
+    }
+    if (parsed.lastActivity && typeof parsed.lastActivity === 'object') {
+      state.lastActivity = parsed.lastActivity;
+    }
     if (typeof parsed.soundEnabled === 'boolean') {
       state.soundEnabled = parsed.soundEnabled;
     }
@@ -53,6 +70,8 @@ function saveProgress() {
       stars: state.stars,
       learnedIds: Array.from(state.learnedIds),
       learnedLetters: Array.from(state.learnedLetters),
+      completedEpisodes: Array.from(state.completedEpisodes),
+      lastActivity: state.lastActivity,
       soundEnabled: state.soundEnabled
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
@@ -60,6 +79,12 @@ function saveProgress() {
     console.warn('Could not save progress:', err);
   }
 }
+
+window.recordActivity = function (activity) {
+  state.lastActivity = { ...activity, ts: Date.now() };
+  saveProgress();
+  renderRecentActivityCard();
+};
 
 /* ==========================================================================
    Web Audio API Synthesized Sound Effects (No external MP3 required)
@@ -178,6 +203,15 @@ function spellWordOutLoud(word) {
 /* ==========================================================================
    UI Rendering: Header Stats & Home Topic Cards
    ========================================================================== */
+function getCurrentCefrRank() {
+  const count = state.learnedIds.size;
+  if (count >= 900) return '🏆 B2 (Trung cao cấp)';
+  if (count >= 650) return '🚀 B1 (Trung cấp)';
+  if (count >= 350) return '🌳 A2 (Cơ bản)';
+  if (count >= 120) return '🌿 A1 (Sơ cấp)';
+  return '🌱 Pre-A1 (Khởi đầu)';
+}
+
 function updateHeaderAndMissionUI() {
   const totalStarsEl = document.getElementById('total-stars-count');
   const totalLearnedEl = document.getElementById('total-learned-count');
@@ -186,23 +220,117 @@ function updateHeaderAndMissionUI() {
   const soundIconEl = document.getElementById('sound-toggle-icon');
 
   const learnedCount = state.learnedIds.size;
+  const totalWords = TOPICS_DATA.reduce((sum, t) => sum + t.cards.length, 0);
   totalStarsEl.textContent = state.stars;
   totalLearnedEl.textContent = learnedCount;
 
   const dailyGoal = 5;
   const missionCount = Math.min(learnedCount, dailyGoal);
   const percent = Math.round((missionCount / dailyGoal) * 100);
-  missionTextEl.textContent = `${ missionCount } / ${ dailyGoal } từ`;
+  missionTextEl.textContent = `${ missionCount } / ${ dailyGoal } từ hôm nay`;
   missionBarEl.style.width = `${ percent }%`;
 
+  const wordsMetric = document.getElementById('metric-words-val');
+  if (wordsMetric) wordsMetric.textContent = `${ learnedCount } / ${ totalWords.toLocaleString('vi-VN') }`;
+  const videosMetric = document.getElementById('metric-videos-val');
+  if (videosMetric) videosMetric.textContent = `${ state.completedEpisodes.size } / 6`;
+  const cefrBadge = document.getElementById('current-cefr-badge');
+  if (cefrBadge) cefrBadge.textContent = getCurrentCefrRank();
+
   soundIconEl.textContent = state.soundEnabled ? '🔊' : '🔇';
+  renderCefrRoadmap();
+}
+
+function renderRecentActivityCard() {
+  const iconEl = document.getElementById('recent-icon');
+  const titleEl = document.getElementById('home-heading');
+  const subEl = document.getElementById('recent-subtitle');
+  const btnEl = document.getElementById('btn-continue-recent');
+  if (!iconEl || !titleEl || !subEl || !btnEl) return;
+
+  const act = state.lastActivity;
+  if (!act) {
+    iconEl.textContent = '🦁';
+    titleEl.textContent = 'Động Vật & Thú Cưng (Pre-A1)';
+    subEl.textContent = 'Chạm nút bên dưới để bắt đầu bài học đầu tiên cùng Sư Tử Leo!';
+    btnEl.textContent = '▶ Bắt đầu học ngay ➔';
+    return;
+  }
+
+  iconEl.textContent = act.icon || '⭐';
+  titleEl.textContent = act.title || 'Tiếp tục bài học';
+  subEl.textContent = act.subtitle || 'Quay lại đúng nơi bé vừa học lúc trước!';
+  btnEl.textContent = '▶ Tiếp tục học ngay ➔';
+}
+
+function renderCefrRoadmap() {
+  const grid = document.getElementById('cefr-path-grid');
+  if (!grid) return;
+  grid.innerHTML = '';
+
+  CEFR_LEVELS.forEach(lvl => {
+    const levelTopics = TOPICS_DATA.filter(t => t.level === lvl.id);
+    const totalInLevel = levelTopics.reduce((s, t) => s + t.cards.length, 0);
+    const learnedInLevel = levelTopics.reduce(
+      (s, t) => s + t.cards.filter(c => state.learnedIds.has(c.id)).length,
+      0
+    );
+    const pct = totalInLevel > 0 ? Math.round((learnedInLevel / totalInLevel) * 100) : 0;
+
+    const card = document.createElement('button');
+    card.type = 'button';
+    card.className = 'cefr-step-card';
+    card.id = `cefr-card-${ lvl.id }`;
+    card.style.setProperty('--cefr-color', lvl.color);
+    card.style.setProperty('--cefr-bg', lvl.bg);
+
+    card.innerHTML = `
+      <div class="cefr-step-top">
+        <span class="cefr-step-icon">${ lvl.icon }</span>
+        <span class="cefr-step-code">${ lvl.name }</span>
+        <span class="cefr-step-pct">${ pct }%</span>
+      </div>
+      <div class="cefr-step-sub">${ lvl.subtitle }</div>
+      <div class="cefr-mini-track"><div class="cefr-mini-fill" style="width:${ pct }%"></div></div>
+      <div class="cefr-step-meta">${ learnedInLevel }/${ totalInLevel } từ • ${ levelTopics.length } chủ đề</div>
+    `;
+
+    card.addEventListener('click', () => {
+      playSoundEffect('pop');
+      openVocabHub(lvl.id);
+    });
+    grid.appendChild(card);
+  });
+}
+
+function openView(viewId) {
+  document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
+  const target = document.getElementById(viewId);
+  if (target) target.classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function openVocabHub(cefrLevel = null) {
+  if (cefrLevel) {
+    state.activeCefrFilter = cefrLevel;
+  }
+  document.querySelectorAll('#cefr-filter-bar [data-cefr]').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.cefr === state.activeCefrFilter);
+  });
+  renderTopicsGrid();
+  openView('view-vocab-hub');
 }
 
 function renderTopicsGrid() {
   const grid = document.getElementById('topics-grid');
+  if (!grid) return;
   grid.innerHTML = '';
 
-  TOPICS_DATA.forEach(topic => {
+  const filtered = state.activeCefrFilter === 'all'
+    ? TOPICS_DATA
+    : TOPICS_DATA.filter(t => t.level === state.activeCefrFilter);
+
+  filtered.forEach(topic => {
     const learnedInTopic = topic.cards.filter(c => state.learnedIds.has(c.id)).length;
     const totalInTopic = topic.cards.length;
 
@@ -220,15 +348,18 @@ function renderTopicsGrid() {
         <div class="topic-card-top">
           <div class="topic-icon-bubble" aria-hidden="true">${ topic.icon }</div>
           <div class="topic-info">
-            <h3>${ topic.titleVi }</h3>
+            <div class="topic-title-row">
+              <h3>${ topic.titleVi }</h3>
+              <span class="topic-cefr-tag cefr-${ (topic.level || 'A1').toLowerCase() }">${ topic.level || 'A1' }</span>
+            </div>
             <span class="topic-en-subtitle">${ topic.titleEn }</span>
           </div>
         </div>
-        <p class="topic-desc" style="margin-top: 12px;">${ topic.description }</p>
+        <p class="topic-desc">${ topic.description }</p>
       </div>
       <div class="topic-card-footer">
         <span class="topic-progress-badge">
-          ⭐ Đã thuộc: <strong>${ learnedInTopic }/${ totalInTopic }</strong>
+          ⭐ <strong>${ learnedInTopic }/${ totalInTopic }</strong>
         </span>
         <span class="topic-play-cta">Học ngay ➔</span>
       </div>
@@ -255,13 +386,21 @@ function openTopicDeck(topicId, initialMode = 'learn', startIndex = 0) {
   state.currentCardIndex = startIndex;
   state.isFlipped = false;
 
-  document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
-  document.getElementById('view-flashcard').classList.add('active');
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  openView('view-flashcard');
 
   const topic = getCurrentTopic();
   document.getElementById('current-topic-icon').textContent = topic.icon;
-  document.getElementById('current-topic-title').textContent = `${ topic.titleVi } (${ topic.titleEn })`;
+  document.getElementById('current-topic-title').textContent = `${ topic.titleVi } [${ topic.level || 'A1' }]`;
+
+  const lessonNum = Math.floor(startIndex / LESSON_SIZE) + 1;
+  window.recordActivity({
+    kind: 'vocab',
+    topicId: topic.id,
+    cardIndex: startIndex,
+    icon: topic.icon,
+    title: `${ topic.titleVi } (${ topic.level || 'A1' })`,
+    subtitle: `Thẻ từ vựng • Bài ${ lessonNum } (Từ ${ startIndex + 1 }/${ topic.cards.length })`
+  });
 
   const flashcard3d = document.getElementById('flashcard-3d');
   flashcard3d.style.setProperty('--card-accent-border', topic.theme.border);
@@ -650,15 +789,75 @@ function bindEvents() {
   // Navigation back to Home
   const goHome = () => {
     playSoundEffect('pop');
-    document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
-    document.getElementById('view-home').classList.add('active');
-    renderTopicsGrid();
+    openView('view-home');
+    updateHeaderAndMissionUI();
+    renderRecentActivityCard();
   };
 
   document.getElementById('btn-home-logo').addEventListener('click', goHome);
-  document.getElementById('btn-back-to-home').addEventListener('click', goHome);
+  document.getElementById('btn-vocab-hub-back').addEventListener('click', goHome);
+  document.getElementById('btn-stories-hub-back').addEventListener('click', goHome);
+  document.getElementById('btn-games-hub-back').addEventListener('click', goHome);
 
-  // Quick Quiz All Topics button on Home
+  // From Flashcard Deck -> back to Vocabulary Library
+  document.getElementById('btn-back-to-home').addEventListener('click', () => {
+    playSoundEffect('pop');
+    openVocabHub();
+  });
+
+  // 4 Main Content Hub buttons on Home
+  document.getElementById('hub-btn-vocab').addEventListener('click', () => {
+    playSoundEffect('pop');
+    openVocabHub('all');
+  });
+  document.getElementById('hub-btn-stories').addEventListener('click', () => {
+    playSoundEffect('pop');
+    openView('view-stories-hub');
+  });
+  document.getElementById('hub-btn-games').addEventListener('click', () => {
+    playSoundEffect('pop');
+    openView('view-games-hub');
+  });
+  document.getElementById('hub-btn-phonics').addEventListener('click', () => {
+    playSoundEffect('pop');
+    if (typeof window.openPhonicsView === 'function') {
+      window.openPhonicsView('board');
+    } else {
+      openView('view-phonics');
+    }
+  });
+
+  // Continue Learning (Bài mới nhất vừa học)
+  document.getElementById('btn-continue-recent').addEventListener('click', () => {
+    playSoundEffect('pop');
+    const act = state.lastActivity;
+    if (!act) {
+      openTopicDeck(TOPICS_DATA[0].id, 'learn', 0);
+      return;
+    }
+    if (act.kind === 'story' && typeof window.openStoryEpisode === 'function') {
+      window.openStoryEpisode(act.epIndex || 0);
+    } else if (act.kind === 'game' && typeof window.openMiniGame === 'function') {
+      window.openMiniGame(act.gameName || 'memory');
+    } else if (act.kind === 'phonics' && typeof window.openPhonicsView === 'function') {
+      window.openPhonicsView(act.tab || 'board');
+    } else {
+      openTopicDeck(act.topicId || TOPICS_DATA[0].id, 'learn', act.cardIndex || 0);
+    }
+  });
+
+  // CEFR Level Filter Pills inside Vocabulary Library
+  document.querySelectorAll('#cefr-filter-bar [data-cefr]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      playSoundEffect('pop');
+      state.activeCefrFilter = btn.dataset.cefr;
+      document.querySelectorAll('#cefr-filter-bar [data-cefr]').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderTopicsGrid();
+    });
+  });
+
+  // Quick Quiz All Topics button inside Vocabulary Library
   document.getElementById('btn-quick-quiz-all').addEventListener('click', () => {
     playSoundEffect('pop');
     openTopicDeck(TOPICS_DATA[0].id, 'quiz');
@@ -786,8 +985,11 @@ function bindEvents() {
     state.stars = 0;
     state.learnedIds.clear();
     state.learnedLetters.clear();
+    state.completedEpisodes.clear();
+    state.lastActivity = null;
     saveProgress();
     updateHeaderAndMissionUI();
+    renderRecentActivityCard();
     renderTopicsGrid();
     if (typeof window.refreshPhonicsUI === 'function') {
       window.refreshPhonicsUI();
@@ -839,7 +1041,7 @@ function bindVocabSearch() {
         <span class="sri-emoji">${ card.emoji }</span>
         <div class="sri-text">
           <strong>${ card.en }</strong>
-          <span>${ card.vi } • <em>${ topic.titleVi }</em></span>
+          <span>${ card.vi } • <em>${ topic.titleVi } (${ topic.level || 'A1' })</em></span>
         </div>
         <span class="sri-go">Mở thẻ ➔</span>
       `;
@@ -874,6 +1076,7 @@ if ('speechSynthesis' in window) {
 document.addEventListener('DOMContentLoaded', () => {
   loadProgress();
   updateHeaderAndMissionUI();
+  renderRecentActivityCard();
   renderTopicsGrid();
   bindEvents();
   bindVocabSearch();
