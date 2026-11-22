@@ -142,13 +142,22 @@
     };
   }
 
+  // 845 Fluent 3D images served from this site (assets/fluent3d) so cards load instantly,
+  // work offline and don't depend on a third-party mirror. Keys are code points without FE0F.
+  const SELF_HOSTED_3D = new Set('1f0cf 1f17f 1f195 1f300 1f303 1f305 1f306 1f308 1f309 1f30a 1f30b 1f30c 1f30d 1f30e 1f30f 1f310 1f311 1f313 1f317 1f319 1f31e 1f31f 1f320 1f321 1f324 1f327 1f328 1f329 1f32b 1f32c 1f32d 1f330 1f331 1f332 1f333 1f334 1f335 1f336 1f337 1f338 1f339 1f33a 1f33b 1f33c 1f33d 1f33e 1f33f 1f340 1f342 1f343 1f344 1f345 1f346 1f347 1f348 1f349 1f34a 1f34b 1f34c 1f34d 1f34e 1f350 1f351 1f352 1f353 1f354 1f355 1f357 1f35a 1f35c 1f35d 1f35e 1f35f 1f360 1f363 1f366 1f369 1f36a 1f36b 1f36c 1f36d 1f36f 1f371 1f372 1f373 1f374 1f375 1f37c 1f37d 1f37f 1f380 1f381 1f382 1f383 1f384 1f385 1f386 1f388 1f389 1f38a 1f38b 1f390 1f392 1f393 1f399 1f39b 1f39e 1f39f 1f3a0 1f3a1 1f3a4 1f3a5 1f3a7 1f3a8 1f3a9 1f3aa 1f3ab 1f3ac 1f3ad 1f3ae 1f3af 1f3b2 1f3b3 1f3b5 1f3b6 1f3b7 1f3b8 1f3b9 1f3ba 1f3bb 1f3bc 1f3be 1f3c0 1f3c1 1f3c3 1f3c4 1f3c5 1f3c6 1f3c9 1f3ca 1f3cb 1f3cd 1f3ce 1f3d0 1f3d1 1f3d3 1f3d4 1f3d5 1f3d6 1f3d7 1f3d8 1f3d9 1f3da 1f3db 1f3dc 1f3dd 1f3de 1f3df 1f3e0 1f3e1 1f3e2 1f3e3 1f3e5 1f3e6 1f3e7 1f3e8 1f3ea 1f3eb 1f3ec 1f3ed 1f3ee 1f3ef 1f3f0 1f3f3 1f3f4-200d-2620 1f3f5 1f3f7 1f3f8 1f3f9 1f3fa 1f400 1f402 1f404 1f406 1f407 1f409 1f40a 1f40c 1f40d 1f410 1f411 1f413 1f414 1f415 1f418 1f419 1f41a 1f41b 1f41c 1f41d 1f41e 1f41f 1f420 1f421 1f422 1f423 1f425 1f426 1f427 1f428 1f42a 1f42c 1f42d 1f42e 1f42f 1f430 1f431 1f433 1f434 1f435 1f436 1f437 1f438 1f439 1f43a 1f43b 1f43b-200d-2744 1f43c 1f43e 1f43f 1f440 1f441 1f442 1f443 1f444 1f445 1f446 1f447 1f449 1f44b 1f44c 1f44d 1f44e 1f44f 1f451 1f453 1f454 1f455 1f456 1f457 1f45b 1f45c 1f45e 1f45f 1f461 1f463 1f465 1f466 1f467 1f468 1f468-200d-1f373 1f468-200d-2695 1f469 1f469-200d-1f373 1f469-200d-1f3a4 1f469-200d-1f3eb 1f469-200d-2695 1f46e 1f471-200d-2640 1f474 1f475 1f476 1f477 1f477-200d-2642 1f478 1f479 1f47b 1f47d 1f47e 1f483 1f485 1f486 1f487 1f488 1f489 1f48a 1f48d 1f48e 1f490 1f493 1f494 1f496 1f49a 1f49b 1f49c 1f49d 1f49e 1f4a0 1f4a1 1f4a4 1f4a5 1f4a6 1f4a7 1f4a8 1f4aa 1f4ab 1f4ac 1f4ad 1f4af 1f4b0 1f4b1 1f4b3 1f4b5 1f4b8 1f4b9 1f4ba 1f4bb 1f4bc 1f4be 1f4c1 1f4c2 1f4c3 1f4c4 1f4c5 1f4c6 1f4c8 1f4c9 1f4ca 1f4cb 1f4cc 1f4cd 1f4ce 1f4cf 1f4d0 1f4d1 1f4d2 1f4d3 1f4d4 1f4d6 1f4d8 1f4da 1f4db 1f4dc 1f4dd 1f4de 1f4e0 1f4e1 1f4e2 1f4e3 1f4e5 1f4e6 1f4e7 1f4e9 1f4ee 1f4ef 1f4f0 1f4f1 1f4f2 1f4f6 1f4f7 1f4f8 1f4f9 1f4fa 1f4fb 1f4ff 1f500 1f501 1f504 1f507 1f50a 1f50b 1f50c 1f50d 1f50e 1f510 1f511 1f512 1f514 1f516 1f517 1f518 1f51f 1f522 1f524 1f525 1f526 1f527 1f528 1f529 1f52a 1f52c 1f52d 1f52e 1f534 1f535 1f537 1f538 1f53a 1f54a 1f552 1f56f 1f570 1f573 1f575 1f576 1f577 1f578 1f58a 1f58b 1f58c 1f58d 1f590 1f5a5 1f5a8 1f5bc 1f5c2 1f5c4 1f5d1 1f5d3 1f5de 1f5e3 1f5ef 1f5f3 1f5fa 1f5fc 1f5fd 1f5ff 1f601 1f602 1f604 1f607 1f60a 1f60b 1f60c 1f610 1f615 1f618 1f61c 1f61f 1f620 1f622 1f624 1f628 1f62c 1f62e 1f632 1f633 1f634 1f637 1f642 1f647 1f648 1f64b 1f64c 1f64f 1f680 1f681 1f682 1f687 1f689 1f68a 1f68c 1f690 1f691 1f692 1f693 1f695 1f697 1f699 1f69a 1f69c 1f6a2 1f6a3 1f6a4 1f6a6 1f6a7 1f6a8 1f6a9 1f6aa 1f6ab 1f6b0 1f6b2 1f6b4 1f6b6 1f6b8 1f6bd 1f6bf 1f6c1 1f6c2 1f6c3 1f6cb 1f6cc 1f6cd 1f6ce 1f6cf 1f6d1 1f6d2 1f6d5 1f6d7 1f6dd 1f6de 1f6e0 1f6e1 1f6e2 1f6e3 1f6e4 1f6e5 1f6e9 1f6eb 1f6ec 1f6f0 1f6f3 1f6f4 1f6f6 1f6f7 1f6f8 1f6f9 1f6fc 1f7e0 1f7e2 1f7e3 1f7e4 1f7e5 1f7e6 1f7e7 1f7e8 1f7e9 1f90d 1f90f 1f910 1f912 1f914 1f915 1f916 1f917 1f919 1f91d 1f921 1f927 1f928 1f929 1f92a 1f92b 1f92d 1f930 1f932 1f934 1f938 1f93a 1f93e 1f93f 1f940 1f941 1f944 1f945 1f947 1f948 1f949 1f94a 1f94b 1f94f 1f950 1f951 1f952 1f953 1f954 1f955 1f956 1f957 1f95a 1f95b 1f95c 1f95d 1f95e 1f95f 1f962 1f963 1f964 1f965 1f966 1f967 1f968 1f969 1f96a 1f96b 1f96c 1f96d 1f971 1f97a 1f97d 1f97e 1f980 1f981 1f982 1f983 1f984 1f985 1f986 1f987 1f988 1f989 1f98a 1f98b 1f98c 1f98d 1f98e 1f98f 1f990 1f991 1f992 1f993 1f994 1f995 1f996 1f997 1f998 1f99a 1f99b 1f99c 1f99e 1f99f 1f9a0 1f9a2 1f9a5 1f9a6 1f9a9 1f9aa 1f9ab 1f9ad 1f9b4 1f9b5 1f9b6 1f9b7 1f9b8 1f9ba 1f9c0 1f9c1 1f9c2 1f9c3 1f9c4 1f9c5 1f9c7 1f9c8 1f9ca 1f9cd 1f9d0 1f9d1 1f9d1-200d-1f33e 1f9d1-200d-1f373 1f9d1-200d-1f393 1f9d1-200d-1f3a4 1f9d1-200d-1f3a8 1f9d1-200d-1f4bb 1f9d1-200d-1f4bc 1f9d1-200d-1f527 1f9d1-200d-1f52c 1f9d1-200d-1f680 1f9d1-200d-1f692 1f9d1-200d-2695 1f9d1-200d-2708 1f9d2 1f9d4 1f9d7 1f9d8 1f9d9 1f9da 1f9dc-200d-2640 1f9dd 1f9e0 1f9e2 1f9e3 1f9e4 1f9e5 1f9e6 1f9e9 1f9ea 1f9eb 1f9ec 1f9ed 1f9ee 1f9f0 1f9f1 1f9f2 1f9f3 1f9f4 1f9f5 1f9f6 1f9f8 1f9f9 1f9fa 1f9fb 1f9fc 1f9fd 1f9fe 1fa70 1fa71 1fa73 1fa74 1fa79 1fa7a 1fa80 1fa81 1fa82 1fa84 1fa86 1fa87 1fa88 1fa90 1fa91 1fa94 1fa95 1fa96 1fa97 1fa98 1fa99 1fa9a 1fa9c 1fa9e 1fa9f 1faa0 1faa1 1faa2 1faa3 1faa5 1faa7 1faa8 1faae 1fab0 1fab1 1fab2 1fab3 1fab4 1fab5 1fab6 1fab7 1fab8 1fab9 1fabb 1fabc 1fabd 1fac0 1fac1 1fad0 1fad1 1fad2 1fad5 1fad6 1fad7 1fad8 1fad9 1fada 1fadb 1fae7 1faf6 1faf7 1faf8 2194 2195 21a9 231a 2328 23ed 23ee 23f0 23f1 23f3 23f8 23f9 25b6 2600 2601 2602 2604 2614 2615 2618 2622 262f 265f 2668 267b 2693 2694 2696 2697 2699 269b 26a1 26aa 26ab 26bd 26be 26c4 26c5 26c8 26cf 26d1 26d3 26ea 26f0 26f2 26f3 26f4 26f5 26f7 26f8 26fa 2702 2705 2708 2709 270a 270b 270c 270d 270f 2714 2716 2728 2744 274c 2753 2757 2764 2764-200d-1fa79 2795 2796 2797 27a1 2b05 2b06 2b07 2b1c 2b50 2b55 30-20e3 31-20e3 32-20e3 33-20e3 34-20e3 35-20e3 36-20e3 37-20e3 38-20e3 39-20e3'.split(' '));
+
+  function selfHosted3dSrc(parsed) {
+    if (SELF_HOSTED_3D.has(parsed.noFe)) return `assets/fluent3d/${ parsed.noFe }.webp`;
+    return null;
+  }
+
   function buildArtImg(emoji, imgClass = 'card-vector-img', fallbackClass = 'art-emoji-giant') {
     const parsed = parseEmojiCodepoints(emoji);
     const safeEmoji = String(emoji || '✨').replace(/"/g, '&quot;');
     if (!parsed) {
       return `<span class="${ fallbackClass }">${ safeEmoji }</span>`;
     }
-    const localSrc = LOCAL_3D_BY_CODE[parsed.noFe] || LOCAL_3D_BY_CODE[parsed.full];
+    const localSrc = LOCAL_3D_BY_CODE[parsed.noFe] || LOCAL_3D_BY_CODE[parsed.full] || selfHosted3dSrc(parsed);
     if (localSrc) {
       return `<img class="${ imgClass } is-fluent3d" src="${ localSrc }" alt="" loading="lazy" decoding="async" draggable="false" data-fallback-emoji="${ safeEmoji }" data-fallback-class="${ fallbackClass }" onerror="window.handleArtImgError(this)" />`;
     }
@@ -798,11 +807,11 @@
         iconBox.classList.add('is-3d-game-icon', 'is-scenic-banner');
         iconBox.innerHTML = `
           <div class="hub-scenic-banner is-game-painted">
-            <img class="hub-painted-img is-soft-game-bg" src="${ s.bg }" alt="" draggable="false" aria-hidden="true" />
+            <img class="hub-painted-img is-soft-game-bg" src="${ s.bg }" alt="" loading="lazy" decoding="async" draggable="false" aria-hidden="true" />
             <div class="hub-3d-cluster" aria-hidden="true">
-              <img class="hub-3d-side is-left" src="${ s.left }" alt="" draggable="false" />
-              <img class="hub-3d-main" src="${ s.main }" alt="" draggable="false" />
-              <img class="hub-3d-side is-right" src="${ s.right }" alt="" draggable="false" />
+              <img class="hub-3d-side is-left" src="${ s.left }" alt="" loading="lazy" decoding="async" draggable="false" />
+              <img class="hub-3d-main" src="${ s.main }" alt="" loading="lazy" decoding="async" draggable="false" />
+              <img class="hub-3d-side is-right" src="${ s.right }" alt="" loading="lazy" decoding="async" draggable="false" />
               <span class="hub-3d-shadow"></span>
             </div>
           </div>`;

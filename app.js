@@ -35,6 +35,28 @@ window.getAllVocabCards = function () {
   return _cachedAllCards;
 };
 
+// The study tip follows one of three patterns, so it is built here instead of being
+// stored 2,500 times in vocab-data.js (saves ~320 KB of download).
+const POS_LABELS_VI = {
+  n: 'Danh từ (n)', v: 'Động từ (v)', adj: 'Tính từ (adj)', adv: 'Trạng từ (adv)',
+  num: 'Số đếm (num)', conj: 'Liên từ (conj)', phrase: 'Cụm giao tiếp'
+};
+
+window.getCardStudyTip = function (card) {
+  if (!card) return '';
+  if (card.funFact) return card.funFact;
+  const level = card.level || '';
+  const pos = POS_LABELS_VI[card.pos] || card.pos || '';
+  const word = `"${ card.en }" (${ card.phonetic || '' })`;
+  if (card.pos === 'v') {
+    return `🌿 Phương pháp Đa giác quan & TPR (${ level } • ${ pos }): Vừa đọc to ${ word } vừa diễn tả hành động bằng tay để não ghi nhớ nhanh gấp 3 lần!`;
+  }
+  if (card.pos === 'adj') {
+    return `🌿 Phương pháp Montessori (${ level } • ${ pos }): Đọc ${ word } và chạm hoặc liên tưởng ngay tới 1 đồ vật có tính chất này quanh bé!`;
+  }
+  return `🌿 Phương pháp Montessori 3 bước (${ level } • ${ pos }): Quan sát hình ➔ Đọc rõ ${ word } ➔ Tự đặt 1 câu thực tế!`;
+};
+
 window.getVocabCardById = function (cardId) {
   if (!_cachedCardMap) window.getAllVocabCards();
   return _cachedCardMap.get(cardId) || null;
@@ -1024,7 +1046,7 @@ function renderCurrentFlashcard(autoSpeak = false) {
   document.getElementById('back-vi-word').textContent = card.vi;
   document.getElementById('card-example-en').textContent = `"${ card.exampleEn }"`;
   document.getElementById('card-example-vi').textContent = card.exampleVi;
-  document.getElementById('card-fact-text').textContent = card.funFact;
+  document.getElementById('card-fact-text').textContent = window.getCardStudyTip({ ...card, level: card.level || topic.level });
 
   // Mastered button state
   const markBtn = document.getElementById('btn-mark-learned');
