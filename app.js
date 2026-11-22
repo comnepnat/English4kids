@@ -1253,7 +1253,7 @@ function bindEvents() {
   // Navigation back to Home
   const goHome = () => {
     playSoundEffect('pop');
-    document.getElementById('view-flashcard').classList.remove('active');
+    document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
     document.getElementById('view-home').classList.add('active');
     renderTopicsGrid();
   };

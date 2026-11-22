@@ -88,6 +88,40 @@
         <div class="topics-grid" id="topics-grid">
           <!-- Populated dynamically by app.js -->
         </div>
+
+        <!-- Phase 2: Mini-games zone -->
+        <div class="section-title-bar games-title-bar">
+          <h2>🎮 Khu Trò Chơi Vui Nhộn (Mini-games)</h2>
+        </div>
+        <div class="games-grid" id="games-grid">
+          <button class="game-tile" id="game-tile-memory" data-game="memory" type="button" style="--tile-accent:#FF7A00; --tile-border:#FFD24C; --tile-shadow:#E5B21D; --tile-soft:#FFF4D6;">
+            <div class="game-tile-icon" aria-hidden="true">🃏</div>
+            <div class="game-tile-info">
+              <h3>Lật Thẻ Nhớ</h3>
+              <span class="game-tile-en">Memory Match</span>
+              <p>Lật 2 thẻ, tìm cặp hình và chữ tiếng Anh giống nhau!</p>
+            </div>
+            <span class="game-tile-cta">Chơi ngay ➔</span>
+          </button>
+          <button class="game-tile" id="game-tile-match" data-game="match" type="button" style="--tile-accent:#22A2F2; --tile-border:#60A5FA; --tile-shadow:#2563EB; --tile-soft:#DBEAFE;">
+            <div class="game-tile-icon" aria-hidden="true">🔗</div>
+            <div class="game-tile-info">
+              <h3>Nối Hình Với Chữ</h3>
+              <span class="game-tile-en">Picture Match</span>
+              <p>Chạm vào hình rồi chạm vào chữ tiếng Anh đúng với hình đó!</p>
+            </div>
+            <span class="game-tile-cta">Chơi ngay ➔</span>
+          </button>
+          <button class="game-tile" id="game-tile-balloon" data-game="balloon" type="button" style="--tile-accent:#FF4D8D; --tile-border:#F472B6; --tile-shadow:#DB2777; --tile-soft:#FCE7F3;">
+            <div class="game-tile-icon" aria-hidden="true">🎈</div>
+            <div class="game-tile-info">
+              <h3>Bắt Bóng Từ Vựng</h3>
+              <span class="game-tile-en">Balloon Catch</span>
+              <p>Nghe từ tiếng Anh, chạm thật nhanh vào quả bóng có hình đúng!</p>
+            </div>
+            <span class="game-tile-cta">Chơi ngay ➔</span>
+          </button>
+        </div>
       </section>
 
       <!-- VIEW 2: FLASHCARD DECK LEARNING -->
@@ -244,7 +278,84 @@
           </div>
         </div>
       </section>
+
+      <!-- VIEW 3: MINI-GAMES (Phase 2) -->
+      <section class="view-section" id="view-games" aria-label="Trò chơi từ vựng">
+        <div class="deck-top-bar">
+          <button class="btn-back" id="btn-games-back" type="button">
+            <span class="back-arrow">⬅</span> Về trang chủ
+          </button>
+
+          <div class="topic-badge-header">
+            <span id="game-title-icon">🃏</span>
+            <span id="game-title-text">Lật Thẻ Nhớ</span>
+          </div>
+
+          <label class="game-topic-select-wrap" for="game-topic-select">
+            📚 Chủ đề:
+            <select id="game-topic-select"></select>
+          </label>
+        </div>
+
+        <div class="game-hud">
+          <span class="hud-pill" id="game-hud-left"></span>
+          <span class="hud-pill" id="game-hud-mid"></span>
+          <span class="hud-pill" id="game-hud-right"></span>
+          <button class="btn-secondary-pill" id="btn-game-restart" type="button">🔄 Chơi lại</button>
+        </div>
+        <p class="game-instruction" id="game-instruction"></p>
+
+        <!-- Game 1: Memory Match -->
+        <div class="game-board hidden" id="game-memory">
+          <div class="memory-grid" id="memory-grid"></div>
+        </div>
+
+        <!-- Game 2: Picture to Word Match -->
+        <div class="game-board hidden" id="game-match">
+          <div class="match-columns">
+            <div class="match-col">
+              <div class="match-col-title">🖼️ Hình ảnh</div>
+              <div class="match-col-items" id="match-pictures"></div>
+            </div>
+            <div class="match-col">
+              <div class="match-col-title">🔤 Từ tiếng Anh</div>
+              <div class="match-col-items" id="match-words"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Game 3: Balloon Catch -->
+        <div class="game-board hidden" id="game-balloon">
+          <div class="balloon-target-bar">
+            <button class="btn-quiz-listen" id="btn-balloon-listen" type="button">🔊 Nghe từ</button>
+            <span class="balloon-target-label">Tìm bóng có hình:</span>
+            <span class="balloon-target-word" id="balloon-target-word">Sẵn sàng chưa?</span>
+          </div>
+          <div class="balloon-sky" id="balloon-sky">
+            <div class="balloon-start-overlay" id="balloon-start-overlay">
+              <div class="balloon-start-emoji">🎈🎈🎈</div>
+              <p>Có 45 giây! Mỗi quả bóng đúng được +1 Sao.</p>
+              <button class="btn-action-mastered" id="btn-balloon-start" type="button">▶ Bắt đầu chơi</button>
+            </div>
+          </div>
+        </div>
+      </section>
     </main>
+
+    <!-- MODAL: GAME RESULT -->
+    <div class="modal-backdrop hidden" id="game-result-modal" role="dialog" aria-modal="true" aria-labelledby="game-result-title">
+      <div class="modal-dialog result-dialog">
+        <div class="result-emoji" id="game-result-emoji">🏆</div>
+        <h2 id="game-result-title">Hoàn thành!</h2>
+        <div class="result-stars" id="game-result-stars">⭐⭐⭐</div>
+        <p class="result-text" id="game-result-text"></p>
+        <p class="result-earned" id="game-result-earned">+3 Sao vàng</p>
+        <div class="result-actions">
+          <button class="btn-action-flip" id="btn-result-home" type="button">🏠 Trang chủ</button>
+          <button class="btn-action-mastered" id="btn-result-replay" type="button">🔄 Chơi lại</button>
+        </div>
+      </div>
+    </div>
 
     <!-- MODAL: ROADMAP FOR PHASES 2 TO 5 -->
     <div class="modal-backdrop hidden" id="roadmap-modal" role="dialog" aria-modal="true" aria-labelledby="roadmap-title">
@@ -256,29 +367,29 @@
         <div class="modal-body">
           <p class="modal-intro">Ứng dụng được thiết kế theo từng giai đoạn giúp bé 6 tuổi làm quen từ vựng trước, sau đó mở rộng kỹ năng phản xạ và phát âm:</p>
           <div class="roadmap-list">
-            <div class="roadmap-item active-phase">
-              <div class="phase-badge done">Giai đoạn 1 (Hiện tại)</div>
-              <h3>🃏 Thẻ từ vựng (Flashcards) Hình ảnh & Phát âm chuẩn</h3>
-              <p>6 chủ đề gần gũi (Động vật, Màu sắc, Gia đình, Số đếm, Trái cây, Đồ vật), lật thẻ 3D, phát âm chuẩn & đọc chậm từng âm, đánh vần và thử thách nghe nhanh.</p>
-            </div>
             <div class="roadmap-item">
-              <div class="phase-badge upcoming">Giai đoạn 2 (Tiếp theo)</div>
+              <div class="phase-badge done">Giai đoạn 1 (Đã xong)</div>
+              <h3>🃏 Thẻ từ vựng (Flashcards) Hình ảnh &amp; Phát âm chuẩn</h3>
+              <p>6 chủ đề gần gũi (Động vật, Màu sắc, Gia đình, Số đếm, Trái cây, Đồ vật), lật thẻ 3D, phát âm chuẩn &amp; đọc chậm từng âm, đánh vần và thử thách nghe nhanh.</p>
+            </div>
+            <div class="roadmap-item active-phase">
+              <div class="phase-badge done">Giai đoạn 2 (Mới)</div>
               <h3>🎮 Trò chơi tương tác (Mini-games)</h3>
               <p>Lật thẻ nhớ (Memory Match), Nối hình với chữ, Bắt bóng từ vựng giúp bé ôn bài không nhàm chán.</p>
             </div>
             <div class="roadmap-item">
-              <div class="phase-badge upcoming">Giai đoạn 3</div>
-              <h3>🔤 Bảng chữ cái (ABC) & Ngữ âm cơ bản (Phonics)</h3>
+              <div class="phase-badge upcoming">Giai đoạn 3 (Tiếp theo)</div>
+              <h3>🔤 Bảng chữ cái (ABC) &amp; Ngữ âm cơ bản (Phonics)</h3>
               <p>Học 26 chữ cái A-Z kèm âm Phonics và bài hát vui nhộn cho bé lớp 1.</p>
             </div>
             <div class="roadmap-item">
               <div class="phase-badge upcoming">Giai đoạn 4</div>
-              <h3>🎙️ Luyện nói & Nhận diện giọng nói (AI Speaking)</h3>
+              <h3>🎙️ Luyện nói &amp; Nhận diện giọng nói (AI Speaking)</h3>
               <p>Bé bấm nút micro đọc theo Sư Tử Leo và nhận chấm điểm 3 sao trực tiếp.</p>
             </div>
             <div class="roadmap-item">
               <div class="phase-badge upcoming">Giai đoạn 5</div>
-              <h3>🏆 Cửa hàng Huy hiệu, Thú cưng ảo & Góc Phụ Huynh</h3>
+              <h3>🏆 Cửa hàng Huy hiệu, Thú cưng ảo &amp; Góc Phụ Huynh</h3>
               <p>Dùng sao đổi phụ kiện cho Sư Tử Leo và xem biểu đồ tiến độ học tập hàng tuần.</p>
             </div>
           </div>
@@ -295,5 +406,6 @@
   </div>
 
   <script src="app.js"></script>
+  <script src="games.js"></script>
 </body>
 </html>
