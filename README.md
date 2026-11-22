@@ -54,4 +54,5 @@
 https://comnepnat.github.io/English4kids/
 
 ## 🙏 Ghi công
-- Hình minh họa emoji vector: [Twemoji](https://github.com/jdecked/twemoji) © Twitter, Inc. và các cộng tác viên, dùng theo giấy phép [CC-BY 4.0](https://creativecommons.org/licenses/by/4.0/).
+- Hình minh họa 3D: [Microsoft Fluent Emoji](https://github.com/microsoft/fluentui-emoji) © Microsoft Corporation, dùng theo giấy phép [MIT](https://github.com/microsoft/fluentui-emoji/blob/main/LICENSE).
+- Hình minh họa dự phòng vector: [Twemoji](https://github.com/jdecked/twemoji) © Twitter, Inc. và các cộng tác viên, dùng theo giấy phép [CC-BY 4.0](https://creativecommons.org/licenses/by/4.0/).

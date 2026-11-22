@@ -386,7 +386,8 @@ function renderRecentActivityCard() {
     const ag = typeof window.getActiveAgeGroup === 'function' ? window.getActiveAgeGroup() : null;
     const prof = typeof window.getActiveProfile === 'function' ? window.getActiveProfile() : null;
     const starter = (ag && TOPICS_DATA.find(t => t.id === ag.starterTopicId)) || TOPICS_DATA[0];
-    iconEl.textContent = starter.icon || '🦁';
+    const sIcon = starter.icon || '🦁';
+    iconEl.innerHTML = typeof window.renderEmojiArt === 'function' ? window.renderEmojiArt(sIcon, '', 'sm') : sIcon;
     titleEl.textContent = `${ starter.titleVi } (${ starter.level })`;
     subEl.textContent = prof && ag
       ? `Bài gợi ý cho ${ prof.name } (${ ag.label } • ${ ag.levels.join('–') })!`
@@ -395,7 +396,8 @@ function renderRecentActivityCard() {
     return;
   }
 
-  iconEl.textContent = act.icon || '⭐';
+  const aIcon = act.icon || '⭐';
+  iconEl.innerHTML = typeof window.renderEmojiArt === 'function' ? window.renderEmojiArt(aIcon, '', 'sm') : aIcon;
   titleEl.textContent = act.title || 'Tiếp tục bài học';
   subEl.textContent = act.subtitle || 'Quay lại đúng nơi bé vừa học lúc trước!';
   btnEl.textContent = '▶ Tiếp tục học ngay ➔';
@@ -494,7 +496,7 @@ function renderTopicsGrid() {
     cardBtn.innerHTML = `
       <div>
         <div class="topic-card-top">
-          <div class="topic-icon-bubble" aria-hidden="true">${ topic.icon }</div>
+          <div class="topic-icon-bubble" aria-hidden="true">${ typeof window.renderEmojiArt === 'function' ? window.renderEmojiArt(topic.icon, '', 'sm') : topic.icon }</div>
           <div class="topic-info">
             <div class="topic-title-row">
               <h3>${ topic.titleVi }</h3>
@@ -928,7 +930,13 @@ function renderCardDots() {
     btn.className = 'card-dot-btn';
     if (index === state.currentCardIndex) btn.classList.add('active');
     if (state.learnedIds.has(card.id)) btn.classList.add('learned');
-    btn.textContent = typeof card.numberVal === 'number' ? String(card.numberVal) : card.emoji;
+    if (typeof card.numberVal === 'number') {
+      btn.textContent = String(card.numberVal);
+    } else if (typeof window.renderEmojiArt === 'function') {
+      btn.innerHTML = window.renderEmojiArt(card.emoji, card.en, 'sm');
+    } else {
+      btn.textContent = card.emoji;
+    }
     btn.title = `${ card.en } - ${ card.vi }`;
 
     btn.addEventListener('click', () => {
