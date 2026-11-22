@@ -111,8 +111,8 @@
 
     // Prefer non-local cloud voices (often neural) slightly over compact offline
     if (v.localService === false) score += 22;
-    // Android Chrome exposes Google's high-quality server voices as "...-network"
-    if (/-network\b/i.test(name)) score += 40;
+    // On Android, on-device voices play smoothly; streamed "-network" voices can stutter on weak Wi-Fi
+    if (/Android/i.test(navigator.userAgent || '') && v.localService === true) score += 30;
 
     // Heavy Penalty: Legacy Robotic SAPI5, eSpeak, Compact & Novelty Voices
     if (/\b(Zira|David|Mark|Hazel|George|Susan|Richard|Heera|Ravi|eSpeak|Compact|Albert|Bad News|Bahh|Bells|Boing|Bubbles|Cellos|Deranged|Fred|Good News|Hysterical|Jester|Junior|Kathy|Organ|Princess|Ralph|Superstar|Trinoids|Whisper|Wobble|Zarvox|Eddy|Flo|Grandma|Grandpa|Reed|Rocko|Sandy|Shelley)\b/i.test(name)) {
@@ -372,56 +372,96 @@
     if (speakBtn) speakBtn.classList.toggle('speaking', isSpeaking);
   }
 
+  const IS_ANDROID = /Android/i.test(navigator.userAgent || '');
+  // Chrome can garbage-collect an utterance mid-sentence (speech stops early, onend never
+  // fires). Holding references until they finish prevents that.
+  const liveUtterances = new Set();
+  let finishCurrentSpeech = null; // resolves the promise of whatever is speaking now
+
+  function splitIntoChunks(text) {
+    // Long text is spoken sentence by sentence: Chrome's online voices cut off after ~15s.
+    if (text.length <= 160) return [text];
+    const parts = text.match(/[^.!?]+[.!?]+["'”’)]*\s*|[^.!?]+$/g) || [text];
+    return parts.map(t => t.trim()).filter(Boolean);
+  }
+
   function speakViaBrowserTts(text, requestedRate) {
-    if (!('speechSynthesis' in window)) return;
+    return new Promise(resolve => {
+      if (!('speechSynthesis' in window)) { resolve(); return; }
+      const synth = window.speechSynthesis;
+      const wasBusy = synth.speaking || synth.pending;
+      synth.cancel();
 
-    const wasSpeaking = window.speechSynthesis.speaking || window.speechSynthesis.pending;
-    window.speechSynthesis.cancel();
+      let settled = false;
+      let safetyTimer = null;
+      const finish = () => {
+        if (settled) return;
+        settled = true;
+        clearTimeout(safetyTimer);
+        if (finishCurrentSpeech === finish) finishCurrentSpeech = null;
+        setSpeakingVisual(false);
+        resolve();
+      };
+      finishCurrentSpeech = finish;
 
-    const doSpeak = () => {
-      const utterance = new SpeechSynthesisUtterance(prepareSpeechText(text));
-      const bestVoice = pickBestBrowserVoice();
-      if (bestVoice) {
-        utterance.voice = bestVoice;
-        utterance.lang = bestVoice.lang || prefs.accent;
-      } else {
-        utterance.lang = prefs.accent;
-      }
+      const doSpeak = () => {
+        if (settled) return;
+        const chunks = splitIntoChunks(prepareSpeechText(text));
+        const bestVoice = pickBestBrowserVoice();
+        // Calibrate natural rate: avoid overly slow distortion (0.55 -> 0.70; 0.85..0.95 -> ~0.95)
+        const baseRate = requestedRate <= 0.65 ? 0.70 : Math.min(1.05, Math.max(0.90, requestedRate + 0.06));
+        const rate = Math.max(0.62, Math.min(1.2, +(baseRate * prefs.speedMultiplier).toFixed(2)));
 
-      // Calibrate natural rate: avoid overly slow distortion (0.55 -> 0.70; 0.85..0.95 -> ~0.95)
-      let baseRate = requestedRate <= 0.65 ? 0.70 : Math.min(1.05, Math.max(0.90, requestedRate + 0.06));
-      utterance.rate = Math.max(0.62, Math.min(1.2, +(baseRate * prefs.speedMultiplier).toFixed(2)));
+        setSpeakingVisual(true);
+        chunks.forEach((chunk, i) => {
+          const utterance = new SpeechSynthesisUtterance(chunk);
+          if (bestVoice) {
+            utterance.voice = bestVoice;
+            utterance.lang = bestVoice.lang || prefs.accent;
+          } else {
+            utterance.lang = prefs.accent;
+          }
+          utterance.rate = rate;
+          utterance.pitch = 1.0; // natural pitch (1.1 sounds like a chipmunk)
+          utterance.volume = 1.0;
+          liveUtterances.add(utterance);
+          const done = () => {
+            liveUtterances.delete(utterance);
+            if (i === chunks.length - 1) finish();
+          };
+          utterance.onend = done;
+          utterance.onerror = done;
+          synth.speak(utterance);
+        });
 
-      // CRITICAL: Natural pitch 1.0 (avoid robotic chipmunk pitch 1.1!)
-      utterance.pitch = 1.0;
-      utterance.volume = 1.0;
+        // Safety net in case the browser never reports the end of speech.
+        const estimateMs = 2500 + (text.length * 95) / rate;
+        safetyTimer = setTimeout(finish, Math.min(30000, estimateMs));
+      };
 
-      setSpeakingVisual(true);
-      utterance.onend = () => setSpeakingVisual(false);
-      utterance.onerror = () => setSpeakingVisual(false);
-
-      window.speechSynthesis.speak(utterance);
-    };
-
-    // Tiny settle guard prevents Chrome/Safari from clipping the first syllable after cancel()
-    if (wasSpeaking) {
-      setTimeout(doSpeak, 25);
-    } else {
-      doSpeak();
-    }
+      // Speaking right after cancel() makes some engines (notably Android) drop or clip
+      // the new utterance, so give the engine a moment to settle.
+      const settleMs = IS_ANDROID ? 150 : (wasBusy ? 60 : 0);
+      if (settleMs) setTimeout(doSpeak, settleMs);
+      else doSpeak();
+    });
   }
 
   /* ------------------------------------------------------------------
      Public Unified Speech API (Replaces legacy speakEnglish seamlessly)
      ------------------------------------------------------------------ */
+  let currentSpeech = Promise.resolve();
+
   window.stopAllSpeech = function () {
     speakToken += 1;
     if (activeAudio) {
       try { activeAudio.pause(); activeAudio.currentTime = 0; } catch (e) { /* ignore */ }
+      if (typeof activeAudio.onended === 'function') activeAudio.onended();
     }
     if ('speechSynthesis' in window) {
       window.speechSynthesis.cancel();
     }
+    if (finishCurrentSpeech) finishCurrentSpeech();
     setSpeakingVisual(false);
   };
 
@@ -433,15 +473,11 @@
     }
   };
 
-  window.speakEnglish = async function (text, rate = 0.92) {
-    if (!text || !String(text).trim()) return;
-    window.stopAllSpeech();
-    const myToken = speakToken;
-
+  async function speakInternal(text, rate, myToken) {
     const cleanWord = extractCleanSingleWord(text);
     const isSlow = rate <= 0.68;
 
-    // Layer 1: Try Real Human Studio MP3 for single words (instant when cached, ~200ms first time)
+    // Layer 1: Real human studio MP3 for single words (instant when cached, ~200ms first time)
     if (prefs.nativeWordAudio && cleanWord) {
       const mp3Url = await resolveNativeWordAudioUrl(cleanWord, prefs.accent);
       if (myToken !== speakToken) return;
@@ -461,15 +497,52 @@
       }
     }
 
-    // Layer 3 (Optional): Cloud AI Neural TTS for sentences/stories when user configured an API key
+    // Layer 3 (Optional): Cloud AI TTS for sentences/stories when the parent added an API key
     if (prefs.cloudProvider !== 'none' && prefs.cloudApiKey) {
       const ok = await tryPlayCloudTts(text, (isSlow ? 0.75 : 0.96) * prefs.speedMultiplier, myToken);
       if (ok || myToken !== speakToken) return;
     }
 
-    // Layer 2: Best Ranked Neural Browser Voice (natural pitch 1.0)
+    // Layer 2: Best ranked device voice
     if (myToken !== speakToken) return;
-    speakViaBrowserTts(text, rate);
+    await speakViaBrowserTts(text, rate);
+  }
+
+  // Returns a Promise that resolves when the speech has finished (or was interrupted).
+  window.speakEnglish = function (text, rate = 0.92) {
+    if (!text || !String(text).trim()) return Promise.resolve();
+    window.stopAllSpeech();
+    const myToken = speakToken;
+    currentSpeech = speakInternal(text, rate, myToken).catch(() => {});
+    return currentSpeech;
+  };
+
+  /**
+   * Run `callback` once the current speech has finished, plus a short pause, so the next
+   * scene/step never cuts a sentence off. `min` keeps a minimum pace, `max` caps the wait.
+   * Returns { cancel } so callers can abort (e.g. when the user leaves the screen).
+   */
+  window.afterSpeech = function (callback, { gap = 600, min = 0, max = 20000 } = {}) {
+    const started = Date.now();
+    let cancelled = false;
+    let timer = null;
+    const capTimer = setTimeout(proceed, max);
+    let proceeded = false;
+    function proceed() {
+      if (proceeded || cancelled) return;
+      proceeded = true;
+      clearTimeout(capTimer);
+      const wait = Math.max(gap, min - (Date.now() - started));
+      timer = setTimeout(() => { if (!cancelled) callback(); }, wait);
+    }
+    currentSpeech.then(proceed, proceed);
+    return {
+      cancel() {
+        cancelled = true;
+        clearTimeout(capTimer);
+        clearTimeout(timer);
+      }
+    };
   };
 
   /* ------------------------------------------------------------------

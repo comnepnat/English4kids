@@ -182,7 +182,7 @@
   function stopAll() {
     clearTimers();
     if (g.balloon) g.balloon.running = false;
-    if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+    if (typeof window.stopAllSpeech === 'function') window.stopAllSpeech(); else if ('speechSynthesis' in window) window.speechSynthesis.cancel();
     const sky = $('balloon-sky');
     if (sky) sky.querySelectorAll('.balloon').forEach(b => b.remove());
   }

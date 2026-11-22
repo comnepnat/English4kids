@@ -516,6 +516,7 @@
   }
 
   function stopBlendTimers() {
+    blendRunId += 1; // stops a sound sequence that is waiting for speech to finish
     pState.blendTimers.forEach(t => clearTimeout(t));
     pState.blendTimers = [];
     document.querySelectorAll('.blend-letter-tile.active-sound').forEach(el => el.classList.remove('active-sound'));
@@ -581,7 +582,7 @@
   function goHomeFromPhonics() {
     stopAbcSong();
     stopBlendTimers();
-    if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+    if (typeof window.stopAllSpeech === 'function') window.stopAllSpeech(); else if ('speechSynthesis' in window) window.speechSynthesis.cancel();
     document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
     $('view-home').classList.add('active');
     updatePhonicsProgressUI();
@@ -746,7 +747,7 @@
   function toggleAbcSong() {
     if (pState.songPlaying) {
       stopAbcSong();
-      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+      if (typeof window.stopAllSpeech === 'function') window.stopAllSpeech(); else if ('speechSynthesis' in window) window.speechSynthesis.cancel();
       return;
     }
 
@@ -865,34 +866,36 @@
     }
   }
 
-  function playBlendingSequence(slow = false) {
+  let blendRunId = 0;
+
+  // Each sound is spoken in full before the next one starts (fixed timers cut sounds off
+  // on slower devices), then the whole word is read.
+  async function playBlendingSequence(slow = false) {
     stopBlendTimers();
+    const runId = ++blendRunId;
     const pool = getActiveBlendPool();
     const item = pool[pState.blendIndex];
     if (!item) return;
 
-    const step = slow ? 850 : 600;
-    item.parts.forEach((part, idx) => {
-      const t = setTimeout(() => {
-        const tile = $(`blend-tile-${ idx }`);
-        document.querySelectorAll('.blend-letter-tile').forEach(el => el.classList.remove('active-sound'));
-        if (tile) tile.classList.add('active-sound');
-        speakEnglish(part.speak, slow ? 0.72 : 0.88);
-      }, idx * step);
-      pState.blendTimers.push(t);
-    });
+    const pause = ms => new Promise(r => { const t = setTimeout(r, ms); pState.blendTimers.push(t); });
+    const stillActive = () => runId === blendRunId;
+    const gap = slow ? 380 : 220;
 
-    const finalTimer = setTimeout(() => {
-      document.querySelectorAll('.blend-letter-tile').forEach(el => el.classList.add('active-sound'));
-      playSoundEffect('pop');
-      speakEnglish(item.word.toLowerCase(), slow ? 0.75 : 0.9);
-      const clearT = setTimeout(() => {
-        document.querySelectorAll('.blend-letter-tile').forEach(el => el.classList.remove('active-sound'));
-      }, 900);
-      pState.blendTimers.push(clearT);
-    }, item.parts.length * step + 180);
+    for (let idx = 0; idx < item.parts.length; idx++) {
+      if (!stillActive()) return;
+      const tile = $(`blend-tile-${ idx }`);
+      document.querySelectorAll('.blend-letter-tile').forEach(el => el.classList.remove('active-sound'));
+      if (tile) tile.classList.add('active-sound');
+      await speakEnglish(item.parts[idx].speak, slow ? 0.72 : 0.88);
+      await pause(gap);
+    }
 
-    pState.blendTimers.push(finalTimer);
+    if (!stillActive()) return;
+    document.querySelectorAll('.blend-letter-tile').forEach(el => el.classList.add('active-sound'));
+    playSoundEffect('pop');
+    await speakEnglish(item.word.toLowerCase(), slow ? 0.75 : 0.9);
+    if (!stillActive()) return;
+    document.querySelectorAll('.blend-letter-tile').forEach(el => el.classList.remove('active-sound'));
   }
 
   /* ==========================================================================
