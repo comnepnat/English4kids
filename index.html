@@ -8,6 +8,14 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#FFC23C" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="English4Kids" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <link rel="icon" type="image/png" sizes="192x192" href="assets/icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png" />
   <link rel="preconnect" href="https://api.dictionaryapi.dev" crossorigin>
   <link rel="stylesheet" href="styles.css" />
 </head>
@@ -179,6 +187,14 @@
         </div>
 
         <!-- 6 Main Content Hubs (Clean Outside Navigation - 3x2 Tablet Grid) -->
+        <!-- Install-as-app banner (shown only when Chrome offers installation) -->
+        <div class="install-banner hidden" id="install-banner">
+          <span class="install-banner-icon" aria-hidden="true">📲</span>
+          <span class="install-banner-text"><strong>Cài English4Kids lên màn hình chính</strong> để mở nhanh như một ứng dụng, dùng được cả khi mất mạng.</span>
+          <button type="button" class="install-banner-btn" id="btn-install-app">Cài app</button>
+          <button type="button" class="install-banner-close" id="btn-install-dismiss" aria-label="Ẩn">✕</button>
+        </div>
+
         <!-- Leo's Daily Quest + Garden + Sticker album -->
         <div class="quest-banner" id="quest-banner">
           <div class="quest-banner-main">
@@ -1551,13 +1567,6 @@
   <script src="milestones.js"></script>
   <script src="backup.js"></script>
   <script src="quest.js"></script>
-  <script>
-    // Cache pictures, sounds and app files so the app opens fast and works offline.
-    if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js').catch(() => {});
-      });
-    }
-  </script>
+  <script src="pwa.js"></script>
 </body>
 </html>
