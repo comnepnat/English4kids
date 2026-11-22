@@ -7292,3 +7292,125 @@ button {
   }
 }
 
+
+/* ==========================================================================
+   Landscape tablets (e.g. Galaxy Tab S9 FE ~1152×650 usable): fit the whole
+   flashcard on one screen without scrolling.
+   ========================================================================== */
+@media (orientation: landscape) and (min-width: 900px) and (max-height: 820px) {
+  /* One row: back button • mode tabs • topic badge */
+  #view-flashcard .deck-top-bar {
+    margin-bottom: 8px;
+    gap: 8px;
+    flex-wrap: nowrap;
+  }
+
+  #view-flashcard .btn-back {
+    flex-shrink: 0;
+    padding: 8px 14px;
+    font-size: 0.95rem;
+  }
+
+  #view-flashcard .mode-switcher {
+    order: 2;
+    flex-shrink: 0;
+  }
+
+  #view-flashcard .mode-tab {
+    padding: 7px 12px;
+    font-size: 0.92rem;
+  }
+
+  #view-flashcard .topic-badge-header {
+    order: 3;
+    min-width: 0;
+    padding: 6px 14px;
+    font-size: 1rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Lesson sets and card dots share one row */
+  #view-flashcard.active {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    column-gap: 14px;
+    align-items: center;
+  }
+
+  #view-flashcard.active > * {
+    grid-column: 1 / -1;
+  }
+
+  #view-flashcard.active > .lesson-sets-bar {
+    grid-column: 1;
+    margin-bottom: 8px;
+  }
+
+  #view-flashcard.active > .card-dots-bar {
+    grid-column: 2;
+    margin-bottom: 8px;
+    justify-content: flex-start;
+  }
+
+  #view-flashcard .lesson-sets-bar {
+    flex-wrap: nowrap;
+    gap: 6px;
+  }
+
+  #view-flashcard .lesson-sets-bar .filter-pill {
+    padding: 6px 12px;
+    font-size: 0.85rem;
+  }
+
+  #view-flashcard .card-dots-bar {
+    flex-wrap: nowrap;
+    gap: 6px;
+  }
+
+  #view-flashcard .card-dot-btn {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    font-size: 1.15rem;
+  }
+
+  /* Keep the three audio buttons on a single line */
+  #view-flashcard .card-audio-controls {
+    flex-wrap: nowrap;
+    gap: 8px;
+  }
+
+  #view-flashcard .card-audio-controls button {
+    padding: 8px 14px;
+    font-size: 0.95rem;
+    white-space: nowrap;
+  }
+
+  .flashcard-3d {
+    min-height: 360px;
+  }
+
+  .flashcard-face {
+    padding: 14px 18px;
+  }
+
+  .card-illustration-box {
+    width: 112px;
+    height: 112px;
+  }
+
+  .art-emoji-giant {
+    font-size: 66px;
+  }
+
+  .english-word {
+    font-size: 2.2rem;
+  }
+
+  /* The study tip is the same on every card; skip it so the back face fits */
+  #view-flashcard .fun-fact-box {
+    display: none;
+  }
+}
