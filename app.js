@@ -303,8 +303,9 @@ function updateHeaderAndMissionUI() {
     msMetric.textContent = `${ msSum.passedTotal } / ${ msSum.totalMilestones } mốc`;
   }
 
+  const totalEpisodes = typeof window.getStoriesTotalCount === 'function' ? window.getStoriesTotalCount() : 18;
   const videosMetric = document.getElementById('metric-videos-val');
-  if (videosMetric) videosMetric.textContent = `${ state.completedEpisodes.size }/6 • ${ state.learnedLetters.size }/26`;
+  if (videosMetric) videosMetric.textContent = `${ state.completedEpisodes.size }/${ totalEpisodes } • ${ state.learnedLetters.size }/26`;
 
   const hubSrsSub = document.getElementById('hub-srs-sub');
   if (hubSrsSub && srsSum) {
@@ -1123,6 +1124,7 @@ function bindEvents() {
     if (typeof window.refreshPhonicsUI === 'function') window.refreshPhonicsUI();
     if (typeof window.refreshSrsUI === 'function') window.refreshSrsUI();
     if (typeof window.refreshMilestonesUI === 'function') window.refreshMilestonesUI();
+    if (typeof window.refreshStoriesUI === 'function') window.refreshStoriesUI();
     closeRoadmap();
   });
 }

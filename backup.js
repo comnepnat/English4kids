@@ -60,6 +60,7 @@
     if (typeof window.refreshPhonicsUI === 'function') window.refreshPhonicsUI();
     if (typeof window.refreshSrsUI === 'function') window.refreshSrsUI();
     if (typeof window.refreshMilestonesUI === 'function') window.refreshMilestonesUI();
+    if (typeof window.refreshStoriesUI === 'function') window.refreshStoriesUI();
   }
 
   function showStatus(msg, isError = false) {

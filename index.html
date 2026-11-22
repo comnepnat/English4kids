@@ -121,7 +121,7 @@
               <div class="metric-chip">
                 <span class="m-icon">🎬</span>
                 <div>
-                  <strong id="metric-videos-val">0/6 • 0/26</strong>
+                  <strong id="metric-videos-val">0/18 • 0/26</strong>
                   <span>Phim &amp; ABC</span>
                 </div>
               </div>
@@ -161,8 +161,8 @@
           <button class="main-hub-card" id="hub-btn-stories" type="button" style="--hub-accent:#EC4899; --hub-border:#F472B6; --hub-shadow:#BE185D; --hub-soft:#FCE7F3;">
             <div class="hub-icon-wrap">🎬</div>
             <h3>Phim Tương Tác</h3>
-            <span class="hub-sub">6 Tập • Kiểu Khan Kids</span>
-            <p>Hoạt hình chạm trực tiếp &amp; lồng tiếng song ngữ</p>
+            <span class="hub-sub">18 Tập • Kiểu Khan Kids</span>
+            <p>Hoạt hình chạm, đếm số, sắp xếp &amp; hội thoại từ Pre-A1 đến B2</p>
             <span class="hub-cta">Xem phim ➔</span>
           </button>
 
@@ -233,17 +233,28 @@
         </div>
       </section>
 
-      <!-- VIEW 1C: INTERACTIVE STORIES LIBRARY -->
-      <section class="view-section" id="view-stories-hub" aria-label="Thư viện phim hoạt hình tương tác">
+      <!-- VIEW 1C: INTERACTIVE STORIES LIBRARY (18 Episodes • Khan Academy Kids Style) -->
+      <section class="view-section" id="view-stories-hub" aria-label="Thư viện 18 phim hoạt hình tương tác">
         <div class="deck-top-bar">
           <button class="btn-back" id="btn-stories-hub-back" type="button">
             <span class="back-arrow">⬅</span> Trang chủ
           </button>
           <div class="topic-badge-header">
             <span>🎬</span>
-            <span>Phim Hoạt Hình Tương Tác (Kiểu Khan Kids)</span>
+            <span>Phim Hoạt Hình Tương Tác (18 Tập • Khan Kids)</span>
           </div>
         </div>
+
+        <!-- CEFR Filter for 18 Interactive Episodes -->
+        <div class="cefr-filter-bar" id="stories-cefr-filter" role="group" aria-label="Lọc tập phim theo trình độ">
+          <button class="filter-pill active" data-slevel="all" type="button">🌈 Tất cả (18 tập)</button>
+          <button class="filter-pill" data-slevel="Pre-A1" type="button">🌱 Pre-A1 (4)</button>
+          <button class="filter-pill" data-slevel="A1" type="button">🌿 A1 (4)</button>
+          <button class="filter-pill" data-slevel="A2" type="button">🌳 A2 (4)</button>
+          <button class="filter-pill" data-slevel="B1" type="button">🚀 B1 (3)</button>
+          <button class="filter-pill" data-slevel="B2" type="button">🏆 B2 (3)</button>
+        </div>
+
         <div class="stories-home-grid" id="stories-home-grid">
           <!-- Populated dynamically by stories.js -->
         </div>
@@ -748,7 +759,8 @@
             <!-- Interactive & Decorative Props Layer -->
             <div class="story-props-layer" id="story-props-layer"></div>
 
-            <!-- Animated Mascot Actor: Leo the Lion -->
+            <!-- Animated Mascot Actor: Leo / Mimi / Toby / Lulu + Speech Bubble -->
+            <div class="story-speech-bubble" id="story-speech-bubble" aria-hidden="true"></div>
             <div class="story-leo-actor mood-wave" id="story-leo-actor" aria-hidden="true">
               <div class="leo-actor-emoji">🦁</div>
               <div class="leo-name-tag">Leo</div>
@@ -774,6 +786,7 @@
             <button class="btn-action-flip" id="btn-story-prev" type="button">⏮ Cảnh trước</button>
             <button class="btn-story-play" id="btn-story-playpause" type="button">⏸ Tạm dừng</button>
             <button class="btn-speak-slow" id="btn-story-replay-voice" type="button">🔊 Nghe lại</button>
+            <button class="btn-secondary-pill" id="btn-story-sub-toggle" type="button">🇻🇳 Phụ đề Việt: Bật</button>
             <button class="btn-action-flip" id="btn-story-next" type="button">Cảnh sau ⏭</button>
           </div>
         </div>
@@ -1321,6 +1334,7 @@
   <script src="voice.js"></script>
   <script src="games.js"></script>
   <script src="phonics.js"></script>
+  <script src="stories-data.js"></script>
   <script src="stories.js"></script>
   <script src="srs.js"></script>
   <script src="milestones.js"></script>

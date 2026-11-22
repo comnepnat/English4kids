@@ -5846,3 +5846,222 @@ button {
     font-size: 0.88rem;
   }
 }
+
+/* ==========================================================================
+   KHAN ACADEMY KIDS INTERACTIVE THEATRE EXPANSION (18 EPISODES • 4 MECHANICS)
+   ========================================================================== */
+.story-stage.theme-farm {
+  background: linear-gradient(180deg, #7DD3FC 0%, #E0F2FE 58%, #A3E635 58%, #65A30D 100%);
+}
+.story-stage.theme-weather {
+  background: linear-gradient(180deg, #60A5FA 0%, #BAE6FD 60%, #86EFAC 60%, #22C55E 100%);
+}
+.story-stage.theme-music {
+  background: linear-gradient(180deg, #4C1D95 0%, #7C3AED 58%, #FDE68A 58%, #F59E0B 100%);
+}
+.story-stage.theme-ocean {
+  background: linear-gradient(180deg, #0284C7 0%, #0EA5E9 50%, #0369A1 85%, #FDE68A 92%, #F59E0B 100%);
+}
+.story-stage.theme-bakery {
+  background: linear-gradient(180deg, #FFE4E6 0%, #FFF1F2 60%, #FDE68A 60%, #FBBF24 100%);
+}
+.story-stage.theme-park {
+  background: linear-gradient(180deg, #FBCFE8 0%, #FDF2F8 58%, #86EFAC 58%, #16A34A 100%);
+}
+.story-stage.theme-eco {
+  background: linear-gradient(180deg, #A7F3D0 0%, #ECFDF5 58%, #34D399 58%, #059669 100%);
+}
+.story-stage.theme-lab {
+  background: linear-gradient(180deg, #CFFAFE 0%, #ECFEFF 64%, #CBD5E1 64%, #94A3B8 100%);
+}
+.story-stage.theme-future {
+  background: radial-gradient(circle at 25% 20%, #3730A3 0%, #1E1B4B 58%, #0F172A 100%);
+}
+.story-stage.theme-detective {
+  background: linear-gradient(180deg, #312E81 0%, #4338CA 58%, #CBD5E1 58%, #64748B 100%);
+}
+.story-stage.theme-summit {
+  background: linear-gradient(180deg, #0F766E 0%, #14B8A6 58%, #E2E8F0 58%, #94A3B8 100%);
+}
+
+.story-stage.theme-future .story-sky-sun,
+.story-stage.theme-music .story-sky-sun,
+.story-stage.theme-detective .story-sky-sun {
+  background: radial-gradient(circle, #FEF08A 0%, #A855F7 100%);
+  box-shadow: 0 0 28px rgba(192, 132, 252, 0.75);
+}
+
+.story-stage.theme-ocean .story-sky-sun {
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.75) 0%, rgba(186, 230, 253, 0.2) 100%);
+  box-shadow: 0 0 36px rgba(186, 230, 253, 0.7);
+}
+
+/* Episode Cards CEFR Level & Host Badges */
+.ep-title-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.ep-level-pill {
+  flex-shrink: 0;
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: var(--radius-pill);
+  background: #F1F5F9;
+  color: var(--text-navy);
+}
+
+.ep-level-pill.cefr-pre-a1 { background: #DCFCE7; color: #15803D; }
+.ep-level-pill.cefr-a1 { background: #E0F2FE; color: #0369A1; }
+.ep-level-pill.cefr-a2 { background: #FEF3C7; color: #B45309; }
+.ep-level-pill.cefr-b1 { background: #DBEAFE; color: #1D4ED8; }
+.ep-level-pill.cefr-b2 { background: #EDE9FE; color: #6D28D9; }
+
+.story-ep-card.is-watched {
+  border-color: #22C55E;
+}
+
+.story-ep-card.is-watched .ep-play-circle {
+  background: #22C55E;
+  color: #FFFFFF;
+}
+
+.ep-foot-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  margin-top: 4px;
+  flex-wrap: wrap;
+}
+
+.ep-host-tag {
+  font-size: 0.76rem;
+  font-weight: 800;
+  color: var(--text-navy);
+  background: #F1F5F9;
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+}
+
+/* Floating Comic Speech Bubble beside Mascot Host */
+.story-speech-bubble {
+  position: absolute;
+  left: 98px;
+  bottom: 18px;
+  max-width: 340px;
+  z-index: 5;
+  background: rgba(255, 255, 255, 0.94);
+  border: 2.5px solid #FBBF24;
+  border-radius: 18px 18px 18px 4px;
+  padding: 6px 12px;
+  font-family: var(--font-display);
+  font-size: 0.86rem;
+  font-weight: 800;
+  color: var(--text-navy);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.14);
+  line-height: 1.25;
+  pointer-events: none;
+}
+
+/* Sparkling Step/Count Badge on Interactive Items */
+.sii-order-badge {
+  position: absolute;
+  top: -12px;
+  right: -10px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, #FDE047 0%, #F59E0B 100%);
+  color: #78350F;
+  border: 3px solid #FFFFFF;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.22);
+}
+
+/* Interactive Dialogue Reply Stack on Stage */
+.stage-dialogue-stack {
+  position: absolute;
+  top: 62px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(560px, 90%);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 5;
+}
+
+.stage-dialogue-btn {
+  background: rgba(255, 255, 255, 0.95);
+  border: 3px solid #818CF8;
+  box-shadow: 0 4px 0 #4F46E5, 0 8px 18px rgba(0, 0, 0, 0.16);
+  border-radius: 18px;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-align: left;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.stage-dialogue-btn:hover {
+  transform: translateY(-2px);
+  background: #EEF2FF;
+}
+
+.stage-dialogue-btn.correct-hit {
+  background: #DCFCE7;
+  border-color: #22C55E;
+  box-shadow: 0 4px 0 #15803D;
+}
+
+.stage-dialogue-btn.wrong-hit {
+  background: #FEE2E2;
+  border-color: #EF4444;
+  box-shadow: 0 4px 0 #B91C1C;
+  animation: wrongShake 0.35s ease;
+}
+
+.sdb-emoji {
+  font-size: 28px;
+  flex-shrink: 0;
+}
+
+.sdb-texts strong {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 0.98rem;
+  font-weight: 800;
+  color: var(--text-navy);
+  line-height: 1.2;
+}
+
+.sdb-texts small {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-slate);
+}
+
+@media (max-width: 640px) {
+  .story-speech-bubble {
+    display: none;
+  }
+  .stage-dialogue-stack {
+    top: 56px;
+    gap: 7px;
+  }
+  .stage-dialogue-btn {
+    padding: 8px 10px;
+  }
+}

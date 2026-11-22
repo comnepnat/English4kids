@@ -23,9 +23,18 @@
 - **15 Mốc Kiểm Tra (3 mốc / trình độ CEFR)**: Mốc Chặng 1, Mốc Chặng 2 và **👑 Thi Vượt Mốc Trình Độ** (đạt ≥ 80% nhận Vương miện & Huy hiệu 1–3 ★).
 - **5 Dạng Bài Tương Tác Đa Kỹ Năng**: 🎧 Nghe chọn hình, 📖 Đọc hiểu chọn từ, 🧩 Điền từ vào câu, 🔤 Ghép mảnh chữ chính tả và ⚡ Đúng/Sai tốc độ — kèm **5 Tim ❤️**, **Combo 🔥**, đồng hồ bấm giờ, báo cáo phân tích 4 kỹ năng và nút **1 chạm đẩy từ sai vào Ôn tập AnkiDroid**.
 
-## 🎬 Phim Tương Tác, 🎮 Mini-games & 🔤 ABC Phonics
+## 🎬 Phim Hoạt Hình Tương Tác (18 Tập • Kiểu Khan Academy Kids)
 
-- **6 tập Phim Hoạt Hình Tương Tác** kiểu Khan Academy Kids cùng Sư Tử Leo.
+- **18 tập phim hoạt hình tương tác** phân tầng từ **Pre-A1 ➔ B2** cùng 4 nhân vật dẫn chuyện đáng yêu (**🦁 Leo**, **🐼 Mimi**, **🦊 Toby**, **🐰 Lulu**) kèm bong bóng lời thoại & nút bật/tắt phụ đề song ngữ.
+- **4 cơ chế tương tác trực tiếp ngay trong phim**:
+  - ⭐ **Chạm tìm hình** (*Tap to Find*)
+  - 🔢 **Tập đếm trực tiếp** (*Interactive Counting* 1–5 có giọng đếm từng bước)
+  - 🧩 **Sắp xếp đúng thứ tự** (*Sequence Builder*: thói quen sáng, công thức làm bánh, vòng tuần hoàn nước, quy trình tư duy...)
+  - 💬 **Hội thoại phản xạ** (*Dialogue Choices*: chọn câu trả lời giao tiếp lịch sự, cảm xúc SEL & tranh luận B2).
+
+## 🎙️ Hệ Thống Phát Âm Tự Nhiên 3 Lớp, 🎮 Mini-games & 🔤 ABC Phonics
+
+- **Giọng người thật (Studio từ điển)** cho 2.000 từ vựng (🇺🇸 Anh–Mỹ / 🇬🇧 Anh–Anh) + **tự động xếp hạng giọng AI Neural HD** (`pitch = 1.0`) + nút **🎙️ Giọng** chọn giọng & tốc độ ngay trên thanh tiêu đề.
 - **3 Mini-games** (Lật Thẻ Nhớ, Nối Hình Với Chữ, Bắt Bóng Vàng x2 Sao) với 3 mức độ Dễ / Vừa / Thử thách.
 - **ABC & Phonics**: 26 chữ cái, 8 âm ghép đôi (`SH, CH, TH, PH, WH, CK, NG, OO`), 33 từ ghép vần và 3 chế độ đố vui ngữ âm.
 
