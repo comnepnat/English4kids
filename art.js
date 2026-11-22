@@ -886,5 +886,57 @@
     });
   }
 
+  /* ==========================================================================
+     8. KID-FRIENDLY HOME HERO: Leo waves and greets the child by name
+     ========================================================================== */
+  const HERO_GREETINGS = [
+    ['Hi', "Let's play and learn!", 'Cùng vừa chơi vừa học nhé!'],
+    ['Hello', 'Ready for new words?', 'Sẵn sàng học từ mới chưa nào?'],
+    ['Yay', 'You are doing great!', 'Bé đang học giỏi lắm!']
+  ];
+
+  window.refreshHomeHero = function () {
+    const card = document.getElementById('recent-activity-card');
+    if (!card) return;
+    let hero = document.getElementById('home-hero-mascot');
+    if (!hero) {
+      card.classList.add('has-hero');
+      hero = document.createElement('div');
+      hero.className = 'home-hero';
+      hero.id = 'home-hero-mascot';
+      hero.innerHTML = `
+        <button type="button" class="home-hero-leo" aria-label="Leo">${ window.renderMascotSvg('leo', 'wave', false) }</button>
+        <div class="home-hero-bubble">
+          <strong class="hero-line-en"></strong>
+          <span class="hero-line-vi"></span>
+        </div>`;
+      card.insertBefore(hero, card.querySelector('.recent-body'));
+      hero.querySelector('.home-hero-leo').addEventListener('click', () => {
+        const en = hero.querySelector('.hero-line-en').textContent;
+        if (typeof window.speakEnglish === 'function') window.speakEnglish(en, 0.92);
+        const leo = hero.querySelector('.home-hero-leo');
+        leo.classList.remove('is-jumping');
+        void leo.offsetWidth;
+        leo.classList.add('is-jumping');
+      });
+    }
+    const prof = typeof window.getActiveProfile === 'function' ? window.getActiveProfile() : null;
+    const name = prof && prof.name ? prof.name : 'friend';
+    const [hi, en, vi] = HERO_GREETINGS[new Date().getDate() % HERO_GREETINGS.length];
+    hero.querySelector('.hero-line-en').textContent = `${ hi }, ${ name }! ${ en }`;
+    hero.querySelector('.hero-line-vi').textContent = vi;
+  };
+
+  /* Montessori colors for the big flashcard word: vowels blue, consonants red */
+  window.renderColorfulWord = function (word) {
+    const esc = ch => ch.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    return Array.from(String(word || '')).map((ch, i) => {
+      if (!/[a-z]/i.test(ch)) return `<span class="cw-gap">${ esc(ch) }</span>`;
+      const cls = /[aeiou]/i.test(ch) ? 'cw-vowel' : 'cw-consonant';
+      return `<span class="cw-letter ${ cls }" style="animation-delay:${ i * 45 }ms">${ ch }</span>`;
+    }).join('');
+  };
+
   document.addEventListener('DOMContentLoaded', hydrateStaticStorybookArt);
+  document.addEventListener('DOMContentLoaded', () => window.refreshHomeHero());
 })();

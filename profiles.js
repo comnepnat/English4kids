@@ -293,6 +293,8 @@
     if (vocabAgeBtn) vocabAgeBtn.textContent = `${ ag.icon } Hợp tuổi bé (${ ag.levels.join('–') })`;
     const storyAgeBtn = $('btn-stories-filter-age');
     if (storyAgeBtn) storyAgeBtn.textContent = `${ ag.icon } Hợp tuổi bé (${ ag.levels.join('–') })`;
+
+    if (typeof window.refreshHomeHero === 'function') window.refreshHomeHero();
   }
 
   /* ------------------------------------------------------------------
