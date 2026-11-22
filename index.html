@@ -25,21 +25,28 @@
         <div class="mascot-badge" aria-hidden="true">🦁</div>
         <div class="brand-titles">
           <span class="brand-name">English<span class="highlight">4Kids</span></span>
-          <span class="brand-tag">Cùng Sư Tử Leo học từ vựng!</span>
+          <span class="brand-tag">Cùng Sư Tử Leo học tiếng Anh!</span>
         </div>
       </button>
 
       <div class="header-stats">
+        <button class="profile-switcher-pill" id="btn-profile-switcher" type="button" title="Chuyển đổi hoặc tạo hồ sơ cho nhiều bé">
+          <span class="ps-avatar" id="header-profile-avatar">🦁</span>
+          <span class="ps-name" id="header-profile-name">Bé 1</span>
+          <span class="ps-age" id="header-profile-age">6–7t</span>
+          <span class="ps-caret">▾</span>
+        </button>
+
         <div class="stat-pill star-pill" id="star-counter-pill" title="Tổng số sao bé đạt được">
           <span class="stat-icon">⭐</span>
           <span class="stat-val" id="total-stars-count">0</span>
-          <span class="stat-label">Sao vàng</span>
+          <span class="stat-label">Sao</span>
         </div>
 
         <div class="stat-pill learned-pill" id="learned-counter-pill" title="Số từ vựng bé đã thuộc">
           <span class="stat-icon">🎓</span>
           <span class="stat-val" id="total-learned-count">0</span>
-          <span class="stat-label">Từ đã thuộc</span>
+          <span class="stat-label">Từ</span>
         </div>
 
         <button class="btn-icon-action" id="btn-voice-modal" type="button" title="Chọn giọng đọc tự nhiên (Anh-Mỹ / Anh-Anh)">
@@ -72,8 +79,11 @@
           <!-- Card A: Bài mới nhất vừa học (Continue Learning) -->
           <div class="dash-card recent-card" id="recent-activity-card">
             <div class="dash-card-head">
-              <span class="dash-tag recent-tag">▶️ Bài mới nhất vừa học</span>
-              <span class="cefr-pill-mini" id="current-cefr-badge">🌱 Trình độ: Pre-A1</span>
+              <span class="dash-tag recent-tag" id="home-welcome-profile">🦁 Bé 1 • 🌱 6–7 tuổi (Pre-A1–A1)</span>
+              <div class="recent-head-right">
+                <span class="cefr-pill-mini" id="current-cefr-badge">🌱 Pre-A1</span>
+                <button type="button" class="btn-switch-mini" id="btn-home-switch-profile">👨‍👩‍👧‍👦 Đổi bé</button>
+              </div>
             </div>
             <div class="recent-body">
               <div class="recent-icon-box" id="recent-icon">🦁</div>
@@ -211,6 +221,7 @@
         <!-- CEFR Level Filter Pills -->
         <div class="cefr-filter-bar" id="cefr-filter-bar" role="group" aria-label="Lọc theo trình độ CEFR">
           <button class="filter-pill active" data-cefr="all" type="button">🌈 Tất cả (2.000)</button>
+          <button class="filter-pill age-filter-pill" data-cefr="age" id="btn-vocab-filter-age" type="button">🌱 Hợp tuổi bé (Pre-A1–A1)</button>
           <button class="filter-pill" data-cefr="Pre-A1" type="button">🌱 Pre-A1 (400)</button>
           <button class="filter-pill" data-cefr="A1" type="button">🌿 A1 (400)</button>
           <button class="filter-pill" data-cefr="A2" type="button">🌳 A2 (400)</button>
@@ -248,6 +259,7 @@
         <!-- CEFR Filter for 18 Interactive Episodes -->
         <div class="cefr-filter-bar" id="stories-cefr-filter" role="group" aria-label="Lọc tập phim theo trình độ">
           <button class="filter-pill active" data-slevel="all" type="button">🌈 Tất cả (18 tập)</button>
+          <button class="filter-pill age-filter-pill" data-slevel="age" id="btn-stories-filter-age" type="button">🌱 Hợp tuổi bé (Pre-A1–A1)</button>
           <button class="filter-pill" data-slevel="Pre-A1" type="button">🌱 Pre-A1 (4)</button>
           <button class="filter-pill" data-slevel="A1" type="button">🌿 A1 (4)</button>
           <button class="filter-pill" data-slevel="A2" type="button">🌳 A2 (4)</button>
@@ -1325,11 +1337,60 @@
       </div>
     </div>
 
+    <!-- MODAL: MULTI-PROFILE FAMILY & AGE-BASED LEVELS -->
+    <div class="modal-backdrop hidden" id="profile-modal" role="dialog" aria-modal="true" aria-labelledby="profile-modal-title">
+      <div class="modal-dialog profile-dialog">
+        <div class="modal-header">
+          <h2 id="profile-modal-title">👨‍👩‍👧‍👦 Hồ Sơ Các Bé &amp; Mức Độ Theo Tuổi</h2>
+          <button class="btn-close-modal" id="btn-close-profile" type="button" aria-label="Đóng">✕</button>
+        </div>
+
+        <div class="modal-body">
+          <!-- Panel A: Profile Switcher List -->
+          <div id="profile-list-panel">
+            <p class="modal-intro">Mỗi bé có <strong>tiến trình học, sao vàng, lịch ôn AnkiDroid &amp; huy hiệu vượt mốc hoàn toàn riêng biệt</strong> và tự động gợi ý trình độ theo lứa tuổi!</p>
+            <div class="profile-cards-grid" id="profile-cards-grid">
+              <!-- Populated dynamically by profiles.js -->
+            </div>
+            <button type="button" class="btn-add-profile-full" id="btn-add-new-profile">
+              ➕ Thêm hồ sơ bé mới
+            </button>
+          </div>
+
+          <!-- Panel B: Add / Edit Child Profile Form -->
+          <div id="profile-form-panel" class="hidden">
+            <h3 class="prof-form-heading" id="prof-form-title">➕ Tạo Hồ Sơ Bé Mới</h3>
+
+            <div class="prof-field">
+              <label for="prof-name-input">✏️ Tên gọi của bé:</label>
+              <input type="text" id="prof-name-input" maxlength="24" placeholder="Ví dụ: Bé Bông, Anh Khôi, Su Kem..." autocomplete="off" />
+            </div>
+
+            <div class="prof-field">
+              <span class="prof-field-label">🎭 Chọn nhân vật đại diện:</span>
+              <div class="avatar-picker-grid" id="prof-avatar-picker"></div>
+            </div>
+
+            <div class="prof-field">
+              <span class="prof-field-label">🎂 Chọn nhóm tuổi (tự động thiết lập trình độ &amp; độ khó phù hợp):</span>
+              <div class="age-picker-grid" id="prof-age-picker"></div>
+            </div>
+
+            <div class="prof-form-actions">
+              <button type="button" class="btn-action-flip" id="btn-prof-cancel">⬅ Quay lại</button>
+              <button type="button" class="btn-action-mastered" id="btn-prof-save">✨ Tạo hồ sơ &amp; Bắt đầu học</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Celebration Confetti Canvas -->
     <canvas id="confetti-canvas" aria-hidden="true"></canvas>
   </div>
 
   <script src="vocab-data.js"></script>
+  <script src="profiles.js"></script>
   <script src="app.js"></script>
   <script src="voice.js"></script>
   <script src="games.js"></script>

@@ -38,9 +38,17 @@
 - **3 Mini-games** (Lật Thẻ Nhớ, Nối Hình Với Chữ, Bắt Bóng Vàng x2 Sao) với 3 mức độ Dễ / Vừa / Thử thách.
 - **ABC & Phonics**: 26 chữ cái, 8 âm ghép đôi (`SH, CH, TH, PH, WH, CK, NG, OO`), 33 từ ghép vần và 3 chế độ đố vui ngữ âm.
 
+## 👨‍👩‍👧‍👦 Đa Hồ Sơ Gia Đình & Phân Cấp Theo Lứa Tuổi
+
+Bấm nút **Hồ sơ bé** trên thanh tiêu đề để tạo hồ sơ riêng cho nhiều bé học chung trên 1 máy tính bảng/máy tính (tiến trình, sao vàng, lịch AnkiDroid & kết quả thi vượt mốc tách biệt hoàn toàn, sao lưu trọn bộ gia đình qua file hoặc Google Drive):
+- 🐣 **4–5 tuổi (Mầm non)**: Gợi ý `Pre-A1` (400 từ), mục tiêu 5/ngày, Anki 10 từ/ngày, Mini-games Dễ.
+- 🌱 **6–7 tuổi (Lớp 1–2)**: Gợi ý `Pre-A1 – A1` (800 từ), mục tiêu 10/ngày, Anki 15 từ/ngày, ABC Phonics & phim tương tác.
+- 🌿 **8–10 tuổi (Lớp 3–5)**: Gợi ý `A1 – A2` (Starters–Movers–Flyers), mục tiêu 15/ngày, Anki 20 từ/ngày, Mini-games Vừa.
+- 🚀 **11–15+ tuổi (THCS)**: Gợi ý `B1 – B2` (PET/FCE), mục tiêu 20/ngày, Anki 30 từ/ngày, Mini-games Thử thách.
+
 ## ☁️ Sao Lưu & Đồng Bộ Google Drive
 
-Bấm **☁️ Sao lưu** trên thanh tiêu đề để xuất/nhập file `.json` hoặc đồng bộ 1 chạm trực tiếp lên Google Drive (`english4kids_progress.json`) — bảo toàn toàn bộ sao vàng, từ đã thuộc, lịch ôn AnkiDroid, kết quả thi vượt mốc, chữ ABC và phim đã xem.
+Bấm **☁️ Sao lưu** trên thanh tiêu đề để xuất/nhập file `.json` hoặc đồng bộ 1 chạm trực tiếp lên Google Drive (`english4kids_progress.json`) — bảo toàn toàn bộ hồ sơ của các bé, sao vàng, từ đã thuộc, lịch ôn AnkiDroid, kết quả thi vượt mốc, chữ ABC và phim đã xem.
 
 ## 🌐 Dùng thử trực tiếp
 https://comnepnat.github.io/English4kids/

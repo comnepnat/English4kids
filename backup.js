@@ -17,7 +17,7 @@
   function buildBackupPayload() {
     return {
       app: 'English4Kids',
-      version: 3,
+      version: 4,
       exportedAt: new Date().toISOString(),
       stars: state.stars,
       learnedIds: Array.from(state.learnedIds),
@@ -26,7 +26,10 @@
       lastActivity: state.lastActivity || null,
       soundEnabled: state.soundEnabled,
       srs: state.srs || { cards: {}, stats: {} },
-      milestones: state.milestones || { results: {}, placement: null }
+      milestones: state.milestones || { results: {}, placement: null },
+      familyProfiles: typeof window.getAllProfilesBundle === 'function'
+        ? window.getAllProfilesBundle()
+        : null
     };
   }
 
@@ -34,6 +37,13 @@
     if (!data || typeof data !== 'object') {
       throw new Error('File sao lưu không hợp lệ.');
     }
+
+    // If v4 multi-profile family backup is present, restore all children's profiles cleanly!
+    if (data.familyProfiles && typeof window.restoreAllProfilesBundle === 'function') {
+      window.restoreAllProfilesBundle(data.familyProfiles);
+      return;
+    }
+
     if (typeof data.stars === 'number') state.stars = data.stars;
     if (Array.isArray(data.learnedIds)) state.learnedIds = new Set(data.learnedIds);
     if (Array.isArray(data.learnedLetters)) state.learnedLetters = new Set(data.learnedLetters);

@@ -59,9 +59,14 @@
     if (!grid) return;
     grid.innerHTML = '';
 
-    const filtered = sState.activeLevelFilter === 'all'
-      ? EPISODES.map((ep, idx) => ({ ep, idx }))
-      : EPISODES.map((ep, idx) => ({ ep, idx })).filter(x => x.ep.level === sState.activeLevelFilter);
+    const ag = typeof window.getActiveAgeGroup === 'function' ? window.getActiveAgeGroup() : null;
+    const allMapped = EPISODES.map((ep, idx) => ({ ep, idx }));
+    let filtered = allMapped;
+    if (sState.activeLevelFilter === 'age' && ag) {
+      filtered = allMapped.filter(x => ag.levels.includes(x.ep.level));
+    } else if (sState.activeLevelFilter !== 'all') {
+      filtered = allMapped.filter(x => x.ep.level === sState.activeLevelFilter);
+    }
 
     filtered.forEach(({ ep, idx }) => {
       const host = HOSTS[ep.host] || HOSTS.leo;
