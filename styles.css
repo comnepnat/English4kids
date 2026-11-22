@@ -2952,3 +2952,577 @@ button {
 .big-letter-box.is-digraph .big-lower {
   font-size: 2.6rem;
 }
+
+/* ==========================================================================
+   1,000-WORD SEARCH, LESSON SETS & INTERACTIVE VIDEO THEATRE (KHAN KIDS STYLE)
+   ========================================================================== */
+.pink-chip {
+  color: #BE185D;
+  background: #FCE7F3;
+  border-color: #F9A8D4;
+}
+
+.topics-title-bar {
+  margin-top: 32px;
+}
+
+/* Quick Search across 1,000 words */
+.vocab-search-wrap {
+  position: relative;
+  margin-bottom: 18px;
+}
+
+.vocab-search-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--surface-white);
+  border: 3px solid #BAE6FD;
+  box-shadow: 0 5px 0 #7DD3FC;
+  border-radius: var(--radius-pill);
+  padding: 10px 18px;
+}
+
+.vocab-search-bar input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-family: var(--font-body);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-navy);
+  background: transparent;
+}
+
+.vocab-search-bar input::placeholder {
+  color: #94A3B8;
+}
+
+.btn-clear-search {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #F1F5F9;
+  color: var(--text-slate);
+  font-weight: 800;
+}
+
+.vocab-search-results {
+  margin-top: 10px;
+  background: var(--surface-white);
+  border: 3px solid #E2E8F0;
+  border-radius: 22px;
+  padding: 10px;
+  box-shadow: var(--shadow-floating);
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 8px;
+}
+
+.search-result-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 16px;
+  background: #F8FAFC;
+  border: 2px solid #E2E8F0;
+  text-align: left;
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.search-result-item:hover {
+  transform: translateY(-2px);
+  border-color: var(--accent-blue);
+  background: #F0F9FF;
+}
+
+.sri-emoji {
+  font-size: 1.9rem;
+  line-height: 1;
+}
+
+.sri-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.sri-text strong {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  color: var(--text-navy);
+}
+
+.sri-text span {
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: var(--text-slate);
+}
+
+.sri-go {
+  font-size: 0.84rem;
+  font-weight: 800;
+  color: var(--primary-orange);
+}
+
+.search-empty {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 14px;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+/* Lesson Set Pills in Flashcard View */
+.lesson-sets-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+/* Home: Interactive Episodes Grid */
+.stories-home-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+  gap: 18px;
+  margin-bottom: 10px;
+}
+
+.story-ep-card {
+  background: var(--surface-white);
+  border: 3px solid var(--ep-color, #FF4D8D);
+  box-shadow: 0 7px 0 color-mix(in srgb, var(--ep-color, #FF4D8D) 72%, #000), var(--shadow-card);
+  border-radius: 26px;
+  padding: 14px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-align: left;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.story-ep-card:hover {
+  transform: translateY(-5px);
+}
+
+.ep-thumb {
+  position: relative;
+  width: 96px;
+  height: 86px;
+  border-radius: 20px;
+  background: var(--ep-bg, #FCE7F3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.ep-num-badge {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  background: rgba(15, 23, 42, 0.78);
+  color: #FFFFFF;
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 1px 7px;
+  border-radius: var(--radius-pill);
+}
+
+.ep-emoji {
+  font-size: 2.7rem;
+  line-height: 1;
+}
+
+.ep-play-circle {
+  position: absolute;
+  bottom: -6px;
+  right: -6px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--ep-color, #FF4D8D);
+  color: #FFFFFF;
+  font-size: 0.82rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #FFFFFF;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.18);
+}
+
+.ep-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ep-meta h3 {
+  font-family: var(--font-display);
+  font-size: 1.22rem;
+  font-weight: 800;
+  color: var(--text-navy);
+  line-height: 1.18;
+}
+
+.ep-en {
+  font-size: 0.86rem;
+  font-weight: 800;
+  color: var(--ep-color, #FF4D8D);
+}
+
+.ep-dur {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+/* Interactive Video Player View */
+.story-player-shell {
+  max-width: 860px;
+  margin: 0 auto;
+  background: var(--surface-white);
+  border-radius: 34px;
+  padding: 20px;
+  border: 4px solid #F9A8D4;
+  box-shadow: 0 10px 0 #EC4899, var(--shadow-floating);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.story-stage {
+  position: relative;
+  width: 100%;
+  height: 380px;
+  border-radius: 26px;
+  overflow: hidden;
+  border: 4px solid #FFFFFF;
+  box-shadow: inset 0 -10px 24px rgba(0, 0, 0, 0.08);
+}
+
+/* 6 Episode Illustrated Backdrops */
+.story-stage.theme-zoo {
+  background: linear-gradient(180deg, #93DDFF 0%, #DFF6FF 62%, #86EFAC 62%, #4ADE80 100%);
+}
+.story-stage.theme-art {
+  background: linear-gradient(180deg, #FDF2F8 0%, #FCE7F3 65%, #FDE68A 65%, #FCD34D 100%);
+}
+.story-stage.theme-market {
+  background: linear-gradient(180deg, #FEF3C7 0%, #FFEDD5 64%, #FED7AA 64%, #FDBA74 100%);
+}
+.story-stage.theme-city {
+  background: linear-gradient(180deg, #BAE6FD 0%, #E0F2FE 62%, #94A3B8 62%, #64748B 100%);
+}
+.story-stage.theme-home {
+  background: linear-gradient(180deg, #FEF9C3 0%, #FFFBEB 64%, #FDE68A 64%, #F59E0B 100%);
+}
+.story-stage.theme-space {
+  background: radial-gradient(circle at 20% 20%, #312E81 0%, #1E1B4B 60%, #0F172A 100%);
+}
+
+.story-sky-sun {
+  position: absolute;
+  top: 20px;
+  right: 26px;
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #FEF08A 0%, #FACC15 100%);
+  box-shadow: 0 0 28px rgba(250, 204, 21, 0.7);
+}
+
+.story-stage.theme-space .story-sky-sun {
+  background: radial-gradient(circle, #F8FAFC 0%, #CBD5E1 100%);
+  box-shadow: 0 0 24px rgba(255, 255, 255, 0.6);
+}
+
+.story-checkpoint-badge {
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 6;
+  background: #FEF08A;
+  color: #92400E;
+  border: 3px solid #F59E0B;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  padding: 6px 18px;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 0.98rem;
+  white-space: nowrap;
+  max-width: 92%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.story-props-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+}
+
+.stage-prop {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  user-select: none;
+  filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.15));
+}
+
+.stage-prop.anim-float {
+  animation: gentleBounce 2.8s ease-in-out infinite;
+}
+
+.stage-prop.anim-bob {
+  animation: stageBob 2.1s ease-in-out infinite;
+}
+
+@keyframes stageBob {
+  0%, 100% { transform: translate(-50%, -50%) rotate(-4deg); }
+  50% { transform: translate(-50%, -58%) rotate(4deg); }
+}
+
+.stage-interactive-item {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  background: rgba(255, 255, 255, 0.94);
+  border: 4px solid #FBBF24;
+  box-shadow: 0 7px 0 #D97706, 0 12px 24px rgba(0, 0, 0, 0.18);
+  border-radius: 26px;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  animation: interactivePulse 1.8s ease-in-out infinite;
+  transition: transform 0.18s ease, background 0.18s ease;
+}
+
+.stage-interactive-item:hover {
+  transform: translate(-50%, -56%) scale(1.08);
+  background: #FFFBEB;
+}
+
+.stage-interactive-item.correct-hit {
+  background: #DCFCE7;
+  border-color: #22C55E;
+  box-shadow: 0 7px 0 #15803D;
+  animation: none;
+  transform: translate(-50%, -58%) scale(1.16);
+}
+
+.stage-interactive-item.wrong-hit {
+  background: #FEE2E2;
+  border-color: #EF4444;
+  animation: shakeError 0.4s ease;
+}
+
+@keyframes interactivePulse {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); }
+  50% { transform: translate(-50%, -54%) scale(1.04); }
+}
+
+.sii-emoji {
+  font-size: 3.1rem;
+  line-height: 1;
+}
+
+.sii-swatch {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 4px solid #FFFFFF;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+}
+
+.sii-label {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--text-navy);
+}
+
+/* Animated Leo Mascot on Stage */
+.story-leo-actor {
+  position: absolute;
+  bottom: 14px;
+  left: 18px;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  pointer-events: none;
+}
+
+.leo-actor-emoji {
+  width: 78px;
+  height: 78px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, #FFF3B0, #FFAE00);
+  border: 4px solid #FFFFFF;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.22);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 46px;
+}
+
+.story-leo-actor.mood-wave .leo-actor-emoji,
+.story-leo-actor.mood-ask .leo-actor-emoji {
+  animation: gentleBounce 1.8s ease-in-out infinite;
+}
+
+.story-leo-actor.mood-celebrate .leo-actor-emoji {
+  animation: leoJump 0.65s ease-in-out infinite;
+}
+
+@keyframes leoJump {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-16px) scale(1.08); }
+}
+
+.leo-name-tag {
+  margin-top: -8px;
+  background: #FF7A00;
+  color: #FFFFFF;
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  font-weight: 800;
+  padding: 1px 10px;
+  border-radius: var(--radius-pill);
+  border: 2px solid #FFFFFF;
+}
+
+/* Subtitles, Timeline & Video Controls */
+.story-subtitle-box {
+  background: #FFF9EB;
+  border: 2px solid #FDE68A;
+  border-radius: 20px;
+  padding: 14px 18px;
+  text-align: center;
+}
+
+.story-sub-en {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--text-navy);
+  line-height: 1.25;
+}
+
+.story-sub-vi {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-slate);
+  margin-top: 3px;
+}
+
+.story-timeline-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.story-progress-track {
+  width: 100%;
+  height: 10px;
+  background: #F1F5F9;
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+}
+
+.story-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #EC4899 0%, #FF7A00 100%);
+  border-radius: var(--radius-pill);
+  transition: width 0.35s ease;
+}
+
+.story-timeline-dots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.timeline-dot {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #F1F5F9;
+  border: 2px solid #CBD5E1;
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: var(--text-slate);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.timeline-dot.passed {
+  background: #DCFCE7;
+  border-color: #22C55E;
+  color: #15803D;
+}
+
+.timeline-dot.current {
+  background: #FCE7F3;
+  border-color: #EC4899;
+  color: #BE185D;
+  transform: scale(1.18);
+}
+
+.story-controls-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.btn-story-play {
+  background: linear-gradient(180deg, #FF4D8D 0%, #DB2777 100%);
+  color: #FFFFFF;
+  font-size: 1.1rem;
+  font-weight: 800;
+  padding: 11px 24px;
+  border-radius: var(--radius-pill);
+  box-shadow: 0 5px 0 #9D174D;
+}
+
+.btn-story-play.waiting {
+  background: linear-gradient(180deg, #F59E0B 0%, #D97706 100%);
+  box-shadow: 0 5px 0 #92400E;
+}
+
+@media (max-width: 600px) {
+  .story-stage {
+    height: 330px;
+  }
+
+  .stage-interactive-item {
+    padding: 8px 10px;
+  }
+
+  .sii-emoji {
+    font-size: 2.4rem;
+  }
+
+  .leo-actor-emoji {
+    width: 60px;
+    height: 60px;
+    font-size: 36px;
+  }
+}

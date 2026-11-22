@@ -1,39 +1,34 @@
 # 🦁 English4Kids - Ứng Dụng Học Tiếng Anh Cho Bé 6 Tuổi
 
-Ứng dụng Web tương tác giúp bé 6 tuổi làm quen với tiếng Anh một cách tự nhiên, vui nhộn thông qua **Thẻ từ vựng 3D (Flashcards)**, **Trò chơi tương tác (Mini-games)** và **Bảng chữ cái ABC & Ngữ âm Phonics**, sử dụng **Tiếng Việt làm ngôn ngữ dẫn dắt** để cả bé và ba mẹ đều dễ dàng đồng hành.
+Ứng dụng Web tương tác giúp bé 6 tuổi học tiếng Anh toàn diện qua **1.000 từ vựng Flashcards 3D**, **Phim Hoạt Hình Tương Tác kiểu Khan Academy Kids**, **Mini-games 3 độ khó** và **Bảng chữ cái ABC & Ngữ âm Phonics**.
 
-## ✨ Giai đoạn 1: Thẻ Từ Vựng 3D (12 Chủ Đề • 134 Từ)
+## 🎬 Phim Hoạt Hình Tương Tác (Kiểu Khan Academy Kids)
 
-1. 🦁 **Động vật đáng yêu** (*Cute Animals* – 12 từ)
-2. 🎨 **Thế giới màu sắc** (*Bright Colors* – 10 từ, có bảng màu trực quan)
-3. 👨‍👩‍👧‍👦 **Gia đình thân yêu** (*My Family* – 10 từ)
-4. 🔢 **Bé tập đếm 1–20** (*Numbers 1 to 20* – 20 từ, kèm biểu tượng đếm số lượng)
-5. 🍎 **Trái cây ngọt lành** (*Yummy Fruits* – 10 từ)
-6. 🎒 **Đồ dùng & Đồ chơi** (*School & Toys* – 10 từ)
-7. 🧍 **Cơ thể của bé** (*My Body* – 10 từ)
-8. 👕 **Quần áo xinh xắn** (*Clothes* – 10 từ)
-9. 🍔 **Đồ ăn & Thức uống** (*Food & Drinks* – 10 từ)
-10. 🌤️ **Thời tiết & Thiên nhiên** (*Weather & Nature* – 10 từ)
-11. 🚗 **Phương tiện giao thông** (*Vehicles* – 10 từ)
-12. ⭐ **Hình khối & Hành động** (*Shapes & Actions* – 12 từ)
+6 tập phim hoạt hình tương tác cùng **Sư Tử Leo 🦁**, có lời thoại tiếng Anh + phụ đề song ngữ Việt–Anh, thanh tiến trình đánh dấu **⭐ điểm tương tác** — phim tự tạm dừng để bé chạm trực tiếp vào nhân vật/đồ vật trên màn hình:
+1. 🦁 **Tập 1: Chuyến Đi Sở Thú** (*A Day at the Zoo*)
+2. 🎨 **Tập 2: Xưởng Vẽ Cầu Vồng** (*Rainbow Art Studio*)
+3. 🍎 **Tập 3: Đi Chợ Trái Cây** (*Fruit Market Adventure*)
+4. 🚗 **Tập 4: Thành Phố Xe Cộ** (*Busy City Vehicles*)
+5. 🏡 **Tập 5: Buổi Sáng Của Bé** (*Happy Morning Routine*)
+6. 🚀 **Tập 6: Du Hành Vũ Trụ** (*Space Explorer*)
 
-Mỗi thẻ đều có mặt trước (hình ảnh, từ vựng, IPA, tách âm tiết, nút đọc chuẩn / đọc chậm / đánh vần) và mặt sau (nghĩa tiếng Việt, câu ví dụ có giọng đọc, mẹo ghi nhớ), kèm chế độ **🎯 Thử Thách Nghe** 8 câu.
+## 📚 Giai đoạn 1: Ngân Hàng 1.000 Từ Vựng (20 Chủ Đề × 50 Từ)
+
+- **20 chủ đề phong phú**: Động vật & Thú cưng, Biển cả & Côn trùng, Trái cây & Rau củ, Đồ ăn & Thức uống, Gia đình & Nghề nghiệp, Cơ thể & Sức khỏe, Quần áo & Phụ kiện, Màu sắc & Hình khối, Số đếm & Thời gian, Trường học & Lớp học, Ngôi nhà & Đồ đạc, Đồ chơi & Giải trí, Xe cộ & Giao thông, Thiên nhiên & Thời tiết, Địa điểm quanh bé, Hành động hàng ngày, Hành động học & chơi, Cảm xúc & Tính cách, Tính từ & Trái nghĩa, Vũ trụ & Cổ tích.
+- **Chia bài thông minh**: Mỗi chủ đề 50 từ được chia thành **5 bài nhỏ (Bài 1–5, mỗi bài 10 từ)** để bé 6 tuổi học nhẹ nhàng, không bị rối.
+- **Thanh tìm kiếm nhanh**: Tìm tức thì bất kỳ từ nào trong 1.000 từ bằng tiếng Anh hoặc tiếng Việt.
 
 ## 🎮 Giai đoạn 2: Mini-games (3 Mức Độ: Dễ • Vừa • Thử Thách)
 
-1. 🃏 **Lật Thẻ Nhớ (Memory Match)**: 4, 6 hoặc 8 cặp thẻ hình & chữ theo độ khó.
-2. 🔗 **Nối Hình Với Chữ (Picture Match)**: 2–4 vòng nối nhanh, hỗ trợ đầy đủ 134 từ (kể cả màu sắc & số 1–20).
-3. 🎈 **Bắt Bóng Từ Vựng (Balloon Catch)**: Tùy chỉnh tốc độ, bộ đếm **Combo** và **Bóng Vàng 🌟 thưởng x2 Sao**.
+- 🃏 **Lật Thẻ Nhớ** (4, 6 hoặc 8 cặp thẻ)
+- 🔗 **Nối Hình Với Chữ** (2–4 vòng nối nhanh)
+- 🎈 **Bắt Bóng Từ Vựng** (Combo & Bóng Vàng 🌟 x2 Sao)
 
 ## 🔤 Giai đoạn 3: Bảng Chữ Cái ABC & Ngữ Âm Phonics
 
-1. **🅰️ Bảng Chữ Cái & Âm Ghép**: 26 chữ cái A–Z (4 từ mẫu/chữ = 104 từ) + **8 Âm ghép đôi** (`SH, CH, TH, PH, WH, CK, NG, OO` – 32 từ) + nút **🎶 Hát & Đọc A–Z**.
-2. **🧩 Ghép Âm Theo Nhóm Vần (33 Từ)**: Chia thành 6 nhóm vần quen thuộc (`-AT/-AN`, `-OG/-OX`, `-UN/-UG`, `-IG/-IN`, `-ED/-EN`, `SH/CH/TH`).
-3. **🎯 Đố Vui Ngữ Âm (3 Chế Độ)**: Nghe chọn chữ & âm, Tìm âm đầu còn thiếu (`_AT`), và Tìm từ cùng vần (*Rhyming Match*).
-
-## 🗺️ Lộ trình các giai đoạn tiếp theo
-- **Giai đoạn 4**: Luyện nói & Nhận diện giọng nói (*Web Speech Recognition* chấm điểm 3 sao khi bé đọc theo).
-- **Giai đoạn 5**: Hệ thống phần thưởng mở rộng (Đổi sao lấy phụ kiện cho Sư Tử Leo & Bảng theo dõi chi tiết cho Phụ huynh).
+- **26 chữ cái A–Z** (104 từ mẫu) + **8 Âm ghép đôi** (`SH, CH, TH, PH, WH, CK, NG, OO`) + **🎶 Hát & Đọc A–Z**.
+- **33 Từ ghép âm theo 6 nhóm vần** (`-AT/-AN`, `-OG/-OX`, `-UN/-UG`, `-IG/-IN`, `-ED/-EN`, `SH/CH/TH`).
+- **3 chế độ Đố Vui Ngữ Âm**: Nghe chọn chữ & âm, Tìm âm đầu còn thiếu (`_AT`), và Tìm từ cùng vần (*Rhyming Match*).
 
 ## 🌐 Dùng thử trực tiếp
 https://comnepnat.github.io/English4kids/

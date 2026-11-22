@@ -77,12 +77,30 @@
           </div>
         </div>
 
+        <!-- Interactive Animated Video Theatre (Khan Academy Kids Style) -->
+        <div class="section-title-bar stories-title-bar">
+          <h2>🎬 Phim Hoạt Hình Tương Tác <span class="count-chip pink-chip">6 Tập • Kiểu Khan Kids</span></h2>
+        </div>
+        <div class="stories-home-grid" id="stories-home-grid">
+          <!-- Populated dynamically by stories.js -->
+        </div>
+
         <!-- Topic Grid -->
-        <div class="section-title-bar">
-          <h2>📚 Chủ Đề Thẻ Từ Vựng <span class="count-chip">12 Chủ đề • 134 Từ</span></h2>
+        <div class="section-title-bar topics-title-bar">
+          <h2>📚 Chủ Đề Thẻ Từ Vựng <span class="count-chip">20 Chủ đề • 1.000 Từ</span></h2>
           <button class="btn-secondary-pill" id="btn-quick-quiz-all" type="button">
             🎮 Ôn tập nhanh tất cả
           </button>
+        </div>
+
+        <!-- Quick Search across 1,000 Words -->
+        <div class="vocab-search-wrap">
+          <div class="vocab-search-bar">
+            <span class="search-icon" aria-hidden="true">🔍</span>
+            <input type="text" id="vocab-search-input" placeholder="Tìm nhanh trong 1.000 từ (ví dụ: lion, táo, rocket, bác sĩ...)" autocomplete="off" />
+            <button class="btn-clear-search hidden" id="btn-clear-search" type="button" aria-label="Xóa tìm kiếm">✕</button>
+          </div>
+          <div class="vocab-search-results hidden" id="vocab-search-results"></div>
         </div>
 
         <div class="topics-grid" id="topics-grid">
@@ -181,8 +199,11 @@
           </div>
         </div>
 
-        <!-- Progress dots for current topic cards -->
-        <div class="card-dots-bar" id="card-dots-bar" aria-label="Danh sách thẻ trong chủ đề">
+        <!-- Lesson sets (10 words per lesson for 50-word topics) -->
+        <div class="lesson-sets-bar" id="lesson-sets-bar" aria-label="Chọn bài học 10 từ"></div>
+
+        <!-- Progress dots for current lesson cards -->
+        <div class="card-dots-bar" id="card-dots-bar" aria-label="Danh sách thẻ trong bài">
           <!-- Populated dynamically -->
         </div>
 
@@ -581,6 +602,65 @@
           </div>
         </div>
       </section>
+
+      <!-- VIEW 5: INTERACTIVE ANIMATED VIDEO THEATRE (Khan Academy Kids Style) -->
+      <section class="view-section" id="view-stories" aria-label="Rạp phim hoạt hình tương tác">
+        <div class="deck-top-bar">
+          <button class="btn-back" id="btn-stories-back" type="button">
+            <span class="back-arrow">⬅</span> Về trang chủ
+          </button>
+
+          <div class="topic-badge-header">
+            <span id="story-ep-icon">🦁</span>
+            <span id="story-ep-title">Tập 1: Chuyến Đi Sở Thú</span>
+          </div>
+
+          <button class="btn-secondary-pill" id="btn-story-next-ep" type="button">
+            📺 Tập tiếp theo ➔
+          </button>
+        </div>
+
+        <div class="story-player-shell">
+          <!-- Animated Interactive Stage -->
+          <div class="story-stage theme-zoo" id="story-stage">
+            <div class="story-sky-sun" aria-hidden="true"></div>
+            <div class="story-checkpoint-badge hidden" id="story-checkpoint-badge">
+              ⭐ TƯƠNG TÁC: Chạm vào hình đúng trên màn hình!
+            </div>
+
+            <!-- Interactive & Decorative Props Layer -->
+            <div class="story-props-layer" id="story-props-layer"></div>
+
+            <!-- Animated Mascot Actor: Leo the Lion -->
+            <div class="story-leo-actor mood-wave" id="story-leo-actor" aria-hidden="true">
+              <div class="leo-actor-emoji">🦁</div>
+              <div class="leo-name-tag">Leo</div>
+            </div>
+          </div>
+
+          <!-- Bilingual Subtitle Box -->
+          <div class="story-subtitle-box">
+            <div class="story-sub-en" id="story-sub-en">Hello friends! Welcome to the Sunny Zoo!</div>
+            <div class="story-sub-vi" id="story-sub-vi">Chào các bạn nhỏ! Chào mừng đến với Sở Thú Nắng Vàng!</div>
+          </div>
+
+          <!-- Video Timeline Scrubber with Checkpoint Stars -->
+          <div class="story-timeline-wrap">
+            <div class="story-progress-track">
+              <div class="story-progress-fill" id="story-progress-fill" style="width: 16%"></div>
+            </div>
+            <div class="story-timeline-dots" id="story-timeline-dots"></div>
+          </div>
+
+          <!-- Video Controls -->
+          <div class="story-controls-bar">
+            <button class="btn-action-flip" id="btn-story-prev" type="button">⏮ Cảnh trước</button>
+            <button class="btn-story-play" id="btn-story-playpause" type="button">⏸ Tạm dừng</button>
+            <button class="btn-speak-slow" id="btn-story-replay-voice" type="button">🔊 Nghe lại</button>
+            <button class="btn-action-flip" id="btn-story-next" type="button">Cảnh sau ⏭</button>
+          </div>
+        </div>
+      </section>
     </main>
 
     <!-- MODAL: GAME RESULT -->
@@ -609,9 +689,9 @@
           <p class="modal-intro">Ứng dụng được thiết kế theo từng giai đoạn giúp bé 6 tuổi làm quen từ vựng trước, sau đó mở rộng kỹ năng phản xạ và phát âm:</p>
           <div class="roadmap-list">
             <div class="roadmap-item">
-              <div class="phase-badge done">Giai đoạn 1 (Đã mở rộng)</div>
-              <h3>🃏 Thẻ từ vựng (12 Chủ đề • 134 Từ)</h3>
-              <p>Động vật, Màu sắc, Gia đình, Số 1–20, Trái cây, Trường học, Cơ thể, Quần áo, Đồ ăn, Thời tiết, Xe cộ, Hình khối &amp; Hành động.</p>
+              <div class="phase-badge done">Giai đoạn 1 (1.000 Từ)</div>
+              <h3>🃏 Thẻ từ vựng (20 Chủ đề • 1.000 Từ) &amp; Phim Tương Tác</h3>
+              <p>1.000 từ vựng chia thành các bài nhỏ 10 từ + Tìm kiếm nhanh + 6 tập Phim Hoạt Hình Tương Tác kiểu Khan Academy Kids.</p>
             </div>
             <div class="roadmap-item">
               <div class="phase-badge done">Giai đoạn 2 (Đã mở rộng)</div>
@@ -621,7 +701,7 @@
             <div class="roadmap-item active-phase">
               <div class="phase-badge done">Giai đoạn 3 (Đã mở rộng)</div>
               <h3>🔤 ABC, 8 Âm Ghép &amp; 33 Từ Ghép Vần</h3>
-              <p>26 chữ cái (104 từ mẫu), 8 âm ghép đôi (sh, ch, th...), 32 từ ghép vần theo nhóm và 3 chế độ đố vui Phonics.</p>
+              <p>26 chữ cái (104 từ mẫu), 8 âm ghép đôi (sh, ch, th...), 33 từ ghép vần theo nhóm và 3 chế độ đố vui Phonics.</p>
             </div>
             <div class="roadmap-item">
               <div class="phase-badge upcoming">Giai đoạn 4 (Tiếp theo)</div>
@@ -646,8 +726,10 @@
     <canvas id="confetti-canvas" aria-hidden="true"></canvas>
   </div>
 
+  <script src="vocab-data.js"></script>
   <script src="app.js"></script>
   <script src="games.js"></script>
   <script src="phonics.js"></script>
+  <script src="stories.js"></script>
 </body>
 </html>
