@@ -73,6 +73,10 @@
     if (typeof window.refreshStoriesUI === 'function') window.refreshStoriesUI();
   }
 
+  function confirmOverwrite(sourceLabel) {
+    return window.confirm(`Khôi phục từ ${ sourceLabel } sẽ GHI ĐÈ toàn bộ tiến trình hiện tại trên thiết bị này (sao, từ đã học, ôn tập, các hồ sơ của bé).\n\nBạn có chắc muốn tiếp tục?`);
+  }
+
   function showStatus(msg, isError = false) {
     const banner = $('backup-status-banner');
     if (!banner) return;
@@ -124,6 +128,13 @@
     reader.onload = () => {
       try {
         const parsed = JSON.parse(String(reader.result || ''));
+        if (!parsed || typeof parsed !== 'object' || (parsed.app && parsed.app !== 'English4Kids')) {
+          throw new Error('Not an English4Kids backup');
+        }
+        if (!confirmOverwrite('file sao lưu')) {
+          showStatus('ℹ️ Đã hủy khôi phục. Tiến trình hiện tại được giữ nguyên.');
+          return;
+        }
         applyBackupPayload(parsed);
         playSoundEffect('star');
         launchConfettiBurst();
@@ -286,6 +297,10 @@
       });
       if (!res.ok) throw new Error(`Không thể tải file (HTTP ${ res.status })`);
       const parsed = await res.json();
+      if (!confirmOverwrite('Google Drive')) {
+        showStatus('ℹ️ Đã hủy khôi phục. Tiến trình hiện tại được giữ nguyên.');
+        return;
+      }
       applyBackupPayload(parsed);
 
       const nowIso = new Date().toISOString();
