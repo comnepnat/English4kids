@@ -126,6 +126,23 @@
       ? window.renderEmojiArt(book.coverEmoji, '', 'sm')
       : escapeHtml(book.coverEmoji);
 
+    let heroHtml = '';
+    if (book.fullCoverArt) {
+      heroHtml = '';
+    } else if (Array.isArray(book.coverActors) && book.coverActors.length) {
+      heroHtml = book.coverActors.map(a => {
+        const art = typeof window.renderEmojiArt === 'function'
+          ? window.renderEmojiArt(a.emoji, a.svg || '', 'stage')
+          : escapeHtml(a.emoji);
+        const flip = a.flip ? 'scaleX(-1)' : 'scaleX(1)';
+        const w = a.w || a.size || 68;
+        const h = a.h || a.size || 68;
+        return `<span class="book-cover-actor" style="left:${ a.x || 30 }%; bottom:${ a.y || 6 }%; width:${ w }px; height:${ h }px; transform:translateX(-50%) ${ flip };" aria-hidden="true">${ art }</span>`;
+      }).join('');
+    } else {
+      heroHtml = `<img class="book-cover-char" src="${ charSrc }" alt="" loading="lazy" decoding="async" draggable="false" />`;
+    }
+
     const card = document.createElement('button');
     card.type = 'button';
     card.className = `book-cover-card ${ compact ? 'is-compact' : '' } ${ completed ? 'is-read' : '' }`;
@@ -135,7 +152,7 @@
       <div class="book-cover-visual">
         <span class="book-spine" aria-hidden="true"></span>
         <img class="book-cover-bg" src="${ book.coverBg }" alt="" loading="lazy" decoding="async" draggable="false" />
-        <img class="book-cover-char" src="${ charSrc }" alt="" loading="lazy" decoding="async" draggable="false" />
+        ${ heroHtml }
         <span class="book-cover-prop" aria-hidden="true">${ emblemHtml }</span>
         <span class="book-level-badge cefr-${ (book.level || 'Pre-A1').toLowerCase() }">${ book.level }</span>
         ${ getCategoryBadgeHtml(book) }
@@ -263,6 +280,10 @@
       fxHtml = '<div class="book-fx-stars" aria-hidden="true"><span>✦</span><span>★</span><span>✦</span><span>★</span><span>✦</span></div>';
     } else if (page.mood === 'ocean') {
       fxHtml = '<div class="book-fx-bubbles" aria-hidden="true"><span></span><span></span><span></span><span></span></div>';
+    } else if (page.mood === 'snowy') {
+      fxHtml = '<div class="book-fx-stars is-snow" aria-hidden="true"><span>❄</span><span>❅</span><span>❄</span><span>❅</span><span>❄</span></div>';
+    } else if (page.mood === 'windy') {
+      fxHtml = '<div class="book-fx-wind" aria-hidden="true"><span></span><span></span><span></span><span></span></div>';
     }
 
     const charsHtml = (page.chars || []).map(c => {
@@ -277,20 +298,49 @@
     }).join('');
 
     const propsHtml = (page.props || []).map((p, idx) => {
+      const hintKey = p.svg || p.label;
+      if (p.role === 'hotspot') {
+        const iconHtml = typeof window.renderEmojiArt === 'function'
+          ? window.renderEmojiArt(p.emoji, '', 'sm')
+          : escapeHtml(p.emoji);
+        return `
+          <button type="button" class="book-scene-prop is-hotspot" data-pidx="${ idx }"
+            style="left:${ p.x }%; bottom:${ p.y }%; z-index:${ p.z || 5 };"
+            title="${ escapeHtml(p.label) } — ${ escapeHtml(p.vi) }"
+            aria-label="${ escapeHtml(p.label) }">
+            <span class="book-hotspot-dot">${ iconHtml }</span>
+            <span class="book-hotspot-label">${ escapeHtml(p.label) }</span>
+          </button>
+        `;
+      }
       const artHtml = typeof window.renderEmojiArt === 'function'
-        ? window.renderEmojiArt(p.emoji, p.label, 'stage')
+        ? window.renderEmojiArt(p.emoji, hintKey, 'stage')
         : escapeHtml(p.emoji);
+      const w = p.w || p.size || 86;
+      const h = p.h || p.size || 86;
+      const roleClass = p.role === 'badge'
+        ? 'is-badge'
+        : p.role === 'scenery'
+          ? 'is-scenery'
+          : (Math.max(w, h) >= 84 || p.role === 'actor')
+            ? 'is-actor'
+            : 'is-object';
+      const flipVal = p.flip ? -1 : 1;
+      const rotVal = p.tilt ? `${ p.tilt }deg` : '0deg';
+      const zVal = p.z || (roleClass === 'is-scenery' ? 2 : roleClass === 'is-actor' ? 4 : 5);
       return `
-        <button type="button" class="book-scene-prop" data-pidx="${ idx }"
-          style="left:${ p.x }%; bottom:${ p.y }%; width:${ p.size || 62 }px; height:${ p.size || 62 }px;"
+        <button type="button" class="book-scene-prop ${ roleClass }" data-pidx="${ idx }"
+          style="left:${ p.x }%; bottom:${ p.y }%; --prop-w:${ w }px; --prop-h:${ h }px; --prop-flip:${ flipVal }; --prop-rot:${ rotVal }; z-index:${ zVal };"
           title="${ escapeHtml(p.label) } — ${ escapeHtml(p.vi) }"
           aria-label="${ escapeHtml(p.label) }">
-          ${ artHtml }
+          <span class="book-prop-art">${ artHtml }</span>
+          <span class="book-prop-caption">${ escapeHtml(p.label) }</span>
         </button>
       `;
     }).join('');
 
-    sceneEl.className = `book-illustration-stage ${ moodClass } ${ panClass }`;
+    const fullArtClass = page.fullArt ? 'is-full-art' : '';
+    sceneEl.className = `book-illustration-stage ${ moodClass } ${ panClass } ${ fullArtClass }`;
     sceneEl.innerHTML = `
       <img class="book-scene-bg" src="${ page.bg }" alt="" draggable="false" />
       <div class="book-scene-atmosphere" aria-hidden="true"></div>
@@ -298,7 +348,7 @@
       <div class="book-scene-actors">${ charsHtml }</div>
       <div class="book-scene-props">${ propsHtml }</div>
       <div class="book-prop-toast hidden" id="book-prop-toast"></div>
-      <span class="book-scene-hint">👆 Chạm đồ vật trong tranh để nghe từ!</span>
+      <span class="book-scene-hint">👆 Chạm nhân vật &amp; đồ vật để nghe tiếng Anh!</span>
     `;
 
     sceneEl.querySelectorAll('.book-scene-prop').forEach(btn => {
@@ -318,7 +368,7 @@
           toast._t = setTimeout(() => toast.classList.add('hidden'), 2400);
         }
         if (typeof window.speakEnglish === 'function') {
-          window.speakEnglish(p.label, 0.92);
+          window.speakEnglish(p.speak || p.label, 0.92);
         }
       });
     });
