@@ -268,6 +268,20 @@
           </button>
         </div>
 
+        <!-- Featured Illustrated Read & Listen Storybooks Shelf -->
+        <div class="home-books-shelf" id="home-books-shelf">
+          <div class="section-title-bar compact-bar books-shelf-head">
+            <div>
+              <h2>📖 Truyện Tranh Đọc &amp; Nghe Có Minh Họa</h2>
+              <span class="books-shelf-sub" id="home-books-sub">10 truyện tranh minh họa • Pre-A1 ➔ B2</span>
+            </div>
+            <button type="button" class="btn-secondary-pill" id="btn-home-open-books">📚 Xem cả 10 truyện ➔</button>
+          </div>
+          <div class="home-books-grid" id="home-books-grid">
+            <!-- Populated dynamically by books.js -->
+          </div>
+        </div>
+
         <!-- CEFR Level Progression Path: Pre-A1 -> A1 -> A2 -> B1 -> B2 -->
         <div class="section-title-bar compact-bar cefr-title-bar">
           <h2>📈 Lộ Trình Trình Độ (Pre-A1 ➔ B1, B2)</h2>
@@ -275,6 +289,114 @@
         </div>
         <div class="cefr-path-grid" id="cefr-path-grid">
           <!-- Populated dynamically by app.js with live progress & crown badges per CEFR level -->
+        </div>
+      </section>
+
+      <!-- VIEW 1E: ILLUSTRATED READ & LISTEN STORYBOOKS LIBRARY (10 Picture Books) -->
+      <section class="view-section" id="view-books-hub" aria-label="Thư viện truyện tranh đọc và nghe có minh họa">
+        <div class="deck-top-bar">
+          <button class="btn-back" id="btn-books-hub-back" type="button">
+            <span class="back-arrow">⬅</span> Trang chủ
+          </button>
+          <div class="topic-badge-header">
+            <span>📖</span>
+            <span>Truyện Tranh Đọc &amp; Nghe Có Minh Họa (10 Cuốn)</span>
+          </div>
+        </div>
+
+        <div class="cefr-filter-bar" id="books-cefr-filter" role="group" aria-label="Lọc truyện theo trình độ">
+          <button class="filter-pill active" data-blevel="all" type="button">🌈 Tất cả (10 truyện)</button>
+          <button class="filter-pill age-filter-pill" data-blevel="age" id="btn-books-filter-age" type="button">🌱 Hợp tuổi bé (Pre-A1–A1)</button>
+          <button class="filter-pill" data-blevel="Pre-A1" type="button">🌱 Pre-A1 (3)</button>
+          <button class="filter-pill" data-blevel="A1" type="button">🌿 A1 (2)</button>
+          <button class="filter-pill" data-blevel="A2" type="button">🌳 A2 (2)</button>
+          <button class="filter-pill" data-blevel="B1" type="button">🚀 B1 (2)</button>
+          <button class="filter-pill" data-blevel="B2" type="button">🏆 B2 (1)</button>
+        </div>
+
+        <div class="books-library-grid" id="books-library-grid">
+          <!-- Populated dynamically by books.js -->
+        </div>
+      </section>
+
+      <!-- VIEW 1F: INTERACTIVE OPEN PICTURE BOOK READER -->
+      <section class="view-section" id="view-book-reader" aria-label="Đọc và nghe truyện tranh minh họa">
+        <div class="deck-top-bar">
+          <button class="btn-back" id="btn-book-reader-back" type="button">
+            <span class="back-arrow">⬅</span> Thư viện truyện
+          </button>
+          <div class="topic-badge-header">
+            <span>📖</span>
+            <span id="book-reader-title">Quả Bóng Đỏ Của Leo</span>
+          </div>
+          <button class="btn-secondary-pill" id="btn-book-vi-toggle" type="button">🇻🇳 Dịch Việt: Bật</button>
+        </div>
+
+        <!-- Two-Page Open Picture Book Spread -->
+        <div class="book-reader-shell">
+          <div class="book-spread" id="book-spread-view">
+            <!-- Left Page: Living Hand-Painted Illustration + Interactive 3D Props -->
+            <div class="book-page book-page-left">
+              <div class="book-illustration-stage" id="book-illustration-stage"></div>
+            </div>
+
+            <!-- Right Page: Cream Parchment Reading Page -->
+            <div class="book-page book-page-right">
+              <div class="book-page-top">
+                <span class="book-page-badge" id="book-page-badge">Trang 1 / 6</span>
+                <span class="book-page-bookname" id="book-page-bookname">Leo's Big Red Ball</span>
+              </div>
+
+              <div class="book-text-block">
+                <p class="book-text-en" id="book-text-en"></p>
+                <div class="book-word-tooltip hidden" id="book-word-tooltip" role="status"></div>
+                <p class="book-text-vi" id="book-text-vi"></p>
+              </div>
+
+              <div class="book-page-vocab" id="book-page-vocab" aria-label="Từ vựng nổi bật trong trang"></div>
+
+              <div class="book-audio-actions">
+                <button class="btn-speak-primary" id="btn-book-speak-page" type="button">🔊 Đọc trang này</button>
+                <button class="btn-book-autoread" id="btn-book-autoread" type="button">▶ Đọc tự động cả truyện</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Page Navigation & Synchronized Speed Slider -->
+          <div class="book-nav-bar" id="book-nav-bar">
+            <button class="btn-action-flip" id="btn-book-prev" type="button">⬅ Trang trước</button>
+            <div class="book-page-dots" id="book-page-dots"></div>
+            <button class="btn-action-mastered" id="btn-book-next" type="button">Trang sau ➔</button>
+          </div>
+
+          <div class="quick-speed-bar is-book-speed" aria-label="Thanh điều chỉnh tốc độ đọc truyện">
+            <span class="qs-label">⏱️ Tốc độ đọc</span>
+            <button type="button" class="qs-step-btn" data-speed-step="-0.05" aria-label="Đọc chậm hơn" title="Đọc chậm hơn">🐢</button>
+            <input type="range" class="speed-range-input" data-speed-slider min="0.55" max="1.40" step="0.05" value="1" aria-label="Tốc độ đọc truyện tranh" />
+            <button type="button" class="qs-step-btn" data-speed-step="0.05" aria-label="Đọc nhanh hơn" title="Đọc nhanh hơn">🐇</button>
+            <span class="qs-value-pill" data-speed-badge>1.00×</span>
+          </div>
+
+          <!-- End-of-Book Reading Comprehension Mini-Quiz -->
+          <div class="book-quiz-card hidden" id="book-quiz-view">
+            <span class="book-page-badge" id="book-quiz-progress">Câu hỏi hiểu truyện 1 / 2</span>
+            <h3 class="book-quiz-q-en" id="book-quiz-q-en"></h3>
+            <p class="book-quiz-q-vi" id="book-quiz-q-vi"></p>
+            <div class="book-quiz-options" id="book-quiz-options"></div>
+            <div class="book-quiz-feedback hidden" id="book-quiz-feedback"></div>
+          </div>
+
+          <!-- Celebration Page after Finishing a Book -->
+          <div class="book-done-card hidden" id="book-done-view">
+            <div class="book-done-mascot" id="book-done-mascot"></div>
+            <h2 id="book-done-title">Chúc mừng bé đã đọc xong truyện!</h2>
+            <p class="book-done-reward" id="book-done-reward">⭐ +20 Sao thưởng</p>
+            <div class="book-done-actions">
+              <button class="btn-action-flip" id="btn-book-done-reread" type="button">🔄 Đọc lại từ đầu</button>
+              <button class="btn-action-mastered" id="btn-book-done-next" type="button">📖 Đọc truyện tiếp theo ➔</button>
+              <button class="btn-secondary-pill" id="btn-book-done-library" type="button">📚 Về thư viện truyện</button>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -1605,6 +1727,8 @@
   <script src="phonics.js"></script>
   <script src="stories-data.js"></script>
   <script src="stories.js"></script>
+  <script src="books-data.js"></script>
+  <script src="books.js"></script>
   <script src="srs.js"></script>
   <script src="milestones.js"></script>
   <script src="backup.js"></script>

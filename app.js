@@ -67,6 +67,7 @@ const state = {
   learnedIds: new Set(),
   learnedLetters: new Set(),
   completedEpisodes: new Set(),
+  completedBooks: new Set(),
   lastActivity: null,
   activeCefrFilter: 'all',
   soundEnabled: true,
@@ -122,6 +123,7 @@ function resetStateInMemory() {
   state.learnedIds = new Set();
   state.learnedLetters = new Set();
   state.completedEpisodes = new Set();
+  state.completedBooks = new Set();
   state.lastActivity = null;
   state.activeCefrFilter = 'all';
   state.soundEnabled = true;
@@ -156,6 +158,9 @@ function loadProgress() {
     }
     if (Array.isArray(parsed.completedEpisodes)) {
       state.completedEpisodes = new Set(parsed.completedEpisodes);
+    }
+    if (Array.isArray(parsed.completedBooks)) {
+      state.completedBooks = new Set(parsed.completedBooks);
     }
     if (parsed.lastActivity && typeof parsed.lastActivity === 'object') {
       state.lastActivity = parsed.lastActivity;
@@ -193,6 +198,7 @@ function saveProgress() {
       learnedIds: Array.from(state.learnedIds),
       learnedLetters: Array.from(state.learnedLetters),
       completedEpisodes: Array.from(state.completedEpisodes),
+      completedBooks: Array.from(state.completedBooks),
       lastActivity: state.lastActivity,
       soundEnabled: state.soundEnabled,
       srs: state.srs,
@@ -212,6 +218,7 @@ window.reloadActiveProfileState = function () {
   renderTopicsGrid();
   if (typeof window.refreshPhonicsUI === 'function') window.refreshPhonicsUI();
   if (typeof window.refreshStoriesUI === 'function') window.refreshStoriesUI();
+  if (typeof window.refreshBooksUI === 'function') window.refreshBooksUI();
   if (typeof window.refreshSrsUI === 'function') window.refreshSrsUI();
   if (typeof window.refreshMilestonesUI === 'function') window.refreshMilestonesUI();
   if (typeof window.refreshQuestUI === 'function') window.refreshQuestUI();
@@ -1402,6 +1409,8 @@ function bindEvents() {
       window.openMilestonesHub();
     } else if (act.kind === 'story' && typeof window.openStoryEpisode === 'function') {
       window.openStoryEpisode(act.epIndex || 0);
+    } else if (act.kind === 'book' && typeof window.openBookReader === 'function') {
+      window.openBookReader(act.bookId, 0);
     } else if (act.kind === 'game' && typeof window.openMiniGame === 'function') {
       window.openMiniGame(act.gameName || 'memory');
     } else if (act.kind === 'phonics' && typeof window.openPhonicsView === 'function') {
