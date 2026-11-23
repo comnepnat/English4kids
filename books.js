@@ -15,10 +15,16 @@
 
   const $ = id => document.getElementById(id);
 
+  const VI_PREF_KEY = 'e4k_book_show_vi';
   let activeBookFilter = 'all';
   let currentBook = null;
   let currentPageIndex = 0;
-  let showViTranslation = true;
+  let showViTranslation = (() => {
+    try {
+      const saved = localStorage.getItem(VI_PREF_KEY);
+      return saved === null ? true : saved === '1';
+    } catch { return true; }
+  })();
   let isAutoReading = false;
   let autoTurnHandle = null;
   let quizIndex = 0;
@@ -32,6 +38,44 @@
     toby: 'assets/art/painted_toby.webp',
     lulu: 'assets/art/painted_lulu.webp'
   };
+
+  function getBookCategory(book) {
+    return book.category || 'original';
+  }
+
+  function getCategoryBadgeHtml(book) {
+    const cat = getBookCategory(book);
+    if (cat === 'fairytale') return '<span class="book-cat-badge is-fairytale">🏰 Cổ tích</span>';
+    if (cat === 'fable') return '<span class="book-cat-badge is-fable">🦊 Ngụ ngôn</span>';
+    return '';
+  }
+
+  function syncViVisibility() {
+    const readerSection = $('view-book-reader');
+    if (readerSection) readerSection.classList.toggle('vi-hidden', !showViTranslation);
+
+    const viEl = $('book-text-vi');
+    if (viEl) viEl.classList.toggle('hidden', !showViTranslation);
+
+    const peekBtn = $('btn-book-vi-peek');
+    if (peekBtn) peekBtn.classList.toggle('hidden', showViTranslation);
+
+    const quizVi = $('book-quiz-q-vi');
+    if (quizVi) quizVi.classList.toggle('hidden', !showViTranslation);
+
+    const subToggle = $('btn-book-vi-toggle');
+    if (subToggle) {
+      subToggle.textContent = showViTranslation ? '🇻🇳 Dịch Việt: Đang hiện' : '🙈 Dịch Việt: Đang ẩn';
+      subToggle.classList.toggle('is-vi-off', !showViTranslation);
+      subToggle.setAttribute('aria-pressed', String(showViTranslation));
+    }
+  }
+
+  function setShowViTranslation(val) {
+    showViTranslation = !!val;
+    try { localStorage.setItem(VI_PREF_KEY, showViTranslation ? '1' : '0'); } catch {}
+    syncViVisibility();
+  }
 
   function getCompletedBooksSet() {
     if (typeof state !== 'undefined') {
@@ -94,6 +138,7 @@
         <img class="book-cover-char" src="${ charSrc }" alt="" loading="lazy" decoding="async" draggable="false" />
         <span class="book-cover-prop" aria-hidden="true">${ emblemHtml }</span>
         <span class="book-level-badge cefr-${ (book.level || 'Pre-A1').toLowerCase() }">${ book.level }</span>
+        ${ getCategoryBadgeHtml(book) }
         ${ completed ? '<span class="book-done-badge">✅ Đã đọc</span>' : '' }
       </div>
       <div class="book-cover-meta">
@@ -116,10 +161,22 @@
      ========================================================================== */
   function getAgeRecommendedBooks() {
     const ag = typeof window.getActiveAgeGroup === 'function' ? window.getActiveAgeGroup() : null;
-    if (!ag || !Array.isArray(ag.levels) || !ag.levels.length) return BOOKS_DATA.slice(0, 4);
-    const matched = BOOKS_DATA.filter(b => ag.levels.includes(b.level));
-    const rest = BOOKS_DATA.filter(b => !ag.levels.includes(b.level));
-    return [...matched, ...rest].slice(0, 4);
+    const levels = (ag && Array.isArray(ag.levels) && ag.levels.length) ? ag.levels : ['Pre-A1', 'A1'];
+    const byAge = BOOKS_DATA.filter(b => levels.includes(b.level));
+    const pool = byAge.length >= 4 ? byAge : BOOKS_DATA;
+
+    // Showcase a lively mix on Home: at least 1 Fairy Tale, 1 Fable, and age-matched adventures
+    const picks = [];
+    const addFirst = pred => {
+      const found = pool.find(b => !picks.includes(b) && pred(b))
+        || BOOKS_DATA.find(b => !picks.includes(b) && pred(b));
+      if (found) picks.push(found);
+    };
+    addFirst(b => getBookCategory(b) === 'fairytale');
+    addFirst(b => getBookCategory(b) === 'fable');
+    pool.forEach(b => { if (picks.length < 4 && !picks.includes(b)) picks.push(b); });
+    BOOKS_DATA.forEach(b => { if (picks.length < 4 && !picks.includes(b)) picks.push(b); });
+    return picks.slice(0, 4);
   }
 
   function renderHomeBooksShelf() {
@@ -132,7 +189,7 @@
     const sub = $('home-books-sub');
     if (sub) {
       const done = getCompletedBooksSet().size;
-      sub.textContent = `${ BOOKS_DATA.length } truyện tranh minh họa • Đã đọc ${ done }/${ BOOKS_DATA.length }`;
+      sub.textContent = `${ BOOKS_DATA.length } truyện tranh (Cổ tích, Ngụ ngôn & Phiêu lưu) • Đã đọc ${ done }/${ BOOKS_DATA.length }`;
     }
   }
 
@@ -150,6 +207,9 @@
     let list = BOOKS_DATA;
     if (activeBookFilter === 'age' && ag && Array.isArray(ag.levels)) {
       list = BOOKS_DATA.filter(b => ag.levels.includes(b.level));
+    } else if (activeBookFilter.startsWith('cat:')) {
+      const targetCat = activeBookFilter.slice(4);
+      list = BOOKS_DATA.filter(b => getBookCategory(b) === targetCat);
     } else if (activeBookFilter !== 'all') {
       list = BOOKS_DATA.filter(b => b.level === activeBookFilter);
     }
@@ -369,10 +429,7 @@
       });
     }
 
-    const subToggle = $('btn-book-vi-toggle');
-    if (subToggle) {
-      subToggle.textContent = showViTranslation ? '🇻🇳 Dịch Việt: Bật' : '🇻🇳 Dịch Việt: Tắt';
-    }
+    syncViVisibility();
 
     // Smooth flip animation on spread
     if (spreadEl) {
@@ -537,6 +594,19 @@
       if (rewardEl) {
         rewardEl.textContent = `⭐ +${ bonus } Sao thưởng • Trả lời đúng ${ quizScore }/${ (currentBook.quiz || []).length } câu hỏi`;
       }
+      const moralEl = $('book-done-moral');
+      if (moralEl) {
+        if (currentBook.moralEn) {
+          moralEl.innerHTML = `
+            <div class="bdm-kicker">💡 Bài học câu chuyện (Moral of the Story)</div>
+            <strong class="bdm-en">“${ escapeHtml(currentBook.moralEn) }”</strong>
+            <span class="bdm-vi">${ escapeHtml(currentBook.moralVi || '') }</span>
+          `;
+          moralEl.classList.remove('hidden');
+        } else {
+          moralEl.classList.add('hidden');
+        }
+      }
       const mascotWrap = $('book-done-mascot');
       if (mascotWrap && typeof window.renderMascotSvg === 'function') {
         mascotWrap.innerHTML = window.renderMascotSvg(currentBook.coverChar || 'leo', 'celebrate', false);
@@ -598,6 +668,7 @@
   function bindBooksEvents() {
     renderHomeBooksShelf();
     renderBooksHub();
+    syncViVisibility();
 
     $('btn-home-open-books')?.addEventListener('click', () => {
       if (typeof playSoundEffect === 'function') playSoundEffect('pop');
@@ -662,14 +733,13 @@
     });
 
     $('btn-book-vi-toggle')?.addEventListener('click', () => {
-      showViTranslation = !showViTranslation;
       if (typeof playSoundEffect === 'function') playSoundEffect('pop');
-      const viEl = $('book-text-vi');
-      if (viEl) viEl.classList.toggle('hidden', !showViTranslation);
-      const subToggle = $('btn-book-vi-toggle');
-      if (subToggle) {
-        subToggle.textContent = showViTranslation ? '🇻🇳 Dịch Việt: Bật' : '🇻🇳 Dịch Việt: Tắt';
-      }
+      setShowViTranslation(!showViTranslation);
+    });
+
+    $('btn-book-vi-peek')?.addEventListener('click', () => {
+      if (typeof playSoundEffect === 'function') playSoundEffect('pop');
+      setShowViTranslation(true);
     });
 
     $('btn-book-done-reread')?.addEventListener('click', () => {

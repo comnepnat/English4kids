@@ -11116,4 +11116,92 @@ body[data-age="age_11_15"] {
   }
 }
 
+/* Genre badges for Fairy Tales & Fables */
+.book-cat-badge {
+  position: absolute;
+  left: 20px;
+  bottom: 10px;
+  z-index: 5;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 900;
+  color: #FFFFFF;
+  box-shadow: 0 3px 8px rgba(15, 23, 42, 0.24);
+  backdrop-filter: blur(4px);
+}
+
+.book-cat-badge.is-fairytale {
+  background: linear-gradient(135deg, #EC4899, #8B5CF6);
+}
+
+.book-cat-badge.is-fable {
+  background: linear-gradient(135deg, #10B981, #059669);
+}
+
+/* Vietnamese Hide/Show Toggle & Inline Peek Pill */
+#btn-book-vi-toggle.is-vi-off {
+  background: #F1F5F9;
+  color: #475569;
+  border-color: #CBD5E1;
+  box-shadow: 0 3px 0 #CBD5E1;
+}
+
+.btn-book-vi-peek {
+  align-self: flex-start;
+  padding: 5px 12px;
+  border-radius: 999px;
+  border: 2px dashed #F59E0B;
+  background: rgba(254, 243, 199, 0.45);
+  color: #B45309;
+  font-size: 0.84rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.btn-book-vi-peek:hover {
+  background: #FEF3C7;
+  transform: translateY(-1px);
+}
+
+#view-book-reader.vi-hidden .book-vocab-chip small,
+#view-book-reader.vi-hidden .book-done-moral .bdm-vi {
+  display: none;
+}
+
+/* Story Moral Card on Completion Screen */
+.book-done-moral {
+  margin: 0 auto 18px;
+  padding: 12px 16px;
+  max-width: 540px;
+  border-radius: 18px;
+  background: #FFFBEB;
+  border: 2px solid #FDE68A;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.book-done-moral .bdm-kicker {
+  font-size: 0.78rem;
+  font-weight: 900;
+  color: #D97706;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.book-done-moral .bdm-en {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  color: #1E293B;
+}
+
+.book-done-moral .bdm-vi {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #64748B;
+}
+
+
 

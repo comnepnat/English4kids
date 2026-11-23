@@ -107,7 +107,7 @@ const BOOKS_DATA = [
           { emoji: '🔴', label: 'Catch', vi: 'Bắt bóng', x: 48, y: 52, size: 64 },
           { emoji: '🎈', label: 'Balloon', vi: 'Bóng bay', x: 84, y: 70, size: 54 }
         ],
-        en: '"Thank you, Lulu! Let us play together!" They kick and catch the ball and laugh out loud.',
+        en: '"Thank you, Lulu! Let\'s play together!" They kick and catch the ball and laugh out loud.',
         vi: '"Cảm ơn Lulu nhé! Chúng mình cùng chơi nào!" Hai bạn đá bóng, bắt bóng và cười vang thật vui.',
         vocab: [
           { w: 'together', ipa: '/təˈɡeð.ər/', vi: 'cùng nhau', emoji: '🤝' },
@@ -127,7 +127,7 @@ const BOOKS_DATA = [
           { emoji: '⭐', label: 'Happy', vi: 'Vui vẻ', x: 76, y: 68, size: 56 },
           { emoji: '❤️', label: 'Friends', vi: 'Bạn thân', x: 42, y: 58, size: 48 }
         ],
-        en: 'Playing with a friend is the best fun of all. What a happy day for Leo and Lulu!',
+        en: 'Playing with a friend is the most fun of all. What a happy day for Leo and Lulu!',
         vi: 'Chơi cùng bạn thân là niềm vui tuyệt vời nhất. Thật là một ngày hạnh phúc của Leo và Lulu!',
         vocab: [
           { w: 'friend', ipa: '/frend/', vi: 'người bạn', emoji: '🤝' },
@@ -237,7 +237,7 @@ const BOOKS_DATA = [
           { emoji: '🦋', label: 'Butterfly', vi: 'Con bướm', x: 80, y: 66, size: 58 }
         ],
         en: 'Buzz, buzz! A friendly yellow bee and a blue butterfly dance around the tall sunflowers.',
-        vi: 'Vo ve, vo ve! Một chú ong vàng thân thiện và bạn bướm xanh đang khiêu vũ quanh hoa hướng dương cao.',
+        vi: 'Vo ve, vo ve! Một chú ong vàng thân thiện và bạn bướm xanh đang nhảy múa quanh những bông hoa hướng dương cao.',
         vocab: [
           { w: 'bee', ipa: '/biː/', vi: 'con ong', emoji: '🐝' },
           { w: 'butterfly', ipa: '/ˈbʌt.ər.flaɪ/', vi: 'con bướm', emoji: '🦋' },
@@ -331,7 +331,7 @@ const BOOKS_DATA = [
           { emoji: '☁️', label: 'Cloud', vi: 'Đám mây', x: 34, y: 74, size: 58 }
         ],
         en: 'Pitter-patter! Soft blue raindrops tap on the window. It is a rainy afternoon.',
-        vi: 'Tí tách, tí tách! Những hạt mưa xanh dịu dàng gõ nhịp bên khung cửa sổ. Trời đang có một buổi chiều mưa.',
+        vi: 'Tí tách, tí tách! Những hạt mưa xanh dịu dàng gõ nhịp bên khung cửa sổ. Hôm nay là một buổi chiều mưa dịu mát.',
         vocab: [
           { w: 'raindrops', ipa: '/ˈreɪn.drɒps/', vi: 'hạt mưa', emoji: '💧' },
           { w: 'window', ipa: '/ˈwɪn.doʊ/', vi: 'cửa sổ', emoji: '🪟' },
@@ -577,7 +577,7 @@ const BOOKS_DATA = [
           { emoji: '⭐', label: 'Kind Hero', vi: 'Người tốt bụng', x: 78, y: 68, size: 54 }
         ],
         en: 'Max\'s owner gives Toby and Leo two warm muffins as a thank-you gift. Helping someone in need makes the heart shine bright.',
-        vi: 'Chủ của Max tặng Toby và Leo hai chiếc bánh nướng ấm nóng để cảm ơn. Giúp đỡ khi ai đó cần khiến trái tim luôn tỏa sáng.',
+        vi: 'Chủ của Max tặng Toby và Leo hai chiếc bánh nướng ấm nóng để cảm ơn. Giúp đỡ người khác lúc khó khăn khiến trái tim mình luôn ấm áp và rạng rỡ.',
         vocab: [
           { w: 'gift', ipa: '/ɡɪft/', vi: 'món quà', emoji: '🎁' },
           { w: 'helping', ipa: '/ˈhel.pɪŋ/', vi: 'giúp đỡ', emoji: '🤝' },
@@ -875,7 +875,7 @@ const BOOKS_DATA = [
           { emoji: '🌍', label: 'Earth', vi: 'Trái Đất', x: 46, y: 64, size: 64 }
         ],
         en: 'Back on shore, Leo drops the bottle into the recycling bin. Even one small kind action helps protect our whole blue ocean.',
-        vi: 'Trở lại bờ, Leo bỏ chai nhựa vào thùng tái chế. Chỉ một hành động nhỏ tử tế thôi cũng góp phần bảo vệ cả đại dương xanh.',
+        vi: 'Trở lại bờ, Leo bỏ chai nhựa vào thùng tái chế. Chỉ một hành động tử tế nhỏ bé thôi cũng góp phần bảo vệ cả đại dương xanh.',
         vocab: [
           { w: 'protect', ipa: '/prəˈtekt/', vi: 'bảo vệ', emoji: '🌍' },
           { w: 'ocean', ipa: '/ˈoʊ.ʃən/', vi: 'đại dương', emoji: '🌊' }
@@ -969,7 +969,7 @@ const BOOKS_DATA = [
           { emoji: '💡', label: 'Idea', vi: 'Ý tưởng', x: 48, y: 62, size: 60 },
           { emoji: '🎀', label: 'Tail Ribbon', vi: 'Đuôi diều', x: 48, y: 22, size: 58 }
         ],
-        en: 'Mimi does not give up. She thinks like a scientist: "Why did it spin? It needs balance! Let us tie a long ribbon tail to steady it."',
+        en: 'Mimi does not give up. She thinks like a scientist: "Why did it spin? It needs balance! Let\'s tie a long ribbon tail to steady it."',
         vi: 'Mimi không hề bỏ cuộc. Cô suy nghĩ như một nhà khoa học: "Sao nó lại xoay nhỉ? Cần sự cân bằng! Hãy buộc thêm đuôi ruy-băng dài để giữ thăng bằng."',
         vocab: [
           { w: 'scientist', ipa: '/ˈsaɪ.ən.tɪst/', vi: 'nhà khoa học', emoji: '🔬' },
@@ -1169,7 +1169,7 @@ const BOOKS_DATA = [
         vi: 'Lulu và Mimi viết xuống những câu hỏi thú vị nhất của mình về thiên nhiên và các vì sao. Bước về nhà dưới tán cây đèn lồng, hai bạn hiểu phép màu của việc đọc sách sẽ luôn ở bên mình.',
         vocab: [
           { w: 'beneath', ipa: '/bɪˈniːθ/', vi: 'bên dưới', emoji: '🌳' },
-          { w: 'knowledge', ipa: '/ˈnɒl.ɪdʒ/', vi: 'tri thức', emoji: '📚' }
+          { w: 'branches', ipa: '/ˈbræn.tʃɪz/', vi: 'những cành cây', emoji: '🌿' }
         ]
       }
     ],
@@ -1426,7 +1426,7 @@ const BOOKS_DATA = [
           { emoji: '🔧', label: 'Precision', vi: 'Chính xác', x: 46, y: 34, size: 64 }
         ],
         en: 'Hour after hour, Mimi shaped a replacement brass gear with steady hands while Leo polished the pendulum. Precision demanded patience, and neither of them rushed the craft.',
-        vi: 'Hết giờ này sang giờ khác, Mimi giũa một bánh răng đồng thay thế bằng đôi tay vững vàng, trong khi Leo đánh bóng con lắc. Sự chính xác đòi hỏi kiên nhẫn và không ai trong hai bạn vội vàng.',
+        vi: 'Hết giờ này sang giờ khác, Mimi giũa một bánh răng đồng thay thế bằng đôi tay vững vàng, trong khi Leo đánh bóng con lắc. Sự chính xác đòi hỏi lòng kiên nhẫn, nên cả hai bạn chẳng hề vội vàng.',
         vocab: [
           { w: 'precision', ipa: '/prɪˈsɪʒ.ən/', vi: 'sự chính xác', emoji: '🎯' },
           { w: 'craft', ipa: '/krɑːft/', vi: 'nghề thủ công', emoji: '🛠️' }
@@ -1490,5 +1490,868 @@ const BOOKS_DATA = [
         ]
       }
     ]
+  },
+
+  /* ========================================================================
+     BOOK 11 — NGỤ NGÔN (FABLE) — Pre-A1 (4–6 tuổi): The Tortoise and the Hare
+     ======================================================================== */
+  {
+    id: 'book_tortoise_hare',
+    num: 11,
+    category: 'fable',
+    level: 'Pre-A1',
+    ageHint: '4–6 tuổi',
+    titleEn: 'The Tortoise and the Hare',
+    titleVi: 'Rùa Và Thỏ',
+    subtitle: 'Truyện ngụ ngôn Ê-dốp • Kiên trì',
+    moralEn: 'Slow and steady wins the race.',
+    moralVi: 'Chậm mà chắc, kiên trì không bỏ cuộc sẽ giành chiến thắng.',
+    minutes: '2 phút',
+    coverBg: 'assets/art/painted_home_meadow.webp',
+    coverChar: 'lulu',
+    coverEmoji: '🐢',
+    accent: '#10B981',
+    softBg: '#ECFDF5',
+    pages: [
+      {
+        bg: 'assets/art/painted_home_meadow.webp',
+        mood: 'sunny',
+        pan: 'left',
+        chars: [{ id: 'lulu', x: 22, y: 10, scale: 0.94 }],
+        props: [
+          { emoji: '🐢', label: 'Tortoise', vi: 'Bạn Rùa', x: 66, y: 16, size: 70 },
+          { emoji: '🏁', label: 'Race', vi: 'Cuộc đua', x: 80, y: 58, size: 58 }
+        ],
+        en: 'One sunny morning, a fast hare laughed at a slow little tortoise. "Let\'s have a race to the big tree!" said the tortoise calmly.',
+        vi: 'Một buổi sáng nắng đẹp, chú Thỏ chạy nhanh cười nhạo bạn Rùa chậm chạp. "Chúng mình cùng thi chạy tới cái cây lớn kia nhé!" Rùa bình tĩnh nói.',
+        vocab: [
+          { w: 'fast', ipa: '/fæst/', vi: 'nhanh nhẹn', emoji: '🐇' },
+          { w: 'slow', ipa: '/sloʊ/', vi: 'chậm rãi', emoji: '🐢' },
+          { w: 'race', ipa: '/reɪs/', vi: 'cuộc đua', emoji: '🏁' }
+        ]
+      },
+      {
+        bg: 'assets/art/painted_bg_zoo.webp',
+        mood: 'sunny',
+        pan: 'center',
+        chars: [{ id: 'lulu', x: 24, y: 10, scale: 0.94 }],
+        props: [
+          { emoji: '💨', label: 'Dash', vi: 'Chạy vút đi', x: 58, y: 42, size: 60 },
+          { emoji: '🐢', label: 'Step by Step', vi: 'Từng bước một', x: 76, y: 16, size: 56 }
+        ],
+        en: 'Ready, set, go! The hare zoomed far ahead in a flash. The little tortoise just smiled and walked step by step.',
+        vi: 'Chuẩn bị, bắt đầu! Thỏ phóng vút lên phía trước trong chớp mắt. Rùa nhỏ chỉ mỉm cười và bước đi từng bước một.',
+        vocab: [
+          { w: 'ahead', ipa: '/əˈhed/', vi: 'phía trước', emoji: '➡️' },
+          { w: 'step', ipa: '/step/', vi: 'bước chân', emoji: '👣' }
+        ]
+      },
+      {
+        bg: 'assets/art/painted_home_meadow.webp',
+        mood: 'morning',
+        pan: 'right',
+        chars: [{ id: 'lulu', x: 26, y: 8, scale: 0.92 }],
+        props: [
+          { emoji: '🌳', label: 'Shady Tree', vi: 'Cây râm mát', x: 72, y: 36, size: 76 },
+          { emoji: '💤', label: 'Nap', vi: 'Giấc ngủ trưa', x: 48, y: 62, size: 54 }
+        ],
+        en: 'The hare looked back and saw no one. "I am so fast! I have time for a quick nap," he yawned under a shady tree.',
+        vi: 'Thỏ ngoái lại chẳng thấy ai. "Mình chạy nhanh thế này cơ mà! Nghỉ chợp mắt một lát cũng kịp," Thỏ ngáp dài dưới gốc cây mát.',
+        vocab: [
+          { w: 'nap', ipa: '/næp/', vi: 'giấc ngủ ngắn', emoji: '💤' },
+          { w: 'shady', ipa: '/ˈʃeɪ.di/', vi: 'râm mát', emoji: '🌳' }
+        ]
+      },
+      {
+        bg: 'assets/art/painted_bg_zoo.webp',
+        mood: 'sunny',
+        pan: 'left',
+        chars: [],
+        props: [
+          { emoji: '🐢', label: 'Keep Going', vi: 'Kiên trì đi tiếp', x: 52, y: 18, size: 78 },
+          { emoji: '🌼', label: 'Path', vi: 'Con đường', x: 26, y: 18, size: 52 },
+          { emoji: '💤', label: 'Sleeping Hare', vi: 'Thỏ đang ngủ', x: 80, y: 26, size: 54 }
+        ],
+        en: 'While the hare slept soundly, the tortoise kept going. He did not stop, and he did not give up. Quietly, he passed the sleeping hare!',
+        vi: 'Trong lúc Thỏ ngủ say giấc, Rùa vẫn bền bỉ tiến về phía trước. Cậu không dừng lại cũng chẳng bỏ cuộc, rồi lặng lẽ vượt qua bạn Thỏ đang ngủ!',
+        vocab: [
+          { w: 'slept', ipa: '/slept/', vi: 'đã ngủ', emoji: '💤' },
+          { w: 'passed', ipa: '/pæst/', vi: 'vượt qua', emoji: '🐢' }
+        ]
+      },
+      {
+        bg: 'assets/art/painted_hub_games.webp',
+        mood: 'sunny',
+        pan: 'center',
+        chars: [
+          { id: 'leo', x: 18, y: 10, scale: 0.9 },
+          { id: 'mimi', x: 78, y: 10, scale: 0.9, flip: true }
+        ],
+        props: [
+          { emoji: '🐢', label: 'Winner', vi: 'Người chiến thắng', x: 48, y: 16, size: 74 },
+          { emoji: '🏁', label: 'Finish Line', vi: 'Vạch đích', x: 48, y: 58, size: 64 }
+        ],
+        en: 'The hare woke up and ran as fast as he could, but it was too late! The tortoise crossed the finish line first while everyone cheered.',
+        vi: 'Thỏ giật mình tỉnh dậy chạy hết sức nhưng đã quá muộn! Rùa đã chạm vạch đích trước trong tiếng reo hò cổ vũ của mọi người.',
+        vocab: [
+          { w: 'finish', ipa: '/ˈfɪn.ɪʃ/', vi: 'vạch đích / kết thúc', emoji: '🏁' },
+          { w: 'first', ipa: '/fɜːrst/', vi: 'đầu tiên', emoji: '🥇' }
+        ]
+      },
+      {
+        bg: 'assets/art/painted_home_meadow.webp',
+        mood: 'sunset',
+        pan: 'center',
+        chars: [{ id: 'lulu', x: 26, y: 10, scale: 0.92 }],
+        props: [
+          { emoji: '🐢', label: 'Steady', vi: 'Bền bỉ', x: 64, y: 18, size: 68 },
+          { emoji: '🏆', label: 'Trophy', vi: 'Cúp chiến thắng', x: 48, y: 54, size: 58 }
+        ],
+        en: 'The hare smiled and shook the tortoise\'s hand. "You taught me a great lesson today: slow and steady wins the race!"',
+        vi: 'Thỏ mỉm cười bắt tay chúc mừng Rùa. "Hôm nay bạn đã dạy mình một bài học thật quý: chậm mà chắc sẽ giành chiến thắng!"',
+        vocab: [
+          { w: 'lesson', ipa: '/ˈles.ən/', vi: 'bài học', emoji: '📖' },
+          { w: 'steady', ipa: '/ˈsted.i/', vi: 'đều đặn bền bỉ', emoji: '🏆' }
+        ]
+      }
+    ],
+    quiz: [
+      {
+        qEn: 'Why did the fast hare lose the race?',
+        qVi: 'Vì sao chú Thỏ chạy nhanh lại thua cuộc đua?',
+        options: [
+          { text: 'He stopped to take a nap', emoji: '💤', correct: true },
+          { text: 'He forgot his shoes', emoji: '👟', correct: false },
+          { text: 'He jumped into a river', emoji: '🌊', correct: false }
+        ]
+      },
+      {
+        qEn: 'What is the moral of this fable?',
+        qVi: 'Bài học của câu chuyện ngụ ngôn này là gì?',
+        options: [
+          { text: 'Slow and steady wins the race', emoji: '🏆', correct: true },
+          { text: 'Never try anything new', emoji: '🛑', correct: false },
+          { text: 'Always laugh at slow friends', emoji: '😅', correct: false }
+        ]
+      }
+    ]
+  },
+
+  /* ========================================================================
+     BOOK 12 — NGỤ NGÔN (FABLE) — A1 (6–8 tuổi): The Ant and the Grasshopper
+     ======================================================================== */
+  {
+    id: 'book_ant_grasshopper',
+    num: 12,
+    category: 'fable',
+    level: 'A1',
+    ageHint: '6–8 tuổi',
+    titleEn: 'The Ant and the Grasshopper',
+    titleVi: 'Kiến Và Châu Chấu',
+    subtitle: 'Truyện ngụ ngôn Ê-dốp • Chăm chỉ',
+    moralEn: 'Work hard today so you are ready for tomorrow.',
+    moralVi: 'Chăm chỉ chuẩn bị từ hôm nay để luôn vững vàng cho ngày mai.',
+    minutes: '3 phút',
+    coverBg: 'assets/art/painted_hub_vocab.webp',
+    coverChar: 'mimi',
+    coverEmoji: '🐜',
+    accent: '#EA580C',
+    softBg: '#FFF7ED',
+    pages: [
+      {
+        bg: 'assets/art/painted_home_meadow.webp',
+        mood: 'sunny',
+        pan: 'left',
+        chars: [],
+        props: [
+          { emoji: '🐜', label: 'Ant', vi: 'Chú Kiến', x: 30, y: 18, size: 70 },
+          { emoji: '🌾', label: 'Grain', vi: 'Hạt lúa mì', x: 50, y: 24, size: 62 },
+          { emoji: '🦗', label: 'Grasshopper', vi: 'Châu Chấu', x: 76, y: 26, size: 68 }
+        ],
+        en: 'On a warm summer day, a little ant carried heavy grains of wheat back to her nest. Nearby, a green grasshopper sang happily in the sun.',
+        vi: 'Vào một ngày hè ấm áp, chú Kiến nhỏ cần mẫn khuân từng hạt lúa mì nặng về tổ. Gần đó, Châu Chấu xanh đang ca hát vui vẻ dưới ánh nắng.',
+        vocab: [
+          { w: 'summer', ipa: '/ˈsʌm.ər/', vi: 'mùa hè', emoji: '☀️' },
+          { w: 'carried', ipa: '/ˈkær.id/', vi: 'khuân vác', emoji: '🐜' },
+          { w: 'nest', ipa: '/nest/', vi: 'cái tổ', emoji: '🏡' }
+        ]
+      },
+      {
+        bg: 'assets/art/painted_hub_phonics.webp',
+        mood: 'sunny',
+        pan: 'center',
+        chars: [],
+        props: [
+          { emoji: '🦗', label: 'Play Music', vi: 'Chơi nhạc', x: 66, y: 24, size: 72 },
+          { emoji: '🎵', label: 'Song', vi: 'Bài hát', x: 76, y: 64, size: 54 },
+          { emoji: '🐜', label: 'Hard Work', vi: 'Chăm chỉ', x: 28, y: 18, size: 64 }
+        ],
+        en: '"Why do you work so hard, Ant? Come sing and dance with me!" laughed the grasshopper. "Winter is coming, and I must store food," replied the ant.',
+        vi: '"Sao Kiến làm việc vất vả thế? Ra đây hát múa cùng mình nào!" Châu Chấu cười nói. "Mùa đông sắp đến rồi, mình phải tích trữ thức ăn," Kiến đáp.',
+        vocab: [
+          { w: 'winter', ipa: '/ˈwɪn.tər/', vi: 'mùa đông', emoji: '❄️' },
+          { w: 'store', ipa: '/stɔːr/', vi: 'tích trữ', emoji: '🧺' }
+        ]
+      },
+      {
+        bg: 'assets/art/painted_hub_vocab.webp',
+        mood: 'morning',
+        pan: 'right',
+        chars: [],
+        props: [
+          { emoji: '🍂', label: 'Autumn Leaves', vi: 'Lá mùa thu', x: 72, y: 62, size: 64 },
+          { emoji: '🐜', label: 'Busy Ant', vi: 'Kiến chăm chỉ', x: 32, y: 18, size: 68 },
+          { emoji: '🌰', label: 'Acorn', vi: 'Hạt dẻ', x: 54, y: 20, size: 56 }
+        ],
+        en: 'Autumn arrived and golden leaves fell from the trees. The ant kept gathering seeds and nuts until her cozy pantry was completely full.',
+        vi: 'Mùa thu tới, lá vàng rơi rụng khắp nơi. Kiến vẫn miệt mài gom hạt giống và quả hạch cho đến khi kho thức ăn ấm cúng đầy ắp.',
+        vocab: [
+          { w: 'autumn', ipa: '/ˈɔː.təm/', vi: 'mùa thu', emoji: '🍂' },
+          { w: 'gathering', ipa: '/ˈɡæð.ər.ɪŋ/', vi: 'thu gom', emoji: '🌰' }
+        ]
+      },
+      {
+        bg: 'assets/art/painted_home_meadow.webp',
+        mood: 'rainy',
+        pan: 'center',
+        chars: [],
+        props: [
+          { emoji: '❄️', label: 'Snow', vi: 'Tuyết lạnh', x: 52, y: 68, size: 68 },
+          { emoji: '🦗', label: 'Cold & Hungry', vi: 'Lạnh và đói', x: 36, y: 20, size: 70 }
+        ],
+        en: 'Soon freezing winter winds blew across the field. Snow covered the ground, and the poor grasshopper had nothing left to eat.',
+        vi: 'Chẳng mấy chốc gió đông lạnh buốt thổi qua cánh đồng. Tuyết phủ trắng mặt đất, và Châu Chấu tội nghiệp chẳng còn chút gì để ăn.',
+        vocab: [
+          { w: 'freezing', ipa: '/ˈfriː.zɪŋ/', vi: 'lạnh cóng', emoji: '❄️' },
+          { w: 'nothing', ipa: '/ˈnʌθ.ɪŋ/', vi: 'không còn gì', emoji: '🥣' }
+        ]
+      },
+      {
+        bg: 'assets/art/painted_bg_montessori.webp',
+        mood: 'cozy',
+        pan: 'center',
+        chars: [],
+        props: [
+          { emoji: '🐜', label: 'Kind Ant', vi: 'Kiến tốt bụng', x: 30, y: 18, size: 68 },
+          { emoji: '🍲', label: 'Warm Soup', vi: 'Súp nóng', x: 52, y: 24, size: 66 },
+          { emoji: '🦗', label: 'Grateful', vi: 'Biết ơn', x: 74, y: 20, size: 66 }
+        ],
+        en: 'Shivering, the grasshopper knocked on the ant\'s door. The kind ant welcomed him inside and shared a bowl of warm soup.',
+        vi: 'Run cầm cập vì lạnh, Châu Chấu gõ cửa nhà Kiến. Bạn Kiến tốt bụng mời Châu Chấu vào nhà và chia sẻ một bát súp ấm nóng.',
+        vocab: [
+          { w: 'welcomed', ipa: '/ˈwel.kəmd/', vi: 'chào đón', emoji: '🚪' },
+          { w: 'shared', ipa: '/ʃerd/', vi: 'chia sẻ', emoji: '🍲' }
+        ]
+      },
+      {
+        bg: 'assets/art/painted_home_meadow.webp',
+        mood: 'sunny',
+        pan: 'center',
+        chars: [],
+        props: [
+          { emoji: '🐜', label: 'Ant', vi: 'Kiến', x: 34, y: 18, size: 68 },
+          { emoji: '🦗', label: 'Grasshopper', vi: 'Châu Chấu', x: 64, y: 20, size: 68 },
+          { emoji: '🌟', label: 'Wisdom', vi: 'Khôn ngoan', x: 50, y: 66, size: 58 }
+        ],
+        en: '"Thank you, Ant! Next summer, I will help gather food first and play music afterward," promised the grasshopper. There is a time for work and a time for play.',
+        vi: '"Cảm ơn Kiến nhiều lắm! Mùa hè tới mình sẽ phụ gom thức ăn trước rồi mới chơi nhạc sau," Châu Chấu hứa. Có thời gian để làm việc và cũng có thời gian để vui chơi.',
+        vocab: [
+          { w: 'promised', ipa: '/ˈprɒm.ɪst/', vi: 'đã hứa', emoji: '🤝' },
+          { w: 'afterward', ipa: '/ˈæf.tər.wərd/', vi: 'sau đó', emoji: '🎵' }
+        ]
+      }
+    ],
+    quiz: [
+      {
+        qEn: 'Why did the ant work hard during summer?',
+        qVi: 'Vì sao chú Kiến làm việc chăm chỉ suốt mùa hè?',
+        options: [
+          { text: 'To store food for winter', emoji: '🌾', correct: true },
+          { text: 'To build a sailboat', emoji: '⛵', correct: false },
+          { text: 'To hide from the sun', emoji: '☀️', correct: false }
+        ]
+      },
+      {
+        qEn: 'What did the kind ant do when the hungry grasshopper knocked?',
+        qVi: 'Bạn Kiến tốt bụng đã làm gì khi Châu Chấu đói bụng gõ cửa?',
+        options: [
+          { text: 'Welcomed him and shared warm soup', emoji: '🍲', correct: true },
+          { text: 'Closed the window', emoji: '🪟', correct: false },
+          { text: 'Moved to another forest', emoji: '🌳', correct: false }
+        ]
+      }
+    ]
+  },
+
+  /* ========================================================================
+     BOOK 13 — NGỤ NGÔN (FABLE) — A2 (8–10 tuổi): The Lion and the Mouse
+     ======================================================================== */
+  {
+    id: 'book_lion_mouse',
+    num: 13,
+    category: 'fable',
+    level: 'A2',
+    ageHint: '8–10 tuổi',
+    titleEn: 'The Lion and the Mouse',
+    titleVi: 'Sư Tử Và Chuột Nhắt',
+    subtitle: 'Truyện ngụ ngôn Ê-dốp • Lòng nhân hậu',
+    moralEn: 'No act of kindness, no matter how small, is ever wasted.',
+    moralVi: 'Không có lòng tốt nào là nhỏ bé — ai cũng có thể giúp ích khi bạn cần.',
+    minutes: '3 phút',
+    coverBg: 'assets/art/painted_bg_zoo.webp',
+    coverChar: 'leo',
+    coverEmoji: '🐭',
+    accent: '#D97706',
+    softBg: '#FFFBEB',
+    pages: [
+      {
+        bg: 'assets/art/painted_bg_zoo.webp',
+        mood: 'sunny',
+        pan: 'left',
+        chars: [{ id: 'leo', x: 26, y: 10, scale: 0.98 }],
+        props: [
+          { emoji: '🐭', label: 'Little Mouse', vi: 'Chuột nhắt', x: 66, y: 16, size: 64 },
+          { emoji: '🌳', label: 'Savanna', vi: 'Rừng cây', x: 80, y: 40, size: 64 }
+        ],
+        en: 'One warm afternoon, a mighty lion was napping beneath a tall tree. A tiny mouse accidentally scampered right across his golden paw and woke him up!',
+        vi: 'Một buổi chiều ấm áp, chú Sư Tử oai vệ đang ngủ trưa dưới gốc cây cao. Một chú Chuột nhắt vô tình chạy vọt qua bàn chân vàng và đánh thức Sư Tử dậy!',
+        vocab: [
+          { w: 'mighty', ipa: '/ˈmaɪ.ti/', vi: 'mạnh mẽ oai vệ', emoji: '🦁' },
+          { w: 'accidentally', ipa: '/ˌæk.sɪˈden.təl.i/', vi: 'vô tình', emoji: '🐭' }
+        ]
+      },
+      {
+        bg: 'assets/art/painted_bg_zoo.webp',
+        mood: 'morning',
+        pan: 'center',
+        chars: [{ id: 'leo', x: 24, y: 10, scale: 0.96 }],
+        props: [
+          { emoji: '🐭', label: 'Please Forgive Me', vi: 'Xin hãy tha lỗi', x: 64, y: 16, size: 62 },
+          { emoji: '💛', label: 'Kindness', vi: 'Lòng tốt', x: 50, y: 56, size: 54 }
+        ],
+        en: '"Please let me go!" squeaked the little mouse. "Someday I might even help you!" The lion chuckled gently and let the tiny creature run free.',
+        vi: '"Xin hãy tha cho tôi!" Chuột nhắt rụt rè kêu lên. "Biết đâu một ngày nào đó tôi có thể giúp lại ngài!" Sư Tử bật cười hiền hậu và thả chú chuột nhỏ đi.',
+        vocab: [
+          { w: 'squeaked', ipa: '/skwiːkt/', vi: 'kêu chít chít', emoji: '🐭' },
+          { w: 'chuckled', ipa: '/ˈtʃʌk.əld/', vi: 'cười khẽ', emoji: '😊' }
+        ]
+      },
+      {
+        bg: 'assets/art/painted_bg_zoo.webp',
+        mood: 'sunset',
+        pan: 'right',
+        chars: [{ id: 'leo', x: 34, y: 10, scale: 0.94 }],
+        props: [
+          { emoji: '🕸️', label: 'Rope Net', vi: 'Lưới dây thừng', x: 56, y: 34, size: 78 },
+          { emoji: '🔊', label: 'Roar', vi: 'Tiếng gầm', x: 76, y: 66, size: 54 }
+        ],
+        en: 'A few days later, the lion stepped into a thick rope net left in the forest. No matter how hard he pulled, he could not escape, so he let out a loud roar.',
+        vi: 'Vài ngày sau, Sư Tử mắc phải một tấm lưới dây thừng dày trong rừng. Dù cố sức giằng co thế nào cũng không thoát được, cậu đành cất tiếng gầm vang.',
+        vocab: [
+          { w: 'escape', ipa: '/ɪˈskeɪp/', vi: 'thoát ra', emoji: '🕸️' },
+          { w: 'roar', ipa: '/rɔːr/', vi: 'tiếng gầm', emoji: '🦁' }
+        ]
+      },
+      {
+        bg: 'assets/art/painted_bg_zoo.webp',
+        mood: 'morning',
+        pan: 'center',
+        chars: [{ id: 'leo', x: 26, y: 10, scale: 0.94 }],
+        props: [
+          { emoji: '🐭', label: 'Brave Mouse', vi: 'Chuột dũng cảm', x: 60, y: 20, size: 70 },
+          { emoji: '🧶', label: 'Ropes', vi: 'Dây thừng', x: 74, y: 42, size: 56 }
+        ],
+        en: 'Hearing the roar, the little mouse hurried straight through the bushes. "Don\'t worry, my friend! I will chew through these ropes!" she called out bravely.',
+        vi: 'Nghe thấy tiếng gầm, Chuột nhắt vội vàng len qua bụi cây chạy tới. "Đừng lo nhé bạn ơi! Tôi sẽ gặm đứt đám dây thừng này!" chú chuột dũng cảm nói.',
+        vocab: [
+          { w: 'hurried', ipa: '/ˈhɜːr.id/', vi: 'vội vàng chạy tới', emoji: '🏃' },
+          { w: 'bravely', ipa: '/ˈbreɪv.li/', vi: 'một cách dũng cảm', emoji: '💪' }
+        ]
+      },
+      {
+        bg: 'assets/art/painted_home_meadow.webp',
+        mood: 'sunny',
+        pan: 'center',
+        chars: [{ id: 'leo', x: 26, y: 10, scale: 0.96 }],
+        props: [
+          { emoji: '🐭', label: 'Hero Mouse', vi: 'Chuột anh hùng', x: 64, y: 18, size: 68 },
+          { emoji: '✨', label: 'Free!', vi: 'Tự do rồi!', x: 50, y: 62, size: 58 }
+        ],
+        en: 'With her sharp little teeth, the mouse nibbled one knot after another until the heavy net fell open. At last, the lion stepped out completely free!',
+        vi: 'Bằng hàm răng nhỏ sắc bén, Chuột nhắt gặm đứt hết nút thắt này đến nút thắt khác cho tới khi tấm lưới bung ra. Cuối cùng Sư Tử đã hoàn toàn tự do!',
+        vocab: [
+          { w: 'nibbled', ipa: '/ˈnɪb.əld/', vi: 'gặm từng chút', emoji: '🐭' },
+          { w: 'completely', ipa: '/kəmˈpliːt.li/', vi: 'hoàn toàn', emoji: '✨' }
+        ]
+      },
+      {
+        bg: 'assets/art/painted_home_meadow.webp',
+        mood: 'sunset',
+        pan: 'right',
+        chars: [{ id: 'leo', x: 26, y: 10, scale: 0.96 }],
+        props: [
+          { emoji: '🐭', label: 'True Friend', vi: 'Bạn tri kỷ', x: 62, y: 18, size: 66 },
+          { emoji: '❤️', label: 'Gratitude', vi: 'Lòng biết ơn', x: 48, y: 58, size: 54 }
+        ],
+        en: '"You were right, little friend," said the lion warmly. "Even the smallest friend can be the greatest help." From that day on, they were lifelong friends.',
+        vi: '"Bạn đã nói đúng đấy, người bạn nhỏ ạ," Sư Tử xúc động nói. "Ngay cả người bạn bé nhỏ nhất cũng có thể giúp đỡ thật lớn lao." Từ hôm đó, cả hai trở thành đôi bạn thân suốt đời.',
+        vocab: [
+          { w: 'greatest', ipa: '/ˈɡreɪ.tɪst/', vi: 'tuyệt vời nhất', emoji: '🌟' },
+          { w: 'lifelong', ipa: '/ˈlaɪf.lɒŋ/', vi: 'suốt đời', emoji: '🤝' }
+        ]
+      }
+    ],
+    quiz: [
+      {
+        qEn: 'How did the little mouse save the mighty lion?',
+        qVi: 'Chú Chuột nhỏ đã cứu Sư Tử bằng cách nào?',
+        options: [
+          { text: 'She chewed through the rope net', emoji: '🐭', correct: true },
+          { text: 'She called a giant helicopter', emoji: '🚁', correct: false },
+          { text: 'She dug a swimming pool', emoji: '🏊', correct: false }
+        ]
+      },
+      {
+        qEn: 'What does this fable teach us?',
+        qVi: 'Câu chuyện ngụ ngôn này dạy ta điều gì?',
+        options: [
+          { text: 'Even a small friend can be a big help', emoji: '❤️', correct: true },
+          { text: 'Only big animals can be heroes', emoji: '🐘', correct: false },
+          { text: 'Never help anyone in trouble', emoji: '🚫', correct: false }
+        ]
+      }
+    ]
+  },
+
+  /* ========================================================================
+     BOOK 14 — CỔ TÍCH (FAIRY TALE) — A1 (6–8 tuổi): The Three Little Pigs
+     ======================================================================== */
+  {
+    id: 'book_three_pigs',
+    num: 14,
+    category: 'fairytale',
+    level: 'A1',
+    ageHint: '6–8 tuổi',
+    titleEn: 'The Three Little Pigs',
+    titleVi: 'Ba Chú Heo Con',
+    subtitle: 'Truyện cổ tích kinh điển • Cẩn thận',
+    moralEn: 'Careful work and smart planning keep you safe and strong.',
+    moralVi: 'Làm việc cẩn thận và chu đáo sẽ giúp ta luôn vững vàng và an toàn.',
+    minutes: '3 phút',
+    coverBg: 'assets/art/painted_hub_stories.webp',
+    coverChar: 'toby',
+    coverEmoji: '🐷',
+    accent: '#EC4899',
+    softBg: '#FDF2F8',
+    pages: [
+      {
+        bg: 'assets/art/painted_home_meadow.webp',
+        mood: 'sunny',
+        pan: 'left',
+        chars: [],
+        props: [
+          { emoji: '🐷', label: 'Three Pigs', vi: 'Ba chú heo con', x: 34, y: 18, size: 74 },
+          { emoji: '🏡', label: 'New Home', vi: 'Ngôi nhà mới', x: 70, y: 26, size: 68 }
+        ],
+        en: 'Once upon a time, three little pigs set out into the sunny valley to build their very own houses. Each pig chose a different material.',
+        vi: 'Ngày xửa ngày xưa, có ba chú heo con cùng đi tới thung lũng ngập nắng để tự xây ngôi nhà cho riêng mình. Mỗi chú chọn một vật liệu khác nhau.',
+        vocab: [
+          { w: 'build', ipa: '/bɪld/', vi: 'xây dựng', emoji: '🧱' },
+          { w: 'different', ipa: '/ˈdɪf.ər.ənt/', vi: 'khác nhau', emoji: '🏡' }
+        ]
+      },
+      {
+        bg: 'assets/art/painted_home_meadow.webp',
+        mood: 'sunny',
+        pan: 'center',
+        chars: [],
+        props: [
+          { emoji: '🌾', label: 'Straw House', vi: 'Nhà rơm', x: 32, y: 22, size: 68 },
+          { emoji: '🪵', label: 'Stick House', vi: 'Nhà gỗ nhỏ', x: 70, y: 22, size: 68 },
+          { emoji: '🐷', label: 'Quick Work', vi: 'Làm vội vàng', x: 52, y: 14, size: 58 }
+        ],
+        en: 'The first pig quickly built a house of golden straw. The second pig built a house of wooden sticks so they could both finish early and play.',
+        vi: 'Heo anh cả dựng vội một ngôi nhà bằng rơm vàng. Heo anh hai làm nhà bằng những cành cây nhỏ để cả hai xong sớm còn đi chơi.',
+        vocab: [
+          { w: 'straw', ipa: '/strɔː/', vi: 'rơm khô', emoji: '🌾' },
+          { w: 'sticks', ipa: '/stɪks/', vi: 'cành cây gỗ', emoji: '🪵' }
+        ]
+      },
+      {
+        bg: 'assets/art/painted_bg_montessori.webp',
+        mood: 'morning',
+        pan: 'right',
+        chars: [],
+        props: [
+          { emoji: '🧱', label: 'Bricks', vi: 'Gạch đỏ chắc chắn', x: 64, y: 26, size: 74 },
+          { emoji: '🐷', label: 'Careful Pig', vi: 'Heo út cẩn thận', x: 32, y: 18, size: 68 }
+        ],
+        en: 'The third little pig took his time and carefully laid heavy red bricks, one on top of another. His sturdy brick house had a strong wooden door.',
+        vi: 'Riêng chú heo út không hề vội vàng mà cẩn thận xếp từng viên gạch đỏ chắc chắn. Ngôi nhà gạch kiên cố của cậu có cánh cửa gỗ thật vững.',
+        vocab: [
+          { w: 'bricks', ipa: '/brɪks/', vi: 'những viên gạch', emoji: '🧱' },
+          { w: 'sturdy', ipa: '/ˈstɜːr.di/', vi: 'kiên cố vững chắc', emoji: '🏠' }
+        ]
+      },
+      {
+        bg: 'assets/art/painted_bg_zoo.webp',
+        mood: 'rainy',
+        pan: 'left',
+        chars: [],
+        props: [
+          { emoji: '🐺', label: 'Big Wolf', vi: 'Chó Sói', x: 30, y: 20, size: 74 },
+          { emoji: '💨', label: 'Huff & Puff', vi: 'Thổi phù phù', x: 56, y: 42, size: 68 },
+          { emoji: '🌾', label: 'Blown Away', vi: 'Bay mất', x: 78, y: 54, size: 56 }
+        ],
+        en: 'One windy day, a big wolf arrived and puffed with all his might! Whoosh! Down blew the straw house, and soon down blew the stick house too!',
+        vi: 'Một ngày nhiều gió, lão Sói to lớn kéo tới và lấy hết sức thổi phù một hơi! Vù! Ngôi nhà rơm đổ sập, và chẳng mấy chốc nhà gỗ cũng bay mất!',
+        vocab: [
+          { w: 'wolf', ipa: '/wʊlf/', vi: 'chó sói', emoji: '🐺' },
+          { w: 'might', ipa: '/maɪt/', vi: 'sức mạnh', emoji: '💨' }
+        ]
+      },
+      {
+        bg: 'assets/art/painted_hub_stories.webp',
+        mood: 'cozy',
+        pan: 'center',
+        chars: [],
+        props: [
+          { emoji: '🧱', label: 'Strong Wall', vi: 'Tường gạch vững', x: 50, y: 28, size: 76 },
+          { emoji: '🐷', label: 'Safe Inside', vi: 'An toàn bên trong', x: 74, y: 18, size: 64 },
+          { emoji: '🐺', label: 'Out of Breath', vi: 'Hết hơi', x: 24, y: 20, size: 62 }
+        ],
+        en: 'The two brothers ran safely to the brick house. The wolf huffed and puffed as hard as he could, but the strong brick walls did not budge an inch!',
+        vi: 'Hai người anh chạy kịp sang nhà gạch an toàn. Lão Sói hít hơi thổi mạnh hết cỡ nhưng những bức tường gạch vững chắc vẫn không hề lung lay!',
+        vocab: [
+          { w: 'safely', ipa: '/ˈseɪf.li/', vi: 'một cách an toàn', emoji: '🛡️' },
+          { w: 'budge', ipa: '/bʌdʒ/', vi: 'nhúc nhích / lung lay', emoji: '🧱' }
+        ]
+      },
+      {
+        bg: 'assets/art/painted_home_meadow.webp',
+        mood: 'sunny',
+        pan: 'center',
+        chars: [],
+        props: [
+          { emoji: '🐷', label: 'Happy Brothers', vi: 'Ba anh em vui vẻ', x: 48, y: 18, size: 74 },
+          { emoji: '🏡', label: 'Brick Home', vi: 'Ngôi nhà gạch', x: 76, y: 28, size: 66 },
+          { emoji: '🎉', label: 'Safe & Happy', vi: 'An toàn hạnh phúc', x: 26, y: 62, size: 54 }
+        ],
+        en: 'Tired and out of breath, the wolf hurried away for good. The three little pigs danced with joy and worked together to build strong brick homes.',
+        vi: 'Mệt lử và hụt hơi, lão Sói đành bỏ chạy biệt tăm. Ba chú heo con nhảy múa mừng rỡ rồi cùng nhau xây thêm những ngôi nhà gạch thật vững chắc.',
+        vocab: [
+          { w: 'breath', ipa: '/breθ/', vi: 'hơi thở', emoji: '💨' },
+          { w: 'joy', ipa: '/dʒɔɪ/', vi: 'niềm vui', emoji: '🎉' }
+        ]
+      }
+    ],
+    quiz: [
+      {
+        qEn: 'Which house stayed strong when the wolf blew?',
+        qVi: 'Ngôi nhà nào vẫn đứng vững khi chó sói thổi?',
+        options: [
+          { text: 'The sturdy brick house', emoji: '🧱', correct: true },
+          { text: 'The straw house', emoji: '🌾', correct: false },
+          { text: 'The stick house', emoji: '🪵', correct: false }
+        ]
+      },
+      {
+        qEn: 'Why did the third little pig\'s house keep everyone safe?',
+        qVi: 'Vì sao ngôi nhà của chú heo út giữ an toàn cho cả ba anh em?',
+        options: [
+          { text: 'He took his time and built carefully', emoji: '🏠', correct: true },
+          { text: 'He painted it purple', emoji: '🎨', correct: false },
+          { text: 'He built it in five seconds', emoji: '⚡', correct: false }
+        ]
+      }
+    ]
+  },
+
+  /* ========================================================================
+     BOOK 15 — CỔ TÍCH (FAIRY TALE) — A2 (8–10 tuổi): Little Red Riding Hood
+     ======================================================================== */
+  {
+    id: 'book_red_riding_hood',
+    num: 15,
+    category: 'fairytale',
+    level: 'A2',
+    ageHint: '8–10 tuổi',
+    titleEn: 'Little Red Riding Hood',
+    titleVi: 'Cô Bé Quàng Khăn Đỏ',
+    subtitle: 'Truyện cổ tích kinh điển • An toàn',
+    moralEn: 'Stay on the safe path and be careful when talking to strangers.',
+    moralVi: 'Luôn đi đúng con đường an toàn và biết cảnh giác trước người lạ.',
+    minutes: '3 phút',
+    coverBg: 'assets/art/painted_hub_srs.webp',
+    coverChar: 'lulu',
+    coverEmoji: '🧺',
+    accent: '#DC2626',
+    softBg: '#FEF2F2',
+    pages: [
+      {
+        bg: 'assets/art/painted_home_meadow.webp',
+        mood: 'morning',
+        pan: 'left',
+        chars: [],
+        props: [
+          { emoji: '👧', label: 'Red Riding Hood', vi: 'Khăn Đỏ', x: 32, y: 18, size: 74 },
+          { emoji: '🧺', label: 'Basket of Pies', vi: 'Giỏ bánh thơm', x: 56, y: 22, size: 64 },
+          { emoji: '🧣', label: 'Red Hood', vi: 'Khăn choàng đỏ', x: 76, y: 56, size: 54 }
+        ],
+        en: 'Once upon a time, a cheerful girl wore a bright red cape wherever she went. One morning, her mother packed a basket of warm muffins for her grandmother.',
+        vi: 'Ngày xửa ngày xưa, có một cô bé vui tươi luôn khoác chiếc áo choàng màu đỏ rực. Một buổi sáng, mẹ gói một giỏ bánh nướng ấm nóng để cô mang sang thăm bà ngoại.',
+        vocab: [
+          { w: 'cape', ipa: '/keɪp/', vi: 'áo choàng', emoji: '🧣' },
+          { w: 'grandmother', ipa: '/ˈɡræn.mʌð.ər/', vi: 'bà ngoại', emoji: '👵' }
+        ]
+      },
+      {
+        bg: 'assets/art/painted_bg_zoo.webp',
+        mood: 'sunny',
+        pan: 'center',
+        chars: [],
+        props: [
+          { emoji: '👧', label: 'Forest Path', vi: 'Đường rừng', x: 28, y: 18, size: 68 },
+          { emoji: '🐺', label: 'Clever Wolf', vi: 'Con sói ranh mãnh', x: 68, y: 20, size: 70 },
+          { emoji: '🌸', label: 'Wildflowers', vi: 'Hoa dại', x: 50, y: 14, size: 52 }
+        ],
+        en: 'Along the forest path, a sneaky wolf stepped out and asked where she was going. Forgetting her mother\'s advice, she told him about Grandmother\'s cottage.',
+        vi: 'Dọc con đường rừng, một con sói ranh mãnh bước ra hỏi cô bé đi đâu. Quên mất lời mẹ dặn, cô bé thật thà kể về ngôi nhà nhỏ của bà ngoại.',
+        vocab: [
+          { w: 'sneaky', ipa: '/ˈsniː.ki/', vi: 'ranh mãnh lén lút', emoji: '🐺' },
+          { w: 'advice', ipa: '/ədˈvaɪs/', vi: 'lời khuyên dặn', emoji: '💡' }
+        ]
+      },
+      {
+        bg: 'assets/art/painted_bg_montessori.webp',
+        mood: 'cozy',
+        pan: 'right',
+        chars: [],
+        props: [
+          { emoji: '🏡', label: 'Cottage', vi: 'Nhà bà ngoại', x: 34, y: 24, size: 70 },
+          { emoji: '🐺', label: 'Disguise', vi: 'Cải trang', x: 68, y: 20, size: 70 }
+        ],
+        en: 'The wolf took a shortcut and reached the cottage first. Hearing his heavy footsteps, clever Grandmother quickly hid safely inside the wooden closet!',
+        vi: 'Con sói đi đường tắt và tới nhà bà trước. Nghe thấy tiếng bước chân nặng nề, bà ngoại thông minh liền nhanh trí trốn an toàn vào trong tủ gỗ!',
+        vocab: [
+          { w: 'shortcut', ipa: '/ˈʃɔːrt.kʌt/', vi: 'đường tắt', emoji: '🧭' },
+          { w: 'cottage', ipa: '/ˈkɒt.ɪdʒ/', vi: 'ngôi nhà nhỏ', emoji: '🏡' }
+        ]
+      },
+      {
+        bg: 'assets/art/painted_bg_montessori.webp',
+        mood: 'cozy',
+        pan: 'left',
+        chars: [],
+        props: [
+          { emoji: '👧', label: 'Notice Clues', vi: 'Nhận ra điểm lạ', x: 30, y: 18, size: 68 },
+          { emoji: '👓', label: 'Big Eyes', vi: 'Đôi mắt to', x: 52, y: 54, size: 56 },
+          { emoji: '🐺', label: 'Pretending', vi: 'Giả vờ', x: 72, y: 20, size: 68 }
+        ],
+        en: 'When Little Red arrived, she noticed something strange right away. "Grandmother, what big ears and bright eyes you have!" she said, stepping carefully toward the door.',
+        vi: 'Khi Khăn Đỏ tới nơi, cô bé lập tức nhận ra điều bất thường. "Bà ơi, sao hôm nay tai bà to và mắt bà sáng thế ạ?" cô vừa hỏi vừa lùi cẩn thận về phía cửa.',
+        vocab: [
+          { w: 'noticed', ipa: '/ˈnoʊ.tɪst/', vi: 'nhận ra', emoji: '👀' },
+          { w: 'strange', ipa: '/streɪndʒ/', vi: 'kỳ lạ', emoji: '❓' }
+        ]
+      },
+      {
+        bg: 'assets/art/painted_hub_srs.webp',
+        mood: 'sunny',
+        pan: 'center',
+        chars: [],
+        props: [
+          { emoji: '🪓', label: 'Woodcutter', vi: 'Bác tiều phu', x: 32, y: 24, size: 70 },
+          { emoji: '🐺', label: 'Ran Away', vi: 'Sói bỏ chạy', x: 74, y: 20, size: 64 },
+          { emoji: '👧', label: 'Safe!', vi: 'An toàn rồi!', x: 52, y: 18, size: 64 }
+        ],
+        en: 'Just then, a friendly woodcutter working nearby heard Little Red call for help. He rushed in, and the startled wolf bolted out the back door into the woods forever.',
+        vi: 'Đúng lúc ấy, bác tiều phu tốt bụng làm việc gần đó nghe thấy tiếng Khăn Đỏ gọi giúp đỡ. Bác vội chạy vào, khiến con sói hoảng hốt phóng ra cửa sau chạy biệt vào rừng sâu.',
+        vocab: [
+          { w: 'startled', ipa: '/ˈstɑːr.təld/', vi: 'giật mình hoảng hốt', emoji: '😮' },
+          { w: 'bolted', ipa: '/ˈboʊl.tɪd/', vi: 'phóng vụt chạy', emoji: '💨' }
+        ]
+      },
+      {
+        bg: 'assets/art/painted_bg_montessori.webp',
+        mood: 'cozy',
+        pan: 'center',
+        chars: [],
+        props: [
+          { emoji: '👵', label: 'Grandmother', vi: 'Bà ngoại', x: 34, y: 18, size: 70 },
+          { emoji: '👧', label: 'Little Red', vi: 'Khăn Đỏ', x: 64, y: 18, size: 70 },
+          { emoji: '🧁', label: 'Warm Muffins', vi: 'Bánh nướng ấm', x: 50, y: 48, size: 58 }
+        ],
+        en: 'Grandmother stepped out with a big hug, and they shared warm muffins and tea with the woodcutter. Little Red promised to always stay on the safe path.',
+        vi: 'Bà ngoại bước ra ôm chầm lấy cháu, rồi cả nhà cùng mời bác tiều phu thưởng thức trà và bánh ấm. Cô bé Quàng Khăn Đỏ tự hứa từ nay sẽ luôn đi đúng đường an toàn.',
+        vocab: [
+          { w: 'hug', ipa: '/hʌɡ/', vi: 'cái ôm', emoji: '🤗' },
+          { w: 'path', ipa: '/pæθ/', vi: 'con đường', emoji: '🛤️' }
+        ]
+      }
+    ],
+    quiz: [
+      {
+        qEn: 'Where did clever Grandmother hide when she heard the wolf?',
+        qVi: 'Bà ngoại thông minh đã trốn ở đâu khi nghe thấy tiếng sói?',
+        options: [
+          { text: 'Safely inside the wooden closet', emoji: '🏡', correct: true },
+          { text: 'On top of a tall cloud', emoji: '☁️', correct: false },
+          { text: 'Under a sailboat', emoji: '⛵', correct: false }
+        ]
+      },
+      {
+        qEn: 'Who helped scare the sneaky wolf away?',
+        qVi: 'Ai đã giúp đuổi con sói ranh mãnh đi?',
+        options: [
+          { text: 'A friendly woodcutter nearby', emoji: '🪓', correct: true },
+          { text: 'A tiny goldfish', emoji: '🐠', correct: false },
+          { text: 'A sleepy turtle', emoji: '🐢', correct: false }
+        ]
+      }
+    ]
+  },
+
+  /* ========================================================================
+     BOOK 16 — CỔ TÍCH (FAIRY TALE) — B1 (10–13 tuổi): Jack and the Beanstalk
+     ======================================================================== */
+  {
+    id: 'book_jack_beanstalk',
+    num: 16,
+    category: 'fairytale',
+    level: 'B1',
+    ageHint: '10–13 tuổi',
+    titleEn: 'Jack and the Beanstalk',
+    titleVi: 'Jack Và Cây Đậu Thần',
+    subtitle: 'Truyện cổ tích kinh điển • Dũng cảm',
+    moralEn: 'Courage and quick thinking help us overcome even giant challenges.',
+    moralVi: 'Lòng dũng cảm và sự nhanh trí giúp ta vượt qua cả những thử thách khổng lồ.',
+    minutes: '4 phút',
+    coverBg: 'assets/art/painted_hub_milestones.webp',
+    coverChar: 'leo',
+    coverEmoji: '🌱',
+    accent: '#059669',
+    softBg: '#ECFDF5',
+    pages: [
+      {
+        bg: 'assets/art/painted_home_meadow.webp',
+        mood: 'morning',
+        pan: 'left',
+        chars: [],
+        props: [
+          { emoji: '👦', label: 'Jack', vi: 'Cậu bé Jack', x: 30, y: 18, size: 72 },
+          { emoji: '🫘', label: 'Magic Beans', vi: 'Hạt đậu thần', x: 64, y: 28, size: 68 },
+          { emoji: '✨', label: 'Sparkle', vi: 'Lấp lánh', x: 76, y: 60, size: 54 }
+        ],
+        en: 'Long ago, a curious boy named Jack traded his family\'s old market cart for five shimmering magic beans. That evening, he planted them beside the garden wall.',
+        vi: 'Ngày xưa, có cậu bé ham khám phá tên là Jack đã đổi chiếc xe đẩy cũ của gia đình lấy năm hạt đậu thần lấp lánh. Tối hôm đó, cậu gieo chúng ngay bên bờ tường vườn.',
+        vocab: [
+          { w: 'shimmering', ipa: '/ˈʃɪm.ər.ɪŋ/', vi: 'lấp lánh ánh sáng', emoji: '✨' },
+          { w: 'planted', ipa: '/ˈplæn.tɪd/', vi: 'đã gieo trồng', emoji: '🌱' }
+        ]
+      },
+      {
+        bg: 'assets/art/painted_hub_milestones.webp',
+        mood: 'sunny',
+        pan: 'center',
+        chars: [],
+        props: [
+          { emoji: '🌱', label: 'Giant Beanstalk', vi: 'Cây đậu khổng lồ', x: 52, y: 26, size: 80 },
+          { emoji: '☁️', label: 'Clouds', vi: 'Tầng mây', x: 74, y: 70, size: 62 }
+        ],
+        en: 'By sunrise, an enormous green beanstalk spiraled all the way up past the drifting white clouds! Taking a deep breath, Jack began to climb higher and higher.',
+        vi: 'Đến bình minh, một cây đậu xanh khổng lồ đã vươn xoắn ốc xuyên qua tận những đám mây trắng bồng bềnh! Hít một hơi thật sâu, Jack bắt đầu leo lên ngày càng cao.',
+        vocab: [
+          { w: 'enormous', ipa: '/ɪˈnɔːr.məs/', vi: 'khổng lồ', emoji: '🌱' },
+          { w: 'spiraled', ipa: '/ˈspaɪ.rəld/', vi: 'uốn xoắn ốc', emoji: '🌀' }
+        ]
+      },
+      {
+        bg: 'assets/art/painted_hub_srs.webp',
+        mood: 'starry',
+        pan: 'right',
+        chars: [],
+        props: [
+          { emoji: '🏰', label: 'Cloud Castle', vi: 'Lâu đài trên mây', x: 54, y: 34, size: 78 },
+          { emoji: '👦', label: 'Explorer', vi: 'Nhà thám hiểm', x: 26, y: 18, size: 62 }
+        ],
+        en: 'Above the clouds stood a towering stone castle where a grumpy giant lived. Inside the great hall, Jack discovered a magical golden harp that played sweet lullabies all by itself.',
+        vi: 'Phía trên tầng mây sừng sững một tòa lâu đài đá nơi gã khổng lồ cáu kỉnh sinh sống. Trong đại sảnh, Jack phát hiện một cây đàn hạc vàng kỳ diệu tự chơi những khúc hát ru êm ái.',
+        vocab: [
+          { w: 'towering', ipa: '/ˈtaʊ.ər.ɪŋ/', vi: 'cao sừng sững', emoji: '🏰' },
+          { w: 'discovered', ipa: '/dɪˈskʌv.ərd/', vi: 'phát hiện ra', emoji: '✨' }
+        ]
+      },
+      {
+        bg: 'assets/art/painted_hub_stories.webp',
+        mood: 'cozy',
+        pan: 'center',
+        chars: [],
+        props: [
+          { emoji: '🎵', label: 'Golden Harp', vi: 'Đàn hạc vàng', x: 60, y: 36, size: 72 },
+          { emoji: '🥚', label: 'Golden Egg', vi: 'Trứng vàng', x: 34, y: 20, size: 64 }
+        ],
+        en: 'The golden harp whispered softly, "Please take me back to the village below! The giant took me from the townspeople long ago." Jack carefully lifted the harp.',
+        vi: 'Cây đàn hạc vàng khẽ thì thầm: "Xin hãy đưa tôi trở về ngôi làng bên dưới! Gã khổng lồ đã lấy tôi đi từ dân làng từ lâu lắm rồi." Jack cẩn thận nhấc cây đàn lên.',
+        vocab: [
+          { w: 'whispered', ipa: '/ˈwɪs.pərd/', vi: 'thì thầm', emoji: '🎵' },
+          { w: 'village', ipa: '/ˈvɪl.ɪdʒ/', vi: 'ngôi làng', emoji: '🏡' }
+        ]
+      },
+      {
+        bg: 'assets/art/painted_hub_milestones.webp',
+        mood: 'sunset',
+        pan: 'left',
+        chars: [],
+        props: [
+          { emoji: '👦', label: 'Climb Down Fast', vi: 'Leo xuống nhanh', x: 34, y: 20, size: 68 },
+          { emoji: '🌱', label: 'Beanstalk', vi: 'Cây đậu thần', x: 64, y: 36, size: 74 }
+        ],
+        en: 'Boom, boom, boom! The giant woke up and chased after him, shaking the clouds. Jack stayed calm, slid swiftly down the twisting vines, and reached his garden first!',
+        vi: 'Rầm, rầm, rầm! Gã khổng lồ tỉnh dậy đuổi theo làm rung chuyển cả tầng mây. Jack giữ bình tĩnh, trượt thật nhanh theo dây đậu xoắn và chạm xuống khu vườn trước tiên!',
+        vocab: [
+          { w: 'swiftly', ipa: '/ˈswɪft.li/', vi: 'thật nhanh nhẹn', emoji: '💨' },
+          { w: 'vines', ipa: '/vaɪnz/', vi: 'dây leo', emoji: '🌿' }
+        ]
+      },
+      {
+        bg: 'assets/art/painted_home_meadow.webp',
+        mood: 'sunny',
+        pan: 'center',
+        chars: [],
+        props: [
+          { emoji: '👦', label: 'Brave Jack', vi: 'Jack dũng cảm', x: 34, y: 18, size: 68 },
+          { emoji: '🎵', label: 'Joyful Music', vi: 'Âm nhạc vui tươi', x: 62, y: 32, size: 68 },
+          { emoji: '🎉', label: 'Village Celebration', vi: 'Lễ hội cả làng', x: 76, y: 66, size: 56 }
+        ],
+        en: 'Quickly, Jack trimmed the beanstalk so the giant could never climb down to trouble the village again. The golden harp filled the valley with joyful music for everyone.',
+        vi: 'Nhanh trí, Jack chặt bỏ cây đậu thần để gã khổng lồ không bao giờ xuống quấy rầy dân làng được nữa. Cây đàn hạc vàng ngân vang những giai điệu hạnh phúc khắp cả thung lũng.',
+        vocab: [
+          { w: 'trimmed', ipa: '/trɪmd/', vi: 'cắt tỉa / chặt bỏ', emoji: '🪓' },
+          { w: 'joyful', ipa: '/ˈdʒɔɪ.fəl/', vi: 'tràn đầy niềm vui', emoji: '🎉' }
+        ]
+      }
+    ],
+    quiz: [
+      {
+        qEn: 'What grew overnight from Jack\'s five magic beans?',
+        qVi: 'Thứ gì đã mọc lên sau một đêm từ năm hạt đậu thần của Jack?',
+        options: [
+          { text: 'An enormous beanstalk into the clouds', emoji: '🌱', correct: true },
+          { text: 'A giant pumpkin carriage', emoji: '🎃', correct: false },
+          { text: 'A silver submarine', emoji: '🚤', correct: false }
+        ]
+      },
+      {
+        qEn: 'What magical treasure did Jack return to the village?',
+        qVi: 'Jack đã mang báu vật kỳ diệu nào trở về cho dân làng?',
+        options: [
+          { text: 'A golden harp that played sweet music', emoji: '🎵', correct: true },
+          { text: 'A pair of flying boots', emoji: '👢', correct: false },
+          { text: 'A crystal telescope', emoji: '🔭', correct: false }
+        ]
+      }
+    ]
   }
 ];
+

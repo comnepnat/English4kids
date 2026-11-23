@@ -273,9 +273,9 @@
           <div class="section-title-bar compact-bar books-shelf-head">
             <div>
               <h2>📖 Truyện Tranh Đọc &amp; Nghe Có Minh Họa</h2>
-              <span class="books-shelf-sub" id="home-books-sub">10 truyện tranh minh họa • Pre-A1 ➔ B2</span>
+              <span class="books-shelf-sub" id="home-books-sub">16 truyện tranh • Cổ tích, Ngụ ngôn &amp; Phiêu lưu</span>
             </div>
-            <button type="button" class="btn-secondary-pill" id="btn-home-open-books">📚 Xem cả 10 truyện ➔</button>
+            <button type="button" class="btn-secondary-pill" id="btn-home-open-books">📚 Xem cả 16 truyện ➔</button>
           </div>
           <div class="home-books-grid" id="home-books-grid">
             <!-- Populated dynamically by books.js -->
@@ -292,7 +292,7 @@
         </div>
       </section>
 
-      <!-- VIEW 1E: ILLUSTRATED READ & LISTEN STORYBOOKS LIBRARY (10 Picture Books) -->
+      <!-- VIEW 1E: ILLUSTRATED READ & LISTEN STORYBOOKS LIBRARY (16 Picture Books: Fairy Tales, Fables & Adventures) -->
       <section class="view-section" id="view-books-hub" aria-label="Thư viện truyện tranh đọc và nghe có minh họa">
         <div class="deck-top-bar">
           <button class="btn-back" id="btn-books-hub-back" type="button">
@@ -300,17 +300,20 @@
           </button>
           <div class="topic-badge-header">
             <span>📖</span>
-            <span>Truyện Tranh Đọc &amp; Nghe Có Minh Họa (10 Cuốn)</span>
+            <span>Truyện Tranh Đọc &amp; Nghe (16 Cuốn • Cổ Tích &amp; Ngụ Ngôn)</span>
           </div>
         </div>
 
-        <div class="cefr-filter-bar" id="books-cefr-filter" role="group" aria-label="Lọc truyện theo trình độ">
-          <button class="filter-pill active" data-blevel="all" type="button">🌈 Tất cả (10 truyện)</button>
-          <button class="filter-pill age-filter-pill" data-blevel="age" id="btn-books-filter-age" type="button">🌱 Hợp tuổi bé (Pre-A1–A1)</button>
-          <button class="filter-pill" data-blevel="Pre-A1" type="button">🌱 Pre-A1 (3)</button>
-          <button class="filter-pill" data-blevel="A1" type="button">🌿 A1 (2)</button>
-          <button class="filter-pill" data-blevel="A2" type="button">🌳 A2 (2)</button>
-          <button class="filter-pill" data-blevel="B1" type="button">🚀 B1 (2)</button>
+        <div class="cefr-filter-bar" id="books-cefr-filter" role="group" aria-label="Lọc truyện theo thể loại và trình độ">
+          <button class="filter-pill active" data-blevel="all" type="button">🌈 Tất cả (16)</button>
+          <button class="filter-pill" data-blevel="cat:fairytale" type="button">🏰 Cổ tích (3)</button>
+          <button class="filter-pill" data-blevel="cat:fable" type="button">🦊 Ngụ ngôn (3)</button>
+          <button class="filter-pill" data-blevel="cat:original" type="button">🦁 Phiêu lưu (10)</button>
+          <button class="filter-pill age-filter-pill" data-blevel="age" id="btn-books-filter-age" type="button">🌱 Hợp tuổi bé</button>
+          <button class="filter-pill" data-blevel="Pre-A1" type="button">🌱 Pre-A1 (4)</button>
+          <button class="filter-pill" data-blevel="A1" type="button">🌿 A1 (4)</button>
+          <button class="filter-pill" data-blevel="A2" type="button">🌳 A2 (4)</button>
+          <button class="filter-pill" data-blevel="B1" type="button">🚀 B1 (3)</button>
           <button class="filter-pill" data-blevel="B2" type="button">🏆 B2 (1)</button>
         </div>
 
@@ -329,7 +332,7 @@
             <span>📖</span>
             <span id="book-reader-title">Quả Bóng Đỏ Của Leo</span>
           </div>
-          <button class="btn-secondary-pill" id="btn-book-vi-toggle" type="button">🇻🇳 Dịch Việt: Bật</button>
+          <button class="btn-secondary-pill" id="btn-book-vi-toggle" type="button">🇻🇳 Dịch Việt: Đang hiện</button>
         </div>
 
         <!-- Two-Page Open Picture Book Spread -->
@@ -351,6 +354,7 @@
                 <p class="book-text-en" id="book-text-en"></p>
                 <div class="book-word-tooltip hidden" id="book-word-tooltip" role="status"></div>
                 <p class="book-text-vi" id="book-text-vi"></p>
+                <button class="btn-book-vi-peek hidden" id="btn-book-vi-peek" type="button">👁️ Hiện bản dịch tiếng Việt</button>
               </div>
 
               <div class="book-page-vocab" id="book-page-vocab" aria-label="Từ vựng nổi bật trong trang"></div>
@@ -391,6 +395,7 @@
             <div class="book-done-mascot" id="book-done-mascot"></div>
             <h2 id="book-done-title">Chúc mừng bé đã đọc xong truyện!</h2>
             <p class="book-done-reward" id="book-done-reward">⭐ +20 Sao thưởng</p>
+            <div class="book-done-moral hidden" id="book-done-moral"></div>
             <div class="book-done-actions">
               <button class="btn-action-flip" id="btn-book-done-reread" type="button">🔄 Đọc lại từ đầu</button>
               <button class="btn-action-mastered" id="btn-book-done-next" type="button">📖 Đọc truyện tiếp theo ➔</button>
