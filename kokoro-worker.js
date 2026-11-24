@@ -1,7 +1,7 @@
 /**
  * English4Kids — Kokoro AI Offline TTS Web Worker (kokoro-worker.js)
- * Runs Kokoro-82M (ONNX q8, ~86 MB, cached once in browser Cache Storage)
- * off the main thread so tablet & mobile UI stays silky smooth.
+ * Auto-selects WebGPU when supported (3-5x faster), falling back to WASM q8 (~86 MB, cached once).
+ * Runs completely off the main thread so tablet & mobile UI never stutters.
  */
 const MODEL_ID = 'onnx-community/Kokoro-82M-v1.0-ONNX';
 const CDN_URLS = [
@@ -10,6 +10,7 @@ const CDN_URLS = [
 ];
 
 let ttsInstance = null;
+let activeDevice = 'wasm';
 let loadingPromise = null;
 const fileProgress = new Map();
 
@@ -49,6 +50,16 @@ async function importKokoroModule() {
   throw lastErr || new Error('Không thể tải thư viện Kokoro TTS.');
 }
 
+async function supportsWebGPU() {
+  try {
+    if (typeof navigator === 'undefined' || !navigator.gpu) return false;
+    const adapter = await navigator.gpu.requestAdapter();
+    return !!adapter;
+  } catch {
+    return false;
+  }
+}
+
 function encodeWavBlob(samples, sampleRate) {
   const numSamples = samples.length;
   const buffer = new ArrayBuffer(44 + numSamples * 2);
@@ -86,12 +97,32 @@ async function ensureLoaded() {
   loadingPromise = (async () => {
     self.postMessage({ type: 'status', status: 'loading', progress: 2 });
     const { KokoroTTS } = await importKokoroModule();
+    const hasGpu = await supportsWebGPU();
+
+    if (hasGpu) {
+      try {
+        fileProgress.clear();
+        ttsInstance = await KokoroTTS.from_pretrained(MODEL_ID, {
+          dtype: 'fp32',
+          device: 'webgpu',
+          progress_callback: emitAggregateProgress
+        });
+        activeDevice = 'webgpu';
+        self.postMessage({ type: 'ready', progress: 100, device: activeDevice });
+        return ttsInstance;
+      } catch {
+        // Fallback smoothly to WASM q8 if WebGPU fails on this GPU driver
+      }
+    }
+
+    fileProgress.clear();
     ttsInstance = await KokoroTTS.from_pretrained(MODEL_ID, {
       dtype: 'q8',
       device: 'wasm',
       progress_callback: emitAggregateProgress
     });
-    self.postMessage({ type: 'ready', progress: 100 });
+    activeDevice = 'wasm';
+    self.postMessage({ type: 'ready', progress: 100, device: activeDevice });
     return ttsInstance;
   })().catch(err => {
     loadingPromise = null;

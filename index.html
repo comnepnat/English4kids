@@ -1588,8 +1588,8 @@
           <div class="voice-setting-card">
             <label class="voice-toggle-row" for="chk-native-word-audio">
               <div>
-                <strong>🎙️ Giọng Người Thật (Studio Từ điển) cho 2.500 từ</strong>
-                <p>Phát file thu âm giọng bản xứ thật (tự động lưu đệm, dự phòng giọng AI nếu mất mạng).</p>
+                <strong>🎧 Giọng Thu Âm Studio Sẵn Có (2.500 từ + 16 Truyện Tranh — 0ms)</strong>
+                <p>Phát ngay lập tức giọng bản xứ từ điển và sách nói Kokoro-82M fp32 cho cả 96 trang truyện, không cần đợi tạo giọng, hỗ trợ chỉnh tốc độ &amp; nghe offline.</p>
               </div>
               <input type="checkbox" id="chk-native-word-audio" checked />
             </label>
@@ -1719,9 +1719,9 @@
           <div class="voice-priority-box">
             <strong>📋 Thứ tự ưu tiên phát âm &amp; tự động dự phòng (không bao giờ im tiếng):</strong>
             <ol>
-              <li><strong>Từ vựng đơn lẻ:</strong> Nếu bật công tắc <em>Giọng Người Thật (Studio)</em> ở trên → ưu tiên file thu âm bản xứ trước.</li>
-              <li><strong>Câu ví dụ, Phim &amp; Truyện tranh:</strong> Luôn ưu tiên <strong>nguồn giọng bạn đang chọn</strong> ở 3 nút trên.</li>
-              <li><strong>Dự phòng thông minh:</strong> Chọn <em>Google Cloud</em> mà mất mạng/lỗi key → tự chuyển sang <em>Kokoro AI</em> (nếu đã tải) → rồi tới <em>Giọng máy</em>. Chọn <em>Kokoro AI</em> mà chưa tải xong → tạm đọc bằng <em>Giọng máy</em>.</li>
+              <li><strong>16 Truyện Tranh (96 trang) &amp; Từ vựng đơn:</strong> Khi bật công tắc <em>Giọng Thu Âm Studio Sẵn Có</em> ở trên → phát ngay file <strong>sách nói Kokoro-82M fp32 (0ms, không độ trễ)</strong> và giọng bản xứ từ điển.</li>
+              <li><strong>Câu ví dụ &amp; Phim tương tác:</strong> Ưu tiên <strong>nguồn giọng bạn chọn</strong> ở 3 nút trên (<em>Giọng máy</em> / <em>Kokoro AI WebGPU-WASM</em> / <em>Google Cloud TTS</em>). Nếu dùng Google Cloud có API Key thì truyện tranh cũng dùng Google Cloud.</li>
+              <li><strong>Dự phòng thông minh:</strong> Mất mạng hoặc lỗi API Key → tự chuyển sang file thu âm Studio / Kokoro AI (nếu đã tải) → cuối cùng là <em>Giọng máy thiết bị</em>.</li>
             </ol>
           </div>
         </div>

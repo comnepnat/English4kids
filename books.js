@@ -493,9 +493,19 @@
     }
 
     const nextPage = currentBook.pages[currentPageIndex + 1];
-    if (nextPage && nextPage.en && typeof window.prefetchSentenceAudio === 'function') {
-      setTimeout(() => window.prefetchSentenceAudio(nextPage.en), 450);
+    if (nextPage && nextPage.en) {
+      const nextAudioUrl = getBookPageAudioUrl(currentBook.id, currentPageIndex + 1);
+      if (typeof window.preloadAudioUrl === 'function') {
+        window.preloadAudioUrl(nextAudioUrl);
+      }
+      if (typeof window.prefetchSentenceAudio === 'function') {
+        setTimeout(() => window.prefetchSentenceAudio(nextPage.en), 450);
+      }
     }
+  }
+
+  function getBookPageAudioUrl(bookId, pageIdx) {
+    return `assets/audio/books/${ bookId }_p${ pageIdx + 1 }.mp3`;
   }
 
   function speakCurrentPage() {
@@ -507,7 +517,8 @@
       autoTurnHandle = null;
     }
     if (typeof window.speakEnglish === 'function') {
-      window.speakEnglish(page.en, 0.92);
+      const audioUrl = getBookPageAudioUrl(currentBook.id, currentPageIndex);
+      window.speakEnglish(page.en, 0.92, { audioUrl });
     }
     if (isAutoReading && typeof window.afterSpeech === 'function') {
       autoTurnHandle = window.afterSpeech(() => {

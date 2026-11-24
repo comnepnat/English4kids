@@ -574,6 +574,58 @@
     return kokoroLoadPromise;
   }
 
+  const KOKORO_IDB_NAME = 'e4k_kokoro_audio_v1';
+  const KOKORO_IDB_STORE = 'clips';
+  let kokoroDbPromise = null;
+
+  function openKokoroDb() {
+    if (kokoroDbPromise) return kokoroDbPromise;
+    if (typeof indexedDB === 'undefined') return Promise.resolve(null);
+    kokoroDbPromise = new Promise(resolve => {
+      try {
+        const req = indexedDB.open(KOKORO_IDB_NAME, 1);
+        req.onupgradeneeded = () => {
+          const db = req.result;
+          if (!db.objectStoreNames.contains(KOKORO_IDB_STORE)) {
+            db.createObjectStore(KOKORO_IDB_STORE);
+          }
+        };
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = () => resolve(null);
+      } catch { resolve(null); }
+    });
+    return kokoroDbPromise;
+  }
+
+  async function idbGetKokoroBlob(key) {
+    const db = await openKokoroDb();
+    if (!db) return null;
+    return new Promise(resolve => {
+      try {
+        const tx = db.transaction(KOKORO_IDB_STORE, 'readonly');
+        const req = tx.objectStore(KOKORO_IDB_STORE).get(key);
+        req.onsuccess = () => resolve(req.result || null);
+        req.onerror = () => resolve(null);
+      } catch { resolve(null); }
+    });
+  }
+
+  async function idbPutKokoroBlob(key, blob) {
+    const db = await openKokoroDb();
+    if (!db || !blob) return;
+    try {
+      const tx = db.transaction(KOKORO_IDB_STORE, 'readwrite');
+      tx.objectStore(KOKORO_IDB_STORE).put(blob, key);
+    } catch { /* ignore quota errors */ }
+  }
+
+  function splitKokoroSentences(text) {
+    const clean = prepareSpeechText(text);
+    if (!clean) return [];
+    const parts = clean.match(/[^.!?]+[.!?]+["'”’)]*\s*|[^.!?]+$/g) || [clean];
+    return parts.map(s => s.trim()).filter(Boolean);
+  }
+
   async function synthesizeKokoro(rawText) {
     if (kokoroState !== 'ready') return null;
     const worker = ensureKokoroWorker();
@@ -583,6 +635,14 @@
     const voice = resolveKokoroVoiceId();
     const cacheKey = `${ voice }:${ text }`;
     if (kokoroBlobCache.has(cacheKey)) return kokoroBlobCache.get(cacheKey);
+
+    // Check persistent IndexedDB cache first (0ms replay across reloads!)
+    const cachedBlob = await idbGetKokoroBlob(cacheKey);
+    if (cachedBlob) {
+      const url = URL.createObjectURL(cachedBlob);
+      kokoroBlobCache.set(cacheKey, url);
+      return url;
+    }
 
     const id = ++kokoroJobId;
     const blob = await new Promise((resolve, reject) => {
@@ -598,6 +658,7 @@
     });
 
     if (!blob) return null;
+    idbPutKokoroBlob(cacheKey, blob);
     const blobUrl = URL.createObjectURL(blob);
     if (kokoroBlobCache.size >= KOKORO_MAX_CACHE) {
       const firstKey = kokoroBlobCache.keys().next().value;
@@ -609,36 +670,62 @@
     return blobUrl;
   }
 
+  // Sentence-by-sentence streaming: starts playing sentence 1 immediately while pre-generating sentence 2
   async function tryPlayKokoroTts(rawText, rate, token) {
-    // If user previously downloaded Kokoro into cache, start warming it up silently
     if (kokoroState === 'idle' && prefs.kokoroCached) {
       loadKokoroModel().catch(() => {});
     }
     if (kokoroState !== 'ready') return false;
 
+    const sentences = splitKokoroSentences(rawText);
+    if (!sentences.length) return false;
+    const audioRate = Math.max(0.55, Math.min(1.5, rate));
+
     try {
-      const blobUrl = await synthesizeKokoro(rawText);
-      if (!blobUrl || token !== speakToken) return false;
-      const audioRate = Math.max(0.55, Math.min(1.5, rate));
-      return await new Promise(resolve => {
-        setSpeakingVisual(true);
-        playHtmlAudioUrl(
-          blobUrl,
-          audioRate,
-          null,
-          () => { setSpeakingVisual(false); resolve(true); },
-          () => { setSpeakingVisual(false); resolve(false); }
-        );
-      });
+      let nextPromise = synthesizeKokoro(sentences[0]);
+      for (let i = 0; i < sentences.length; i += 1) {
+        const blobUrl = await nextPromise;
+        if (!blobUrl || token !== speakToken) return i > 0;
+        // Start generating next sentence immediately while current sentence plays
+        nextPromise = (i + 1 < sentences.length)
+          ? synthesizeKokoro(sentences[i + 1]).catch(() => null)
+          : null;
+
+        const ok = await new Promise(resolve => {
+          setSpeakingVisual(true);
+          playHtmlAudioUrl(
+            blobUrl,
+            audioRate,
+            null,
+            () => { setSpeakingVisual(false); resolve(true); },
+            () => { setSpeakingVisual(false); resolve(false); }
+          );
+        });
+        if (!ok || token !== speakToken) return ok || token !== speakToken;
+      }
+      return true;
     } catch (e) {
       return false;
     }
   }
 
-  // Silently pre-generate the next storybook page in Kokoro so page turns feel instant
+  // Silently pre-generate the next sentence in Kokoro (sentence 1 first for instant start)
   window.prefetchSentenceAudio = function (text) {
     if (!text || prefs.speechEngine !== 'kokoro' || kokoroState !== 'ready') return;
-    synthesizeKokoro(text).catch(() => {});
+    const parts = splitKokoroSentences(text);
+    if (parts[0]) synthesizeKokoro(parts[0]).catch(() => {});
+  };
+
+  // Preload pre-recorded studio MP3s (e.g. next storybook page) into browser cache for 0ms playback
+  const preloadedAudioUrls = new Set();
+  window.preloadAudioUrl = function (url) {
+    if (!url || preloadedAudioUrls.has(url)) return;
+    preloadedAudioUrls.add(url);
+    try {
+      const a = new Audio();
+      a.preload = 'auto';
+      a.src = url;
+    } catch (e) { /* ignore */ }
   };
 
   /* ------------------------------------------------------------------
@@ -751,27 +838,41 @@
     }
   };
 
-  async function speakInternal(text, rate, myToken) {
+  async function tryPlayDirectAudioUrl(url, audioRate, myToken) {
+    if (!url || myToken !== speakToken) return false;
+    const clampedRate = Math.max(0.55, Math.min(1.5, audioRate));
+    return await new Promise(resolve => {
+      setSpeakingVisual(true);
+      playHtmlAudioUrl(
+        url,
+        clampedRate,
+        null,
+        () => { setSpeakingVisual(false); resolve(true); },
+        () => { setSpeakingVisual(false); resolve(false); }
+      );
+    });
+  }
+
+  async function speakInternal(text, rate, myToken, options = {}) {
     const cleanWord = extractCleanSingleWord(text);
     const isSlow = rate <= 0.68;
     const effectiveRate = (isSlow ? 0.76 : 1.0) * prefs.speedMultiplier;
+    const preRecordedUrl = options && options.audioUrl ? String(options.audioUrl) : '';
 
-    // Priority 0 (Single words): Real human studio MP3 when enabled
+    // Priority 0a (Pre-recorded Studio Audiobook MP3 for 16 storybooks — 0ms latency, Kokoro-82M fp32):
+    // Played immediately unless user explicitly activated Google Cloud TTS with an API key.
+    if (preRecordedUrl && prefs.nativeWordAudio && !(prefs.speechEngine === 'google' && prefs.cloudApiKey)) {
+      const ok = await tryPlayDirectAudioUrl(preRecordedUrl, effectiveRate, myToken);
+      if (ok || myToken !== speakToken) return;
+    }
+
+    // Priority 0b (Single words): Real human studio MP3 when enabled
     if (prefs.nativeWordAudio && cleanWord) {
       const mp3Url = await resolveNativeWordAudioUrl(cleanWord, prefs.accent);
       if (myToken !== speakToken) return;
       if (mp3Url) {
         const audioRate = isSlow ? 0.74 * prefs.speedMultiplier : 1.0 * prefs.speedMultiplier;
-        const ok = await new Promise(resolve => {
-          setSpeakingVisual(true);
-          playHtmlAudioUrl(
-            mp3Url,
-            audioRate,
-            null,
-            () => { setSpeakingVisual(false); resolve(true); },
-            () => { setSpeakingVisual(false); resolve(false); }
-          );
-        });
+        const ok = await tryPlayDirectAudioUrl(mp3Url, audioRate, myToken);
         if (ok || myToken !== speakToken) return;
       }
     }
@@ -783,13 +884,18 @@
         const ok = await tryPlayCloudTts(text, (isSlow ? 0.75 : 0.96) * prefs.speedMultiplier, myToken);
         if (ok || myToken !== speakToken) return;
       }
-      // 1b. Smart fallback -> Kokoro AI if already ready offline on this device
+      // 1b. Smart fallback -> pre-recorded studio MP3 if available (0ms offline!)
+      if (preRecordedUrl) {
+        const ok = await tryPlayDirectAudioUrl(preRecordedUrl, effectiveRate, myToken);
+        if (ok || myToken !== speakToken) return;
+      }
+      // 1c. Smart fallback -> Kokoro AI if already ready offline on this device
       if (kokoroState === 'ready') {
         const ok = await tryPlayKokoroTts(text, effectiveRate, myToken);
         if (ok || myToken !== speakToken) return;
       }
     } else if (prefs.speechEngine === 'kokoro') {
-      // 1a. Kokoro AI Offline
+      // 1a. Kokoro AI Offline (WebGPU/WASM + sentence streaming + IndexedDB cache)
       const ok = await tryPlayKokoroTts(text, effectiveRate, myToken);
       if (ok || myToken !== speakToken) return;
     }
@@ -800,11 +906,11 @@
   }
 
   // Returns a Promise that resolves when the speech has finished (or was interrupted).
-  window.speakEnglish = function (text, rate = 0.92) {
+  window.speakEnglish = function (text, rate = 0.92, options = {}) {
     if (!text || !String(text).trim()) return Promise.resolve();
     window.stopAllSpeech();
     const myToken = speakToken;
-    currentSpeech = speakInternal(text, rate, myToken).catch(() => {});
+    currentSpeech = speakInternal(text, rate, myToken, options).catch(() => {});
     return currentSpeech;
   };
 
