@@ -282,6 +282,22 @@
           </div>
         </div>
 
+        <!-- Interactive Speaking & Roleplay Studio Banner -->
+        <div class="home-talk-banner" id="home-talk-banner">
+          <div class="htb-left">
+            <img class="htb-mascot" src="assets/art/painted_leo.webp" alt="Sư tử Leo" loading="lazy" decoding="async" draggable="false" />
+            <div class="htb-copy">
+              <span class="htb-kicker">🎙️ LUYỆN NÓI &amp; GIAO TIẾP TIẾNG ANH</span>
+              <h2>Trò Chuyện Tương Tác Cùng Leo &amp; Bạn Bè</h2>
+              <p id="home-talk-sub">8 tình huống nhập vai miễn phí + Micro nói thật &amp; AI Gemini (tùy chọn)</p>
+            </div>
+          </div>
+          <div class="htb-actions">
+            <button type="button" class="btn-action-mastered" id="btn-home-open-talk">🎭 Nhập vai miễn phí ➔</button>
+            <button type="button" class="btn-secondary-pill" id="btn-home-open-talk-ai">✨ Chat AI tự do</button>
+          </div>
+        </div>
+
         <!-- CEFR Level Progression Path: Pre-A1 -> A1 -> A2 -> B1 -> B2 -->
         <div class="section-title-bar compact-bar cefr-title-bar">
           <h2>📈 Lộ Trình Trình Độ (Pre-A1 ➔ B1, B2)</h2>
@@ -402,6 +418,152 @@
               <button class="btn-secondary-pill" id="btn-book-done-library" type="button">📚 Về thư viện truyện</button>
             </div>
           </div>
+        </div>
+      </section>
+
+      <!-- VIEW 1G: INTERACTIVE SPEAKING & CONVERSATION STUDIO (Free Roleplay + Micro + Optional Gemini Free Tier AI) -->
+      <section class="view-section" id="view-talk-studio" aria-label="Trò chuyện tương tác tiếng Anh cùng Leo">
+        <div class="deck-top-bar">
+          <button class="btn-back" id="btn-talk-back" type="button">
+            <span class="back-arrow">⬅</span> Quay lại
+          </button>
+          <div class="topic-badge-header">
+            <span>🎙️</span>
+            <span>Trò Chuyện Cùng Leo &amp; Bạn Bè</span>
+          </div>
+          <button class="btn-secondary-pill" id="btn-talk-vi-toggle" type="button" aria-pressed="true">🇻🇳 Dịch Việt: Đang hiện</button>
+        </div>
+
+        <!-- 2-Mode Switcher: Free Roleplay vs Gemini Free Tier AI -->
+        <div class="talk-mode-tabs" id="talk-mode-tabs" role="tablist" aria-label="Chọn chế độ trò chuyện">
+          <button type="button" class="talk-mode-tab active" data-talk-tab="roleplay" aria-pressed="true">
+            🎭 Nhập Vai Miễn Phí (8 Chủ Đề • 0đ)
+          </button>
+          <button type="button" class="talk-mode-tab" data-talk-tab="ai" aria-pressed="false">
+            ✨ Chat AI Tự Do (Gemini Free Key)
+          </button>
+        </div>
+
+        <!-- PANE 1: FREE ROLEPLAY MODE (No API Key Required) -->
+        <div class="talk-pane" id="talk-pane-roleplay">
+          <!-- Hub Grid of 8 Roleplay Missions -->
+          <div id="talk-roleplay-hub">
+            <p class="talk-intro-note">
+              🌟 Bé chọn một tình huống bên dưới để luyện nghe – nói thật cùng <strong>Leo, Mimi, Toby và Lulu</strong>. Hỗ trợ <strong>🎙️ bấm Micro nói trực tiếp</strong>, nghe mẫu trước hoặc chạm thẻ gợi ý!
+            </p>
+            <div class="talk-missions-grid" id="talk-missions-grid"></div>
+          </div>
+
+          <!-- Active Roleplay Chat Room -->
+          <div class="talk-chat-shell hidden" id="talk-roleplay-room">
+            <div class="talk-room-banner">
+              <img class="talk-room-bg" id="talk-room-bg" src="assets/art/painted_home_meadow.webp" alt="" draggable="false" />
+              <div class="talk-room-overlay">
+                <img class="talk-room-avatar" id="talk-room-avatar" src="assets/art/painted_leo.webp" alt="Leo" draggable="false" />
+                <div class="talk-room-meta">
+                  <strong id="talk-room-mascot-name">Sư tử Leo</strong>
+                  <span class="talk-room-pill" id="talk-room-level">Pre-A1 • Lượt 1/4</span>
+                </div>
+                <button type="button" class="btn-secondary-pill talk-exit-btn" id="btn-talk-exit-mission">📋 Đổi chủ đề</button>
+              </div>
+            </div>
+
+            <div class="talk-messages" id="talk-messages" aria-live="polite"></div>
+
+            <div class="talk-mic-live hidden" id="talk-mic-live"></div>
+
+            <!-- Suggestion Chips (listen-first + tap-to-send) -->
+            <div class="talk-suggestions" id="talk-suggestions"></div>
+
+            <!-- Mic + Type Input Bar -->
+            <div class="talk-input-bar" id="talk-input-bar">
+              <button type="button" class="btn-talk-mic" id="btn-talk-mic">
+                <span class="mic-icon">🎙️</span> Bấm để nói tiếng Anh
+              </button>
+              <form class="talk-text-form" id="talk-text-form">
+                <input type="text" id="talk-text-input" class="talk-text-input" placeholder="Hoặc gõ câu tiếng Anh của bé..." autocomplete="off" />
+                <button type="submit" class="btn-talk-send">Gửi ➔</button>
+              </form>
+            </div>
+
+            <!-- Mission Complete Celebration -->
+            <div class="talk-mission-done hidden" id="talk-mission-done">
+              <strong id="talk-done-reward">🎉 Tuyệt vời! Bé nhận được +15 ⭐ Sao thưởng luyện nói!</strong>
+              <div class="talk-done-actions">
+                <button type="button" class="btn-action-flip" id="btn-talk-done-again">🔄 Luyện lại chủ đề này</button>
+                <button type="button" class="btn-action-mastered" id="btn-talk-done-list">🎭 Chọn chủ đề khác ➔</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PANE 2: OPTIONAL AI FREE CHAT (Gemini Free Tier) -->
+        <div class="talk-pane hidden" id="talk-pane-ai">
+          <details class="gdrive-guide talk-ai-config" id="talk-ai-config-details" open>
+            <summary>🔑 Cài đặt Gemini API Key (Miễn phí Free Tier — Không cần thẻ tín dụng)</summary>
+            <p class="voice-cloud-desc">
+              Dành cho phụ huynh muốn bé trò chuyện tiếng Anh <strong>tự do mọi chủ đề</strong>. Key chỉ lưu ngay trong máy bạn (không gửi đi đâu khác).
+              Cách lấy miễn phí 30 giây: vào <strong>aistudio.google.com</strong> → đăng nhập Gmail → bấm <em>Create API key in new project</em> (không gắn thẻ Billing) → dán vào ô dưới:
+            </p>
+            <div class="voice-cloud-form">
+              <select id="talk-gemini-model" class="srs-select">
+                <option value="gemini-2.5-flash">Gemini 2.5 Flash (Thông minh &amp; tự nhiên)</option>
+                <option value="gemini-2.5-flash-lite">Gemini 2.5 Flash-Lite (Siêu nhanh • Hạn mức Free cao)</option>
+              </select>
+              <input type="password" id="talk-gemini-key" placeholder="Dán Gemini API Key (AIza...) vào đây" autocomplete="off" />
+              <button type="button" class="btn-save-cid" id="btn-save-gemini-key">Lưu</button>
+            </div>
+            <div class="gdrive-last-sync" id="talk-ai-status"></div>
+          </details>
+
+          <div class="talk-ai-mascot-bar" id="talk-ai-mascots">
+            <span>Chọn bạn trò chuyện:</span>
+            <button type="button" class="filter-pill active" data-ai-mascot="leo">🦁 Sư tử Leo</button>
+            <button type="button" class="filter-pill" data-ai-mascot="mimi">🐼 Gấu Mimi</button>
+            <button type="button" class="filter-pill" data-ai-mascot="toby">🦊 Cáo Toby</button>
+            <button type="button" class="filter-pill" data-ai-mascot="lulu">🐰 Thỏ Lulu</button>
+            <span class="voice-kokoro-badge" id="ai-key-status-badge">🔑 Chưa dán Gemini API Key</span>
+          </div>
+
+          <div class="talk-chat-shell">
+            <div class="talk-room-banner is-compact">
+              <img class="talk-room-bg" id="ai-room-bg" src="assets/art/painted_home_meadow.webp" alt="" draggable="false" />
+              <div class="talk-room-overlay">
+                <img class="talk-room-avatar" id="ai-room-avatar" src="assets/art/painted_leo.webp" alt="Leo" draggable="false" />
+                <div class="talk-room-meta">
+                  <strong id="ai-room-mascot-name">Sư tử Leo • Trò chuyện AI tự do</strong>
+                  <span class="talk-room-pill">✨ Tự động chỉnh độ khó theo tuổi bé</span>
+                </div>
+                <button type="button" class="btn-secondary-pill talk-exit-btn" id="btn-ai-reset">🔄 Cuộc trò chuyện mới</button>
+              </div>
+            </div>
+
+            <div class="talk-messages" id="ai-messages" aria-live="polite"></div>
+
+            <div class="talk-typing hidden" id="ai-typing-indicator">💬 Bạn thú đang nghĩ câu trả lời tiếng Anh...</div>
+            <div class="talk-mic-live hidden" id="ai-mic-live"></div>
+
+            <div class="talk-suggestions" id="ai-suggestions"></div>
+
+            <div class="talk-input-bar">
+              <button type="button" class="btn-talk-mic" id="btn-ai-mic">
+                <span class="mic-icon">🎙️</span> Bấm để nói tiếng Anh
+              </button>
+              <form class="talk-text-form" id="ai-text-form">
+                <input type="text" id="ai-text-input" class="talk-text-input" placeholder="Gõ câu tiếng Anh bất kỳ để hỏi Leo..." autocomplete="off" />
+                <button type="submit" class="btn-talk-send">Gửi ➔</button>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- Synchronized Reading Speed Slider -->
+        <div class="quick-speed-bar is-book-speed" aria-label="Điều chỉnh tốc độ nói của nhân vật">
+          <span class="qs-label">⏱️ Tốc độ nói</span>
+          <button type="button" class="qs-step-btn" data-speed-step="-0.05" aria-label="Đọc chậm hơn" title="Chậm hơn (-0.05×)">🐢</button>
+          <input type="range" class="speed-range-input" data-speed-slider min="0.55" max="1.40" step="0.05" value="1" aria-label="Thanh trượt tốc độ nói" />
+          <button type="button" class="qs-step-btn" data-speed-step="0.05" aria-label="Đọc nhanh hơn" title="Nhanh hơn (+0.05×)">🐇</button>
+          <span class="qs-value" data-speed-badge>1.00×</span>
         </div>
       </section>
 
@@ -1791,6 +1953,8 @@
   <script src="stories.js"></script>
   <script src="books-data.js"></script>
   <script src="books.js"></script>
+  <script src="talk-data.js"></script>
+  <script src="talk.js"></script>
   <script src="srs.js"></script>
   <script src="milestones.js"></script>
   <script src="backup.js"></script>
