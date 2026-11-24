@@ -17,8 +17,11 @@
     nativeWordAudio: true,     // Real human studio MP3 for single words
     accent: 'en-US',           // 'en-US' | 'en-GB'
     speedMultiplier: 1.0,      // 0.55 .. 1.40 (step 0.05)
+    speechEngine: 'device',    // 'device' | 'kokoro' | 'google'
     voiceURI: 'auto',          // 'auto' or specific SpeechSynthesisVoice.voiceURI
-    cloudProvider: 'none',     // 'none' | 'google' | 'openai'
+    kokoroVoice: 'auto',       // 'auto' | 'af_heart' | 'af_bella' | 'am_michael' | 'bf_emma' | 'bm_george'
+    kokoroCached: false,       // true once user downloaded Kokoro-82M into browser Cache Storage
+    cloudProvider: 'google',   // 'google' | 'openai'
     cloudApiKey: ''
   };
 
@@ -53,7 +56,15 @@
     try {
       const raw = localStorage.getItem(PREFS_KEY);
       if (raw) {
-        prefs = { ...DEFAULT_PREFS, ...JSON.parse(raw) };
+        const parsed = JSON.parse(raw) || {};
+        prefs = { ...DEFAULT_PREFS, ...parsed };
+        // Backward-compatible migration for users who previously configured Cloud TTS
+        if (!parsed.speechEngine) {
+          prefs.speechEngine = (parsed.cloudProvider && parsed.cloudProvider !== 'none' && parsed.cloudApiKey)
+            ? 'google'
+            : 'device';
+        }
+        if (prefs.cloudProvider === 'none') prefs.cloudProvider = 'google';
         prefs.speedMultiplier = clampSpeed(prefs.speedMultiplier);
       }
     } catch (e) { /* ignore */ }
@@ -390,6 +401,247 @@
   }
 
   /* ------------------------------------------------------------------
+     Engine 2: Kokoro-82M Offline AI TTS (Web Worker + Browser Cache)
+     ------------------------------------------------------------------ */
+  const KOKORO_MAX_CACHE = 80;
+  let kokoroWorker = null;
+  let kokoroState = 'idle'; // 'idle' | 'loading' | 'ready' | 'error'
+  let kokoroProgress = 0;
+  let kokoroErrorMsg = '';
+  let kokoroJobId = 0;
+  const kokoroPending = new Map();
+  const kokoroBlobCache = new Map(); // key -> blobUrl
+  let kokoroLoadPromise = null;
+
+  function resolveKokoroVoiceId() {
+    if (prefs.kokoroVoice && prefs.kokoroVoice !== 'auto') return prefs.kokoroVoice;
+    return prefs.accent === 'en-GB' ? 'bf_emma' : 'af_heart';
+  }
+
+  function describeKokoroVoice(id) {
+    const map = {
+      af_heart: 'Heart (US)',
+      af_bella: 'Bella (US)',
+      am_michael: 'Michael (US)',
+      bf_emma: 'Emma (UK)',
+      bm_george: 'George (UK)'
+    };
+    return map[id] || id;
+  }
+
+  function updateKokoroUI() {
+    const btn = $('btn-kokoro-download');
+    const badge = $('voice-kokoro-status');
+    const wrap = $('voice-kokoro-progress-wrap');
+    const fill = $('voice-kokoro-progress-fill');
+
+    if (btn) {
+      if (kokoroState === 'loading') {
+        btn.disabled = true;
+        btn.textContent = `⏳ Đang tải Kokoro AI (${ kokoroProgress }%)...`;
+      } else if (kokoroState === 'ready') {
+        btn.disabled = false;
+        btn.textContent = '✅ Kokoro AI đã sẵn sàng (Nghe thử)';
+      } else if (prefs.kokoroCached) {
+        btn.disabled = false;
+        btn.textContent = '⚡ Nạp Kokoro AI từ bộ nhớ đệm';
+      } else {
+        btn.disabled = false;
+        btn.textContent = '⬇️ Tải & Kích hoạt Kokoro AI (~86 MB)';
+      }
+    }
+
+    if (badge) {
+      badge.classList.remove('is-ready', 'is-loading', 'is-error');
+      if (kokoroState === 'ready') {
+        badge.classList.add('is-ready');
+        badge.textContent = '✅ Đã sẵn sàng offline (không cần mạng)';
+      } else if (kokoroState === 'loading') {
+        badge.classList.add('is-loading');
+        badge.textContent = prefs.kokoroCached
+          ? `Đang nạp mô hình từ máy (${ kokoroProgress }%)...`
+          : `Đang tải mô hình lần đầu (${ kokoroProgress }%)...`;
+      } else if (kokoroState === 'error') {
+        badge.classList.add('is-error');
+        badge.textContent = `⚠️ ${ kokoroErrorMsg || 'Chưa tải được Kokoro (tự dự phòng giọng máy)' }`;
+      } else if (prefs.kokoroCached) {
+        badge.textContent = '💾 Đã lưu trên máy (sẽ tự nạp khi đọc)';
+      } else {
+        badge.textContent = 'Chưa tải mô hình (tự dự phòng giọng máy)';
+      }
+    }
+
+    if (wrap && fill) {
+      const showBar = kokoroState === 'loading';
+      wrap.classList.toggle('hidden', !showBar);
+      fill.style.width = `${ kokoroProgress }%`;
+    }
+
+    updateActiveVoiceStatusUI();
+  }
+
+  function ensureKokoroWorker() {
+    if (kokoroWorker) return kokoroWorker;
+    if (typeof Worker === 'undefined') {
+      kokoroState = 'error';
+      kokoroErrorMsg = 'Trình duyệt không hỗ trợ Web Worker.';
+      updateKokoroUI();
+      return null;
+    }
+    try {
+      kokoroWorker = new Worker('./kokoro-worker.js', { type: 'module' });
+      kokoroWorker.onmessage = (ev) => {
+        const msg = ev.data || {};
+        if (msg.type === 'status' && msg.status === 'loading') {
+          kokoroState = 'loading';
+          kokoroProgress = Math.max(kokoroProgress, msg.progress || 2);
+          updateKokoroUI();
+        } else if (msg.type === 'progress') {
+          kokoroState = 'loading';
+          kokoroProgress = Math.max(kokoroProgress, msg.progress || 0);
+          updateKokoroUI();
+        } else if (msg.type === 'ready') {
+          kokoroState = 'ready';
+          kokoroProgress = 100;
+          kokoroErrorMsg = '';
+          if (!prefs.kokoroCached) {
+            prefs.kokoroCached = true;
+            saveVoicePrefs();
+          }
+          updateKokoroUI();
+        } else if (msg.type === 'audio' && msg.id != null) {
+          const job = kokoroPending.get(msg.id);
+          if (job) {
+            kokoroPending.delete(msg.id);
+            job.resolve(msg.blob);
+          }
+        } else if (msg.type === 'error') {
+          if (msg.id != null && kokoroPending.has(msg.id)) {
+            const job = kokoroPending.get(msg.id);
+            kokoroPending.delete(msg.id);
+            job.reject(new Error(msg.error || 'Kokoro error'));
+          } else {
+            kokoroState = 'error';
+            kokoroErrorMsg = msg.error || 'Không thể tải mô hình Kokoro AI.';
+            kokoroLoadPromise = null;
+            updateKokoroUI();
+          }
+        }
+      };
+      kokoroWorker.onerror = (err) => {
+        kokoroState = 'error';
+        kokoroErrorMsg = 'Thiết bị không hỗ trợ tải module Kokoro AI.';
+        kokoroLoadPromise = null;
+        for (const job of kokoroPending.values()) job.reject(err);
+        kokoroPending.clear();
+        updateKokoroUI();
+      };
+      return kokoroWorker;
+    } catch (e) {
+      kokoroState = 'error';
+      kokoroErrorMsg = 'Không khởi tạo được Kokoro Worker.';
+      updateKokoroUI();
+      return null;
+    }
+  }
+
+  function loadKokoroModel() {
+    if (kokoroState === 'ready') return Promise.resolve(true);
+    if (kokoroLoadPromise) return kokoroLoadPromise;
+    const worker = ensureKokoroWorker();
+    if (!worker) return Promise.resolve(false);
+
+    kokoroState = 'loading';
+    kokoroProgress = 2;
+    kokoroErrorMsg = '';
+    updateKokoroUI();
+
+    kokoroLoadPromise = new Promise(resolve => {
+      const check = (ev) => {
+        const msg = ev.data || {};
+        if (msg.type === 'ready') {
+          worker.removeEventListener('message', check);
+          resolve(true);
+        } else if (msg.type === 'error' && msg.id == null) {
+          worker.removeEventListener('message', check);
+          kokoroLoadPromise = null;
+          resolve(false);
+        }
+      };
+      worker.addEventListener('message', check);
+      worker.postMessage({ type: 'load' });
+    });
+    return kokoroLoadPromise;
+  }
+
+  async function synthesizeKokoro(rawText) {
+    if (kokoroState !== 'ready') return null;
+    const worker = ensureKokoroWorker();
+    if (!worker) return null;
+
+    const text = prepareSpeechText(rawText);
+    const voice = resolveKokoroVoiceId();
+    const cacheKey = `${ voice }:${ text }`;
+    if (kokoroBlobCache.has(cacheKey)) return kokoroBlobCache.get(cacheKey);
+
+    const id = ++kokoroJobId;
+    const blob = await new Promise((resolve, reject) => {
+      const timer = setTimeout(() => {
+        kokoroPending.delete(id);
+        reject(new Error('Kokoro timeout'));
+      }, 22000);
+      kokoroPending.set(id, {
+        resolve: (b) => { clearTimeout(timer); resolve(b); },
+        reject: (err) => { clearTimeout(timer); reject(err); }
+      });
+      worker.postMessage({ type: 'generate', id, text, voice, speed: 1.0 });
+    });
+
+    if (!blob) return null;
+    const blobUrl = URL.createObjectURL(blob);
+    if (kokoroBlobCache.size >= KOKORO_MAX_CACHE) {
+      const firstKey = kokoroBlobCache.keys().next().value;
+      const oldUrl = kokoroBlobCache.get(firstKey);
+      if (oldUrl) try { URL.revokeObjectURL(oldUrl); } catch (e) { /* ignore */ }
+      kokoroBlobCache.delete(firstKey);
+    }
+    kokoroBlobCache.set(cacheKey, blobUrl);
+    return blobUrl;
+  }
+
+  async function tryPlayKokoroTts(rawText, rate, token) {
+    // If user previously downloaded Kokoro into cache, start warming it up silently
+    if (kokoroState === 'idle' && prefs.kokoroCached) {
+      loadKokoroModel().catch(() => {});
+    }
+    if (kokoroState !== 'ready') return false;
+
+    try {
+      const blobUrl = await synthesizeKokoro(rawText);
+      if (!blobUrl || token !== speakToken) return false;
+      const audioRate = Math.max(0.55, Math.min(1.5, rate));
+      return await new Promise(resolve => {
+        setSpeakingVisual(true);
+        playHtmlAudioUrl(
+          blobUrl,
+          audioRate,
+          null,
+          () => { setSpeakingVisual(false); resolve(true); },
+          () => { setSpeakingVisual(false); resolve(false); }
+        );
+      });
+    } catch (e) {
+      return false;
+    }
+  }
+
+  // Silently pre-generate the next storybook page in Kokoro so page turns feel instant
+  window.prefetchSentenceAudio = function (text) {
+    if (!text || prefs.speechEngine !== 'kokoro' || kokoroState !== 'ready') return;
+    synthesizeKokoro(text).catch(() => {});
+  };
+
+  /* ------------------------------------------------------------------
      Layer 2: Natural Web Speech Synthesis (Pitch 1.0, Smart Voice)
      ------------------------------------------------------------------ */
   function setSpeakingVisual(isSpeaking) {
@@ -502,8 +754,9 @@
   async function speakInternal(text, rate, myToken) {
     const cleanWord = extractCleanSingleWord(text);
     const isSlow = rate <= 0.68;
+    const effectiveRate = (isSlow ? 0.76 : 1.0) * prefs.speedMultiplier;
 
-    // Layer 1: Real human studio MP3 for single words (instant when cached, ~200ms first time)
+    // Priority 0 (Single words): Real human studio MP3 when enabled
     if (prefs.nativeWordAudio && cleanWord) {
       const mp3Url = await resolveNativeWordAudioUrl(cleanWord, prefs.accent);
       if (myToken !== speakToken) return;
@@ -523,13 +776,25 @@
       }
     }
 
-    // Layer 3 (Optional): Cloud AI TTS for sentences/stories when the parent added an API key
-    if (prefs.cloudProvider !== 'none' && prefs.cloudApiKey) {
-      const ok = await tryPlayCloudTts(text, (isSlow ? 0.75 : 0.96) * prefs.speedMultiplier, myToken);
+    // Priority 1: User's selected main engine (with smart fallback so speech is never silent)
+    if (prefs.speechEngine === 'google') {
+      // 1a. Google Cloud TTS (or OpenAI if chosen in panel 3)
+      if (prefs.cloudApiKey) {
+        const ok = await tryPlayCloudTts(text, (isSlow ? 0.75 : 0.96) * prefs.speedMultiplier, myToken);
+        if (ok || myToken !== speakToken) return;
+      }
+      // 1b. Smart fallback -> Kokoro AI if already ready offline on this device
+      if (kokoroState === 'ready') {
+        const ok = await tryPlayKokoroTts(text, effectiveRate, myToken);
+        if (ok || myToken !== speakToken) return;
+      }
+    } else if (prefs.speechEngine === 'kokoro') {
+      // 1a. Kokoro AI Offline
+      const ok = await tryPlayKokoroTts(text, effectiveRate, myToken);
       if (ok || myToken !== speakToken) return;
     }
 
-    // Layer 2: Best ranked device voice
+    // Final layer (always available): Best ranked device/browser voice
     if (myToken !== speakToken) return;
     await speakViaBrowserTts(text, rate);
   }
@@ -653,21 +918,49 @@
     updateActiveVoiceStatusUI();
   }
 
+  function syncEnginePanelsUI() {
+    const active = prefs.speechEngine || 'device';
+    document.querySelectorAll('#voice-engine-group [data-engine]').forEach(btn => {
+      const on = btn.dataset.engine === active;
+      btn.classList.toggle('active', on);
+      btn.setAttribute('aria-pressed', String(on));
+    });
+    ['device', 'kokoro', 'google'].forEach(key => {
+      const panel = $(`voice-panel-${ key }`);
+      if (panel) panel.classList.toggle('hidden', key !== active);
+    });
+  }
+
   function updateActiveVoiceStatusUI() {
     const statusEl = $('voice-active-summary');
     if (!statusEl) return;
     const best = pickBestBrowserVoice();
     const accentLabel = prefs.accent === 'en-GB' ? '🇬🇧 Anh–Anh' : '🇺🇸 Anh–Mỹ';
     const voiceLabel = best ? best.name : 'Giọng mặc định hệ thống';
-    const cloudLabel = prefs.cloudProvider !== 'none' && prefs.cloudApiKey
-      ? ` + ☁️ ${ prefs.cloudProvider === 'google' ? 'Google Chirp 3 HD' : 'OpenAI GPT-4o TTS' }`
-      : '';
-    const roboticHint = !cloudLabel && (!best || scoreVoice(best, prefs.accent) < 90)
-      ? ' • ⚠️ Giọng trên thiết bị này còn hơi máy móc, xem mẹo bên dưới để tải giọng tự nhiên miễn phí.'
-      : '';
+
+    let engineSummary = '';
+    if (prefs.speechEngine === 'kokoro') {
+      const kv = describeKokoroVoice(resolveKokoroVoiceId());
+      engineSummary = kokoroState === 'ready'
+        ? `🤖 Kokoro AI Offline (${ kv })`
+        : kokoroState === 'loading'
+          ? `⏳ Đang tải Kokoro AI (${ kokoroProgress }%) — tạm dùng ${ voiceLabel }`
+          : `🤖 Kokoro AI (chưa tải — đang dự phòng ${ voiceLabel })`;
+    } else if (prefs.speechEngine === 'google') {
+      const provName = prefs.cloudProvider === 'openai' ? 'OpenAI GPT-4o TTS' : 'Google Cloud Chirp 3 HD';
+      engineSummary = prefs.cloudApiKey
+        ? `☁️ ${ provName }`
+        : `☁️ ${ provName } (chưa nhập API Key — đang dự phòng ${ voiceLabel })`;
+    } else {
+      const roboticHint = (!best || scoreVoice(best, prefs.accent) < 90)
+        ? ' • 💡 Xem mẹo bên dưới để chọn giọng máy tự nhiên hơn'
+        : '';
+      engineSummary = `📱 ${ voiceLabel }${ roboticHint }`;
+    }
+
     statusEl.textContent = prefs.nativeWordAudio
-      ? `🟢 Từ vựng: Giọng người thật (${ accentLabel }) • Câu & Truyện: ${ voiceLabel }${ cloudLabel }${ roboticHint }`
-      : `🔊 Đang dùng (${ accentLabel }): ${ voiceLabel }${ cloudLabel }${ roboticHint }`;
+      ? `🟢 Từ đơn: Giọng người thật (${ accentLabel }) • Câu & Truyện: ${ engineSummary }`
+      : `🔊 Đang dùng (${ accentLabel }): ${ engineSummary }`;
   }
 
   function syncVoiceModalControls() {
@@ -678,13 +971,18 @@
       btn.classList.toggle('active', btn.dataset.accent === prefs.accent);
     });
     syncSpeedUI();
+    syncEnginePanelsUI();
+
+    const kSel = $('voice-kokoro-voice');
+    if (kSel) kSel.value = prefs.kokoroVoice || 'auto';
 
     const provSel = $('voice-cloud-provider');
     const keyInp = $('voice-cloud-key');
-    if (provSel) provSel.value = prefs.cloudProvider || 'none';
+    if (provSel) provSel.value = prefs.cloudProvider === 'openai' ? 'openai' : 'google';
     if (keyInp) keyInp.value = prefs.cloudApiKey || '';
 
     populateVoiceSelect();
+    updateKokoroUI();
   }
 
   function bindVoiceModalEvents() {
@@ -698,6 +996,11 @@
         if (typeof prevHandler === 'function') prevHandler();
         populateVoiceSelect();
       };
+    }
+
+    // If user chose Kokoro AI and already downloaded it previously, warm it up quietly in background
+    if (prefs.speechEngine === 'kokoro' && prefs.kokoroCached) {
+      setTimeout(() => loadKokoroModel().catch(() => {}), 1200);
     }
 
     // Bind ALL synchronized range sliders (Voice Modal, Flashcards, Stories, SRS)
@@ -736,6 +1039,21 @@
     const closeBtn = $('btn-close-voice');
     if (closeBtn) closeBtn.addEventListener('click', closeModal);
 
+    // 3-Choice Engine Selector (Device / Kokoro / Google Cloud)
+    document.querySelectorAll('#voice-engine-group [data-engine]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const eng = btn.dataset.engine || 'device';
+        prefs.speechEngine = eng;
+        saveVoicePrefs();
+        syncEnginePanelsUI();
+        updateActiveVoiceStatusUI();
+        playSoundEffect('pop');
+        if (eng === 'kokoro' && prefs.kokoroCached && kokoroState === 'idle') {
+          loadKokoroModel().catch(() => {});
+        }
+      });
+    });
+
     // Native human audio toggle
     const nativeChk = $('chk-native-word-audio');
     if (nativeChk) {
@@ -765,7 +1083,7 @@
       });
     });
 
-    // Manual browser voice dropdown
+    // Manual browser voice dropdown (Engine 1: Device)
     const sel = $('voice-select-dropdown');
     if (sel) {
       sel.addEventListener('change', () => {
@@ -773,6 +1091,34 @@
         saveVoicePrefs();
         updateActiveVoiceStatusUI();
         window.speakEnglish('Hello! Welcome to English for kids.', 0.95);
+      });
+    }
+
+    // Kokoro voice character dropdown + Download/Activate button (Engine 2: Kokoro)
+    const kSel = $('voice-kokoro-voice');
+    if (kSel) {
+      kSel.addEventListener('change', () => {
+        prefs.kokoroVoice = kSel.value || 'auto';
+        saveVoicePrefs();
+        updateActiveVoiceStatusUI();
+        if (kokoroState === 'ready') {
+          window.speakEnglish('Hello! Let us read a fun story together.', 0.96);
+        }
+      });
+    }
+
+    const kBtn = $('btn-kokoro-download');
+    if (kBtn) {
+      kBtn.addEventListener('click', async () => {
+        prefs.speechEngine = 'kokoro';
+        saveVoicePrefs();
+        syncEnginePanelsUI();
+        playSoundEffect('pop');
+        const ok = await loadKokoroModel();
+        if (ok) {
+          playSoundEffect('star');
+          window.speakEnglish('Hello! Kokoro voice is ready for story time!', 0.96);
+        }
       });
     }
 
@@ -790,24 +1136,26 @@
       });
     }
 
-    // Optional Cloud AI TTS save
+    // Cloud AI TTS save (Engine 3: Google Cloud / OpenAI)
     const saveCloudBtn = $('btn-save-cloud-tts');
     if (saveCloudBtn) {
       saveCloudBtn.addEventListener('click', () => {
-        prefs.cloudProvider = ($('voice-cloud-provider').value || 'none');
+        prefs.cloudProvider = ($('voice-cloud-provider').value || 'google');
         prefs.cloudApiKey = ($('voice-cloud-key').value || '').trim();
+        prefs.speechEngine = prefs.cloudApiKey ? 'google' : 'device';
         cloudFailStreak = 0;
         cloudVoiceStart.google = 0;
         cloudVoiceStart.openai = 0;
         cloudBlobCache.clear();
         saveVoicePrefs();
+        syncEnginePanelsUI();
         updateActiveVoiceStatusUI();
         playSoundEffect('star');
         const msg = $('voice-cloud-status');
         if (msg) {
-          msg.textContent = prefs.cloudProvider !== 'none' && prefs.cloudApiKey
-            ? '✅ Đã lưu cấu hình AI TTS! Bấm "Thử đọc câu" để nghe ngay.'
-            : 'ℹ️ Đã chuyển về chế độ miễn phí (Giọng người thật + Giọng thiết bị).';
+          msg.textContent = prefs.cloudApiKey
+            ? '✅ Đã lưu API Key! Bấm "Nghe thử cả câu" để kiểm tra giọng Cloud AI.'
+            : 'ℹ️ Bạn chưa nhập API Key — app tạm dùng Giọng máy thiết bị.';
         }
       });
     }

@@ -1631,42 +1631,99 @@
             </div>
           </div>
 
-          <!-- Smart Device Neural Voice Picker -->
-          <div class="voice-setting-card">
-            <label class="voice-sec-label" for="voice-select-dropdown">🗣️ Giọng đọc câu ví dụ &amp; phim tương tác (đã xếp hạng giọng hay nhất lên đầu):</label>
-            <select id="voice-select-dropdown" class="voice-dropdown"></select>
+          <!-- 3-Choice Main Voice Engine Selector (Sentences, Stories & Books) -->
+          <div class="voice-setting-card voice-engine-card">
+            <span class="voice-sec-label">🎚️ Nguồn giọng đọc chính cho câu ví dụ, phim &amp; truyện tranh (chọn 1 trong 3):</span>
+            <div class="voice-engine-grid" id="voice-engine-group" role="radiogroup" aria-label="Chọn nguồn giọng đọc">
+              <button type="button" class="voice-engine-btn active" data-engine="device" aria-pressed="true">
+                <span class="ve-icon">📱</span>
+                <strong>Giọng máy thiết bị</strong>
+                <small>Mở đọc ngay • Miễn phí</small>
+              </button>
+              <button type="button" class="voice-engine-btn" data-engine="kokoro" aria-pressed="false">
+                <span class="ve-icon">🤖</span>
+                <strong>Kokoro AI Offline</strong>
+                <small>Kể chuyện cực ấm • Tải 1 lần</small>
+              </button>
+              <button type="button" class="voice-engine-btn" data-engine="google" aria-pressed="false">
+                <span class="ve-icon">☁️</span>
+                <strong>Google Cloud TTS</strong>
+                <small>Chirp 3 HD • Dùng API Key</small>
+              </button>
+            </div>
 
+            <!-- Panel 1: Device / Browser Voice -->
+            <div class="voice-engine-panel" id="voice-panel-device">
+              <label class="voice-sec-label" for="voice-select-dropdown">🗣️ Chọn giọng trên thiết bị (đã xếp hạng giọng hay nhất lên đầu):</label>
+              <select id="voice-select-dropdown" class="voice-dropdown"></select>
+
+              <details class="voice-tip-box voice-tip-collapsible">
+                <summary>💡 Mẹo cài giọng máy tự nhiên hơn trên iPad / Android / PC (Miễn phí)</summary>
+                <ul>
+                  <li><strong>Trên iPad / iPhone:</strong> Vào <em>Cài đặt → Trợ năng → Nội dung được đọc → Giọng nói → Tiếng Anh</em> → tải miễn phí giọng <strong>Enhanced / Premium</strong> (<em>Ava, Zoe</em> hoặc <em>Samantha Enhanced</em>).</li>
+                  <li><strong>Trên Samsung Galaxy Tab / Android:</strong> Vào <em>Cài đặt → Quản lý chung → Chuyển văn bản thành giọng nói → Công cụ ưu tiên</em> → chọn <strong>Dịch vụ lời nói của Google</strong> (thay cho Samsung TTS). Bấm ⚙️ → <em>Cài đặt dữ liệu giọng nói</em> → tải <em>Tiếng Anh (Hoa Kỳ)</em> rồi mở lại app bằng <strong>Chrome</strong>.</li>
+                  <li><strong>Trên Máy tính:</strong> Mở bằng <strong>Microsoft Edge</strong> (có sẵn giọng <em>Ana / Aria / Jenny Online Natural</em>) hoặc <strong>Google Chrome</strong>.</li>
+                </ul>
+              </details>
+            </div>
+
+            <!-- Panel 2: Kokoro AI Offline (Browser WASM/ONNX) -->
+            <div class="voice-engine-panel hidden" id="voice-panel-kokoro">
+              <p class="voice-cloud-desc">
+                <strong>Kokoro-82M</strong> chạy trực tiếp trên máy của bạn, <strong>miễn phí 100%</strong>, chỉ cần tải mô hình (~86 MB) <strong>1 lần duy nhất</strong> rồi lưu offline trong trình duyệt. App tự động tạo trước trang truyện kế tiếp để lật trang mượt hơn.
+              </p>
+              <div class="voice-kokoro-row">
+                <label class="voice-sec-label" for="voice-kokoro-voice">🎭 Giọng kể chuyện Kokoro:</label>
+                <select id="voice-kokoro-voice" class="voice-dropdown">
+                  <option value="auto">✨ Tự động theo vùng miền (Mỹ: Heart / Anh: Emma)</option>
+                  <option value="af_heart">🇺🇸 Heart — Nữ Mỹ ấm áp, tự nhiên nhất (Hạng A)</option>
+                  <option value="af_bella">🇺🇸 Bella — Nữ Mỹ truyền cảm kể truyện (Hạng A-)</option>
+                  <option value="am_michael">🇺🇸 Michael — Nam Mỹ rõ ràng (Hạng C+)</option>
+                  <option value="bf_emma">🇬🇧 Emma — Nữ Anh–Anh thanh lịch (Hạng B-)</option>
+                  <option value="bm_george">🇬🇧 George — Nam Anh–Anh trầm ấm (Hạng C)</option>
+                </select>
+              </div>
+              <div class="voice-kokoro-actions">
+                <button type="button" class="btn-backup-primary" id="btn-kokoro-download">⬇️ Tải &amp; Kích hoạt Kokoro AI (~86 MB)</button>
+                <span class="voice-kokoro-badge" id="voice-kokoro-status">Chưa tải mô hình (tự dự phòng giọng máy)</span>
+              </div>
+              <div class="voice-kokoro-progress hidden" id="voice-kokoro-progress-wrap" aria-hidden="true">
+                <div class="voice-kokoro-progress-fill" id="voice-kokoro-progress-fill" style="width: 0%;"></div>
+              </div>
+            </div>
+
+            <!-- Panel 3: Google Cloud TTS (BYO Key, also supports OpenAI) -->
+            <div class="voice-engine-panel hidden" id="voice-panel-google">
+              <p class="voice-cloud-desc">
+                Kết nối API Key cá nhân (chỉ lưu trong máy của bạn) để phát giọng AI điện ảnh qua đám mây:
+              </p>
+              <div class="voice-cloud-form">
+                <select id="voice-cloud-provider" class="srs-select">
+                  <option value="google">Google Cloud TTS (Chirp 3 HD, dự phòng Neural2)</option>
+                  <option value="openai">OpenAI TTS (gpt-4o-mini-tts, dự phòng tts-1)</option>
+                </select>
+                <input type="password" id="voice-cloud-key" placeholder="Dán API Key của bạn vào đây" autocomplete="off" />
+                <button type="button" class="btn-save-cid" id="btn-save-cloud-tts">Lưu</button>
+              </div>
+              <div class="gdrive-last-sync" id="voice-cloud-status"></div>
+            </div>
+
+            <!-- Sample Test Buttons (tests active engine immediately) -->
             <div class="voice-test-row">
               <button type="button" class="btn-backup-primary" id="btn-voice-test-word">🔊 Nghe thử 1 từ (Elephant)</button>
               <button type="button" class="btn-backup-secondary" id="btn-voice-test-sentence">💬 Nghe thử cả câu</button>
             </div>
           </div>
 
-          <!-- Quick Tips for Best Voices on iPad / Windows / Chrome -->
-          <div class="voice-tip-box">
-            <strong>💡 Mẹo để câu dài &amp; phim đọc hay như người thật 100% (Miễn phí):</strong>
-            <ul>
-              <li><strong>Trên iPad / iPhone:</strong> Vào <em>Cài đặt → Trợ năng → Nội dung được đọc → Giọng nói → Tiếng Anh</em> → tải miễn phí giọng <strong>Enhanced / Premium</strong> (<em>Ava, Zoe</em> hoặc <em>Samantha Enhanced</em>).</li>
-              <li><strong>Trên Samsung Galaxy Tab / Android:</strong> Vào <em>Cài đặt → Quản lý chung → Chuyển văn bản thành giọng nói → Công cụ ưu tiên</em> → chọn <strong>Dịch vụ lời nói của Google</strong> (thay cho Samsung TTS). Bấm ⚙️ cạnh đó → <em>Cài đặt dữ liệu giọng nói</em> → tải <em>Tiếng Anh (Hoa Kỳ)</em> và chọn giọng nghe hay nhất. Sau đó mở app bằng <strong>Chrome</strong> và chọn lại giọng trong mục này.</li>
-              <li><strong>Trên Máy tính:</strong> Mở bằng <strong>Microsoft Edge</strong> (có sẵn giọng <em>Ana / Aria / Jenny Online Natural</em> rất tự nhiên) hoặc <strong>Google Chrome</strong> (<em>Google US English</em>).</li>
-            </ul>
+          <!-- Clear Priority & Auto-Fallback Order Box -->
+          <div class="voice-priority-box">
+            <strong>📋 Thứ tự ưu tiên phát âm &amp; tự động dự phòng (không bao giờ im tiếng):</strong>
+            <ol>
+              <li><strong>Từ vựng đơn lẻ:</strong> Nếu bật công tắc <em>Giọng Người Thật (Studio)</em> ở trên → ưu tiên file thu âm bản xứ trước.</li>
+              <li><strong>Câu ví dụ, Phim &amp; Truyện tranh:</strong> Luôn ưu tiên <strong>nguồn giọng bạn đang chọn</strong> ở 3 nút trên.</li>
+              <li><strong>Dự phòng thông minh:</strong> Chọn <em>Google Cloud</em> mà mất mạng/lỗi key → tự chuyển sang <em>Kokoro AI</em> (nếu đã tải) → rồi tới <em>Giọng máy</em>. Chọn <em>Kokoro AI</em> mà chưa tải xong → tạm đọc bằng <em>Giọng máy</em>.</li>
+            </ol>
           </div>
-
-          <!-- Optional BYO Cloud AI TTS -->
-          <details class="gdrive-guide voice-cloud-box">
-            <summary>✨ Nâng cao (Tùy chọn): Kết nối AI TTS (Google Chirp 3 HD / OpenAI GPT-4o) cho câu dài</summary>
-            <p class="voice-cloud-desc">Dành cho phụ huynh muốn mọi câu ví dụ &amp; tập phim dùng giọng AI điện ảnh (chỉ lưu key trong máy của bạn):</p>
-            <div class="voice-cloud-form">
-              <select id="voice-cloud-provider" class="srs-select">
-                <option value="none">Tắt (Dùng miễn phí)</option>
-                <option value="google">Google Cloud TTS (Chirp 3 HD, dự phòng Neural2)</option>
-                <option value="openai">OpenAI TTS (gpt-4o-mini-tts, dự phòng tts-1)</option>
-              </select>
-              <input type="password" id="voice-cloud-key" placeholder="Dán API Key của bạn (nếu muốn dùng)" autocomplete="off" />
-              <button type="button" class="btn-save-cid" id="btn-save-cloud-tts">Lưu</button>
-            </div>
-            <div class="gdrive-last-sync" id="voice-cloud-status"></div>
-          </details>
         </div>
       </div>
     </div>

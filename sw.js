@@ -6,7 +6,7 @@
  * - Images, fonts and word-audio MP3s: cache first, so each picture or sound is
  *   downloaded once and then appears instantly.
  */
-const VERSION = 'e4k-v7';
+const VERSION = 'e4k-v8';
 const SHELL_CACHE = `${ VERSION }-shell`;
 const MEDIA_CACHE = `${ VERSION }-media`;
 const MAX_MEDIA_ENTRIES = 1500;
@@ -19,6 +19,7 @@ const SHELL_FILES = [
   'profiles.js',
   'app.js',
   'voice.js',
+  'kokoro-worker.js',
   'art.js',
   'games.js',
   'phonics.js',

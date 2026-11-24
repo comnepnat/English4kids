@@ -491,6 +491,11 @@
     if (autoSpeak) {
       speakCurrentPage();
     }
+
+    const nextPage = currentBook.pages[currentPageIndex + 1];
+    if (nextPage && nextPage.en && typeof window.prefetchSentenceAudio === 'function') {
+      setTimeout(() => window.prefetchSentenceAudio(nextPage.en), 450);
+    }
   }
 
   function speakCurrentPage() {

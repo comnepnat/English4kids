@@ -11412,5 +11412,186 @@ body[data-age="age_11_15"] {
   color: #64748B;
 }
 
+/* ==========================================================================
+   3-Choice Voice Engine Selector (Device / Kokoro AI Offline / Google Cloud)
+   ========================================================================== */
+.voice-engine-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.voice-engine-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.voice-engine-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 12px 10px;
+  border-radius: 18px;
+  border: 3px solid #E2E8F0;
+  background: #F8FAFC;
+  color: #334155;
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.15s ease, border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+}
+
+.voice-engine-btn:hover {
+  transform: translateY(-2px);
+  border-color: #93C5FD;
+  background: #EFF6FF;
+}
+
+.voice-engine-btn.active {
+  background: linear-gradient(180deg, #EFF6FF 0%, #DBEAFE 100%);
+  border-color: #3B82F6;
+  box-shadow: 0 5px 0 #2563EB;
+  color: #1E3A8A;
+}
+
+.voice-engine-btn .ve-icon {
+  font-size: 1.55rem;
+  line-height: 1;
+}
+
+.voice-engine-btn strong {
+  font-family: var(--font-display);
+  font-size: 0.92rem;
+  font-weight: 900;
+  line-height: 1.2;
+}
+
+.voice-engine-btn small {
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: #64748B;
+}
+
+.voice-engine-btn.active small {
+  color: #1D4ED8;
+}
+
+.voice-engine-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: #F8FAFC;
+  border: 2px solid #E2E8F0;
+}
+
+.voice-engine-panel.hidden {
+  display: none;
+}
+
+.voice-tip-collapsible {
+  margin-top: 2px;
+}
+
+.voice-tip-collapsible summary {
+  cursor: pointer;
+  font-weight: 800;
+  color: #0F172A;
+}
+
+.voice-kokoro-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.voice-kokoro-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.voice-kokoro-badge {
+  font-size: 0.82rem;
+  font-weight: 800;
+  padding: 5px 11px;
+  border-radius: 999px;
+  background: #F1F5F9;
+  color: #475569;
+}
+
+.voice-kokoro-badge.is-ready {
+  background: #DCFCE7;
+  color: #15803D;
+}
+
+.voice-kokoro-badge.is-loading {
+  background: #FEF3C7;
+  color: #B45309;
+}
+
+.voice-kokoro-badge.is-error {
+  background: #FEE2E2;
+  color: #B91C1C;
+}
+
+.voice-kokoro-progress {
+  width: 100%;
+  height: 10px;
+  border-radius: 999px;
+  background: #E2E8F0;
+  overflow: hidden;
+}
+
+.voice-kokoro-progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #3B82F6 0%, #8B5CF6 100%);
+  transition: width 0.25s ease;
+}
+
+.voice-priority-box {
+  padding: 12px 15px;
+  border-radius: 16px;
+  background: #FFFBEB;
+  border: 2px solid #FDE68A;
+  color: #334155;
+  font-size: 0.86rem;
+  line-height: 1.5;
+}
+
+.voice-priority-box strong {
+  color: #92400E;
+}
+
+.voice-priority-box ol {
+  margin: 6px 0 0 18px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+@media (max-width: 600px) {
+  .voice-engine-grid {
+    grid-template-columns: 1fr;
+  }
+  .voice-engine-btn {
+    flex-direction: row;
+    justify-content: flex-start;
+    text-align: left;
+    gap: 10px;
+    padding: 10px 12px;
+  }
+  .voice-engine-btn small {
+    margin-left: auto;
+  }
+}
+
+
 
 
