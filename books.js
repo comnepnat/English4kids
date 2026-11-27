@@ -32,6 +32,22 @@
   let quizAnswered = false;
   let inQuizMode = false;
 
+  // Karaoke Read-Aloud state
+  let currentPageTokens = [];    // [{ widx, sidx, word, norm, charStart, charEnd, weight, vocabIdx }]
+  let currentPageSentences = []; // [{ sidx, text, charStart, charEnd, wordIndices }]
+  let karaokeRunId = 0;
+  let karaokeRafId = null;
+  let karaokeFallbackTimer = null;
+  let karaokeBoundarySeen = false;
+  let karaokeActiveWidx = -1;
+
+  // Kid Read-Back Microphone state
+  let readbackOpen = false;
+  let readbackSentenceIdx = 0;   // 0..N-1 or -1 for entire page
+  let readbackRecognition = null;
+  let isBookMicListening = false;
+  const rewardedReadbackKeys = new Set();
+
   const CHAR_IMG = {
     leo:  'assets/art/painted_leo.webp',
     mimi: 'assets/art/painted_mimi.webp',
@@ -87,12 +103,52 @@
     return new Set();
   }
 
+  function clearKaraokeHighlights() {
+    karaokeActiveWidx = -1;
+    const enEl = $('book-text-en');
+    if (!enEl) return;
+    enEl.querySelectorAll('.book-kword').forEach(el => {
+      el.classList.remove('is-karaoke-active', 'is-karaoke-past');
+    });
+  }
+
+  function stopKaraoke() {
+    karaokeRunId += 1;
+    if (karaokeRafId) {
+      cancelAnimationFrame(karaokeRafId);
+      karaokeRafId = null;
+    }
+    if (karaokeFallbackTimer) {
+      clearTimeout(karaokeFallbackTimer);
+      karaokeFallbackTimer = null;
+    }
+    karaokeBoundarySeen = false;
+    clearKaraokeHighlights();
+    const speakBtn = $('btn-book-speak-page');
+    if (speakBtn) speakBtn.classList.remove('is-karaoke-reading');
+  }
+
+  function stopBookMic() {
+    isBookMicListening = false;
+    if (readbackRecognition) {
+      try {
+        readbackRecognition.onresult = null;
+        readbackRecognition.onerror = null;
+        readbackRecognition.onend = null;
+        readbackRecognition.stop();
+      } catch { /* ignore */ }
+      readbackRecognition = null;
+    }
+    updateReadbackMicButtonUI();
+  }
+
   function cancelAutoRead() {
     isAutoReading = false;
     if (autoTurnHandle && typeof autoTurnHandle.cancel === 'function') {
       autoTurnHandle.cancel();
     }
     autoTurnHandle = null;
+    stopKaraoke();
     updateAutoReadButtonUI();
   }
 
@@ -241,15 +297,113 @@
   /* ==========================================================================
      3. OPEN PICTURE BOOK READER (#view-book-reader)
      ========================================================================== */
-  function highlightStoryVocab(text, vocabList) {
-    let html = escapeHtml(text);
-    if (!Array.isArray(vocabList) || !vocabList.length) return html;
-    vocabList.forEach((v, idx) => {
-      const escapedW = v.w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      const re = new RegExp(`\\b(${ escapedW })\\b`, 'i');
-      html = html.replace(re, `<button type="button" class="book-vocab-word" data-vidx="${ idx }">$1</button>`);
+  function normalizeSpokenWord(w) {
+    return String(w || '')
+      .toLowerCase()
+      .replace(/[’`]/g, "'")
+      .replace(/[^a-z0-9']/g, '')
+      .replace(/^'+|'+$/g, '');
+  }
+
+  function splitStorySentences(text) {
+    const str = String(text || '');
+    const sentences = [];
+    const re = /[^.!?]+(?:[.!?]+["'”’)\]]*)?|[^.!?]+$/g;
+    let m;
+    while ((m = re.exec(str)) !== null) {
+      const raw = m[0];
+      const trimmed = raw.trim();
+      if (!trimmed) continue;
+      const leadSpace = raw.indexOf(trimmed);
+      const charStart = m.index + (leadSpace >= 0 ? leadSpace : 0);
+      const charEnd = charStart + trimmed.length;
+      sentences.push({
+        sidx: sentences.length,
+        text: trimmed,
+        charStart,
+        charEnd,
+        wordIndices: []
+      });
+    }
+    if (!sentences.length && str.trim()) {
+      sentences.push({ sidx: 0, text: str.trim(), charStart: 0, charEnd: str.length, wordIndices: [] });
+    }
+    return sentences;
+  }
+
+  function tokenizeStoryPage(text, vocabList) {
+    const str = String(text || '');
+    const sentences = splitStorySentences(str);
+    const tokens = [];
+    const wordRe = /[A-Za-z0-9]+(?:['’\-][A-Za-z0-9]+)*/g;
+    let m;
+
+    // Pre-find vocab character spans (case-insensitive whole-word matches)
+    const vocabSpans = [];
+    if (Array.isArray(vocabList)) {
+      vocabList.forEach((v, idx) => {
+        if (!v || !v.w) return;
+        const escaped = v.w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const vre = new RegExp(`\\b(${ escaped })\\b`, 'i');
+        const vm = vre.exec(str);
+        if (vm) {
+          vocabSpans.push({ start: vm.index, end: vm.index + vm[0].length, vidx: idx });
+        }
+      });
+    }
+
+    while ((m = wordRe.exec(str)) !== null) {
+      const word = m[0];
+      const charStart = m.index;
+      const charEnd = charStart + word.length;
+      let sidx = sentences.findIndex(s => charStart >= s.charStart && charStart < s.charEnd);
+      if (sidx < 0) sidx = Math.max(0, sentences.length - 1);
+
+      // Look ahead for trailing punctuation to weight natural speech pauses
+      const afterSlice = str.slice(charEnd, charEnd + 3);
+      let pauseWeight = 0;
+      if (/^["'”’)\]]*[.!?…]/.test(afterSlice)) pauseWeight = 5.4;
+      else if (/^["'”’)\]]*[,;:]/.test(afterSlice)) pauseWeight = 2.6;
+      else if (/^\s*[—–-]/.test(afterSlice)) pauseWeight = 2.4;
+
+      const cleanLen = word.replace(/[^A-Za-z0-9]/g, '').length;
+      const vowelGroups = (word.toLowerCase().match(/[aeiouy]+/g) || []).length;
+      const weight = Math.max(2.3, cleanLen * 0.85 + vowelGroups * 0.65) + pauseWeight;
+
+      const matchedVocab = vocabSpans.find(vs => charStart >= vs.start && charEnd <= vs.end);
+      const widx = tokens.length;
+      tokens.push({
+        widx,
+        sidx,
+        word,
+        norm: normalizeSpokenWord(word),
+        charStart,
+        charEnd,
+        weight,
+        vocabIdx: matchedVocab ? matchedVocab.vidx : -1
+      });
+      if (sentences[sidx]) sentences[sidx].wordIndices.push(widx);
+    }
+
+    // Build HTML with every word wrapped as a karaoke span/button
+    let html = '';
+    let cursor = 0;
+    tokens.forEach(tok => {
+      if (tok.charStart > cursor) {
+        html += escapeHtml(str.slice(cursor, tok.charStart));
+      }
+      if (tok.vocabIdx >= 0) {
+        html += `<button type="button" class="book-kword book-vocab-word" data-widx="${ tok.widx }" data-sidx="${ tok.sidx }" data-vidx="${ tok.vocabIdx }">${ escapeHtml(tok.word) }</button>`;
+      } else {
+        html += `<span class="book-kword" role="button" tabindex="0" data-widx="${ tok.widx }" data-sidx="${ tok.sidx }">${ escapeHtml(tok.word) }</span>`;
+      }
+      cursor = tok.charEnd;
     });
-    return html;
+    if (cursor < str.length) {
+      html += escapeHtml(str.slice(cursor));
+    }
+
+    return { html, tokens, sentences };
   }
 
   function showWordTooltip(v) {
@@ -374,9 +528,534 @@
     });
   }
 
+  /* ==========================================================================
+     3B. KARAOKE READ-ALOUD ENGINE (Word-by-Word Light-Up across MP3/Kokoro/Cloud/Browser TTS)
+     ========================================================================== */
+  function setActiveKaraokeWord(widx, rangeIndices = null) {
+    if (widx === karaokeActiveWidx) return;
+    karaokeActiveWidx = widx;
+    const enEl = $('book-text-en');
+    if (!enEl) return;
+    const allowedSet = Array.isArray(rangeIndices) ? new Set(rangeIndices) : null;
+    enEl.querySelectorAll('.book-kword').forEach(el => {
+      const idx = Number(el.dataset.widx);
+      if (allowedSet && !allowedSet.has(idx)) {
+        el.classList.remove('is-karaoke-active', 'is-karaoke-past');
+        return;
+      }
+      el.classList.toggle('is-karaoke-active', idx === widx);
+      el.classList.toggle('is-karaoke-past', widx >= 0 && idx < widx);
+    });
+  }
+
+  function buildWeightSchedule(wordIndices) {
+    const cum = [];
+    let total = 0;
+    wordIndices.forEach(widx => {
+      const tok = currentPageTokens[widx];
+      total += tok ? tok.weight : 3;
+      cum.push(total);
+    });
+    return { cum, total: Math.max(total, 1) };
+  }
+
+  function pickWordIndexAtProgress(wordIndices, schedule, progress) {
+    if (!wordIndices.length) return -1;
+    const p = Math.max(0, Math.min(0.9999, progress));
+    const target = p * schedule.total;
+    for (let i = 0; i < schedule.cum.length; i += 1) {
+      if (target <= schedule.cum[i]) return wordIndices[i];
+    }
+    return wordIndices[wordIndices.length - 1];
+  }
+
+  function startAudioElementKaraoke(audioEl, wordIndices, runId) {
+    if (!audioEl || !wordIndices.length || runId !== karaokeRunId) return;
+    if (karaokeRafId) cancelAnimationFrame(karaokeRafId);
+    const schedule = buildWeightSchedule(wordIndices);
+
+    const tick = () => {
+      if (runId !== karaokeRunId) return;
+      const dur = audioEl.duration;
+      const t = audioEl.currentTime || 0;
+      if (Number.isFinite(dur) && dur > 0.12) {
+        const headPad = Math.min(0.09, dur * 0.025);
+        const tailPad = Math.min(0.16, dur * 0.045);
+        const span = Math.max(0.08, dur - headPad - tailPad);
+        const progress = (t - headPad) / span;
+        if (progress >= 0) {
+          const widx = pickWordIndexAtProgress(wordIndices, schedule, progress);
+          setActiveKaraokeWord(widx, wordIndices);
+        }
+      }
+      if (!audioEl.ended && runId === karaokeRunId) {
+        karaokeRafId = requestAnimationFrame(tick);
+      }
+    };
+    setActiveKaraokeWord(wordIndices[0], wordIndices);
+    karaokeRafId = requestAnimationFrame(tick);
+  }
+
+  function startFallbackTimerKaraoke(wordIndices, rate, runId) {
+    if (!wordIndices.length || runId !== karaokeRunId) return;
+    if (karaokeRafId) cancelAnimationFrame(karaokeRafId);
+    const schedule = buildWeightSchedule(wordIndices);
+    const chars = wordIndices.reduce((acc, idx) => acc + ((currentPageTokens[idx]?.word.length) || 4) + 1, 0);
+    const speed = Math.max(0.5, Number(rate) || 0.92);
+    const estDurationMs = Math.max(900, (chars / (14.2 * speed)) * 1000);
+    const startTs = performance.now();
+
+    const tick = (now) => {
+      if (runId !== karaokeRunId || karaokeBoundarySeen) return;
+      const progress = (now - startTs) / estDurationMs;
+      const widx = pickWordIndexAtProgress(wordIndices, schedule, progress);
+      setActiveKaraokeWord(widx, wordIndices);
+      if (progress < 1.0 && runId === karaokeRunId) {
+        karaokeRafId = requestAnimationFrame(tick);
+      }
+    };
+    setActiveKaraokeWord(wordIndices[0], wordIndices);
+    karaokeRafId = requestAnimationFrame(tick);
+  }
+
+  function speakTextWithKaraoke(text, wordIndices, baseCharOffset, rate = 0.92, audioUrl = '') {
+    stopKaraoke();
+    if (!text || typeof window.speakEnglish !== 'function') return;
+    const runId = ++karaokeRunId;
+    karaokeBoundarySeen = false;
+    const speakBtn = $('btn-book-speak-page');
+    if (speakBtn) speakBtn.classList.add('is-karaoke-reading');
+
+    const opts = {
+      audioUrl: audioUrl || '',
+      onAudioStart(audioEl, meta) {
+        if (runId !== karaokeRunId) return;
+        let activeIndices = wordIndices;
+        if (meta && meta.engine === 'kokoro' && meta.chunkCount > 1 && currentPageSentences[meta.chunkIndex]) {
+          activeIndices = currentPageSentences[meta.chunkIndex].wordIndices;
+        }
+        startAudioElementKaraoke(audioEl, activeIndices, runId);
+      },
+      onSpeechStart(meta) {
+        if (runId !== karaokeRunId) return;
+        // Give browser onboundary a brief moment; if unsupported (e.g. Android), drive smooth weighted karaoke
+        const effRate = (meta && meta.rate) || rate;
+        setActiveKaraokeWord(wordIndices[0] ?? -1, wordIndices);
+        karaokeFallbackTimer = setTimeout(() => {
+          if (runId === karaokeRunId && !karaokeBoundarySeen) {
+            startFallbackTimerKaraoke(wordIndices, effRate, runId);
+          }
+        }, 320);
+      },
+      onBoundary(ev) {
+        if (runId !== karaokeRunId || !ev) return;
+        karaokeBoundarySeen = true;
+        if (karaokeFallbackTimer) {
+          clearTimeout(karaokeFallbackTimer);
+          karaokeFallbackTimer = null;
+        }
+        if (karaokeRafId) {
+          cancelAnimationFrame(karaokeRafId);
+          karaokeRafId = null;
+        }
+        const absChar = baseCharOffset + (ev.globalCharIndex || 0);
+        // Find matching word token covering absChar (or nearest following)
+        let matchIdx = -1;
+        for (let i = 0; i < wordIndices.length; i += 1) {
+          const tok = currentPageTokens[wordIndices[i]];
+          if (!tok) continue;
+          if (absChar >= tok.charStart && absChar <= tok.charEnd + 1) {
+            matchIdx = tok.widx;
+            break;
+          }
+          if (tok.charStart >= absChar) {
+            matchIdx = tok.widx;
+            break;
+          }
+        }
+        if (matchIdx >= 0) setActiveKaraokeWord(matchIdx, wordIndices);
+      },
+      onSpeechEnd() {
+        if (runId === karaokeRunId) {
+          stopKaraoke();
+        }
+      }
+    };
+
+    window.speakEnglish(text, rate, opts);
+  }
+
+  /* ==========================================================================
+     3C. KID READ-BACK MICROPHONE ("🎙️ Bé đọc lại câu")
+     ========================================================================== */
+  function clearReadbackWordClasses() {
+    const enEl = $('book-text-en');
+    if (!enEl) return;
+    enEl.querySelectorAll('.book-kword').forEach(el => {
+      el.classList.remove('is-rb-target', 'is-spoken-hit', 'is-spoken-miss');
+    });
+  }
+
+  function getActiveReadbackTarget() {
+    if (!currentPageSentences.length) {
+      return { text: '', wordIndices: [], charOffset: 0, label: 'Trang này', keySuffix: 'all' };
+    }
+    if (readbackSentenceIdx < 0 || readbackSentenceIdx >= currentPageSentences.length) {
+      const page = currentBook?.pages?.[currentPageIndex];
+      return {
+        text: page ? page.en : '',
+        wordIndices: currentPageTokens.map(t => t.widx),
+        charOffset: 0,
+        label: 'Cả trang',
+        keySuffix: 'all'
+      };
+    }
+    const sent = currentPageSentences[readbackSentenceIdx];
+    return {
+      text: sent.text,
+      wordIndices: sent.wordIndices,
+      charOffset: sent.charStart,
+      label: `Câu ${ sent.sidx + 1 }`,
+      keySuffix: `s${ sent.sidx }`
+    };
+  }
+
+  function highlightReadbackTargetWords() {
+    clearReadbackWordClasses();
+    if (!readbackOpen) return;
+    const target = getActiveReadbackTarget();
+    const set = new Set(target.wordIndices);
+    const enEl = $('book-text-en');
+    if (!enEl) return;
+    enEl.querySelectorAll('.book-kword').forEach(el => {
+      if (set.has(Number(el.dataset.widx))) {
+        el.classList.add('is-rb-target');
+      }
+    });
+  }
+
+  function updateReadbackMicButtonUI() {
+    const recBtn = $('btn-book-rb-record');
+    if (recBtn) {
+      recBtn.classList.toggle('is-listening', isBookMicListening);
+      recBtn.innerHTML = isBookMicListening
+        ? '<span class="mic-pulse">🔴</span> Đang nghe bé đọc... (Bấm dừng)'
+        : '🎙️ Bấm để bé đọc câu này';
+    }
+    const openBtn = $('btn-book-mic');
+    if (openBtn) {
+      openBtn.classList.toggle('is-active', readbackOpen);
+      openBtn.textContent = readbackOpen ? '🎙️ Đóng Micro luyện đọc' : '🎙️ Bé đọc lại câu';
+    }
+  }
+
+  function expandContractions(str) {
+    return String(str || '')
+      .toLowerCase()
+      .replace(/[’`]/g, "'")
+      .replace(/\b(i'm)\b/g, 'i am')
+      .replace(/\b(he's)\b/g, 'he is')
+      .replace(/\b(she's)\b/g, 'she is')
+      .replace(/\b(it's)\b/g, 'it is')
+      .replace(/\b(that's)\b/g, 'that is')
+      .replace(/\b(let's)\b/g, 'let us')
+      .replace(/\b(we're)\b/g, 'we are')
+      .replace(/\b(they're)\b/g, 'they are')
+      .replace(/\b(you're)\b/g, 'you are')
+      .replace(/\b(don't)\b/g, 'do not')
+      .replace(/\b(doesn't)\b/g, 'does not')
+      .replace(/\b(can't)\b/g, 'cannot')
+      .replace(/\b(won't)\b/g, 'will not')
+      .replace(/\b(i'll)\b/g, 'i will')
+      .replace(/\b(i've)\b/g, 'i have');
+  }
+
+  function levenshteinDist(a, b) {
+    if (a === b) return 0;
+    if (!a.length) return b.length;
+    if (!b.length) return a.length;
+    const prev = Array.from({ length: b.length + 1 }, (_, i) => i);
+    for (let i = 1; i <= a.length; i += 1) {
+      let corner = prev[0];
+      prev[0] = i;
+      for (let j = 1; j <= b.length; j += 1) {
+        const temp = prev[j];
+        const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+        prev[j] = Math.min(prev[j] + 1, prev[j - 1] + 1, corner + cost);
+        corner = temp;
+      }
+    }
+    return prev[b.length];
+  }
+
+  function wordsMatchForKids(expectedNorm, spokenWords) {
+    if (!expectedNorm) return true;
+    const expFlat = expectedNorm.replace(/'/g, '');
+    const expExpanded = expandContractions(expectedNorm).split(/\s+/).filter(Boolean);
+    for (let i = 0; i < spokenWords.length; i += 1) {
+      const sw = spokenWords[i];
+      if (!sw) continue;
+      if (sw === expectedNorm || sw.replace(/'/g, '') === expFlat) return true;
+      if (expExpanded.includes(sw)) return true;
+      if (expFlat.length >= 4 && sw.length >= 4 && levenshteinDist(expFlat, sw.replace(/'/g, '')) <= 1) return true;
+      // Forgive plural/3rd-person -s drops for young kids
+      if (expFlat.length >= 4 && (expFlat === `${ sw }s` || `${ expFlat }s` === sw)) return true;
+    }
+    return false;
+  }
+
+  function evaluateReadbackWords(transcript, isFinal) {
+    const target = getActiveReadbackTarget();
+    const expandedSpoken = expandContractions(transcript)
+      .replace(/[^a-z0-9'\s]/g, ' ')
+      .split(/\s+/)
+      .filter(Boolean);
+    const rawSpoken = String(transcript || '')
+      .toLowerCase()
+      .replace(/[’`]/g, "'")
+      .replace(/[^a-z0-9'\s]/g, ' ')
+      .split(/\s+/)
+      .filter(Boolean);
+    const spokenPool = [...new Set([...rawSpoken, ...expandedSpoken])];
+
+    let hits = 0;
+    const total = target.wordIndices.length;
+    const enEl = $('book-text-en');
+
+    target.wordIndices.forEach(widx => {
+      const tok = currentPageTokens[widx];
+      const matched = wordsMatchForKids(tok ? tok.norm : '', spokenPool);
+      if (matched) hits += 1;
+      const el = enEl?.querySelector(`.book-kword[data-widx="${ widx }"]`);
+      if (el) {
+        el.classList.toggle('is-spoken-hit', matched);
+        el.classList.toggle('is-spoken-miss', isFinal && !matched);
+      }
+    });
+
+    const pct = total ? Math.round((hits / total) * 100) : 0;
+    return { hits, total, pct };
+  }
+
+  function awardReadbackStars(starsEarned, keySuffix) {
+    if (!currentBook || starsEarned <= 0) return 0;
+    const key = `${ currentBook.id }_p${ currentPageIndex }_${ keySuffix }`;
+    if (rewardedReadbackKeys.has(key)) return 0;
+    rewardedReadbackKeys.add(key);
+    if (typeof state !== 'undefined') {
+      state.stars = (state.stars || 0) + starsEarned;
+      if (typeof saveProgress === 'function') saveProgress();
+      if (typeof updateHeaderAndMissionUI === 'function') updateHeaderAndMissionUI();
+    }
+    return starsEarned;
+  }
+
+  function renderReadbackPanel() {
+    const panel = $('book-readback-panel');
+    if (!panel) return;
+    panel.classList.toggle('hidden', !readbackOpen);
+    updateReadbackMicButtonUI();
+
+    if (!readbackOpen) {
+      clearReadbackWordClasses();
+      return;
+    }
+
+    const sBar = $('book-rb-sentences');
+    if (sBar) {
+      const multi = currentPageSentences.length > 1;
+      const buttonsHtml = currentPageSentences.map(s => `
+        <button type="button" class="book-rb-pill ${ readbackSentenceIdx === s.sidx ? 'active' : '' }" data-rbs="${ s.sidx }">
+          Câu ${ s.sidx + 1 }
+        </button>
+      `).join('');
+      const allBtnHtml = multi && currentPageTokens.length <= 34
+        ? `<button type="button" class="book-rb-pill ${ readbackSentenceIdx === -1 ? 'active' : '' }" data-rbs="-1">📄 Cả trang</button>`
+        : '';
+      sBar.innerHTML = buttonsHtml + allBtnHtml;
+      sBar.classList.toggle('hidden', !multi);
+
+      sBar.querySelectorAll('[data-rbs]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          stopBookMic();
+          stopKaraoke();
+          if (typeof playSoundEffect === 'function') playSoundEffect('pop');
+          readbackSentenceIdx = Number(btn.dataset.rbs);
+          renderReadbackPanel();
+        });
+      });
+    }
+
+    const target = getActiveReadbackTarget();
+    const promptEl = $('book-rb-target-text');
+    if (promptEl) {
+      promptEl.textContent = `“${ target.text }”`;
+    }
+
+    const resEl = $('book-rb-result');
+    if (resEl) {
+      resEl.className = 'book-rb-result hidden';
+      resEl.innerHTML = '';
+    }
+
+    const nextSentBtn = $('btn-book-rb-next-sent');
+    if (nextSentBtn) {
+      const hasNext = readbackSentenceIdx >= 0 && readbackSentenceIdx < currentPageSentences.length - 1;
+      nextSentBtn.classList.toggle('hidden', !hasNext);
+    }
+
+    highlightReadbackTargetWords();
+  }
+
+  function startBookReadbackMic() {
+    if (isBookMicListening) {
+      stopBookMic();
+      return;
+    }
+    cancelAutoRead();
+    if (typeof window.stopAllSpeech === 'function') window.stopAllSpeech();
+
+    const target = getActiveReadbackTarget();
+    const resEl = $('book-rb-result');
+    const Ctor = window.SpeechRecognition || window.webkitSpeechRecognition || null;
+
+    if (!Ctor) {
+      if (resEl) {
+        resEl.className = 'book-rb-result is-info';
+        resEl.innerHTML = `
+          <div>ℹ️ Trình duyệt này chưa hỗ trợ Micro tự động. Bé bấm <strong>🔊 Nghe mẫu</strong> rồi đọc to cùng bố mẹ nhé!</div>
+          <button type="button" class="btn-book-rb-self" id="btn-book-rb-self-ok">✅ Bé đã đọc to câu này! (+1 ⭐)</button>
+        `;
+        $('btn-book-rb-self-ok')?.addEventListener('click', () => {
+          const gained = awardReadbackStars(1, target.keySuffix);
+          if (typeof playSoundEffect === 'function') playSoundEffect('star');
+          if (typeof launchConfettiBurst === 'function') launchConfettiBurst();
+          resEl.className = 'book-rb-result is-great';
+          resEl.innerHTML = `⭐⭐⭐ <strong>Giỏi lắm!</strong> Bé đọc to rất tự tin! ${ gained ? `(+${ gained } ⭐)` : '' }`;
+        });
+      }
+      return;
+    }
+
+    highlightReadbackTargetWords();
+    let finalTranscript = '';
+
+    try {
+      const rec = new Ctor();
+      readbackRecognition = rec;
+      rec.lang = 'en-US';
+      rec.interimResults = true;
+      rec.maxAlternatives = 1;
+      rec.continuous = false;
+
+      isBookMicListening = true;
+      updateReadbackMicButtonUI();
+      if (typeof playSoundEffect === 'function') playSoundEffect('pop');
+
+      if (resEl) {
+        resEl.className = 'book-rb-result is-listening';
+        resEl.textContent = '🎙️ Bé hãy đọc to câu được tô nổi phía trên bằng tiếng Anh nhé...';
+      }
+
+      rec.onresult = (ev) => {
+        let interim = '';
+        for (let i = ev.resultIndex; i < ev.results.length; i += 1) {
+          const txt = ev.results[i][0]?.transcript || '';
+          if (ev.results[i].isFinal) finalTranscript += `${ txt } `;
+          else interim += txt;
+        }
+        const liveText = (finalTranscript + interim).trim();
+        if (liveText) {
+          evaluateReadbackWords(liveText, false);
+          if (resEl) {
+            resEl.className = 'book-rb-result is-listening';
+            resEl.textContent = `🎙️ Đang nghe bé: “${ liveText }”`;
+          }
+        }
+      };
+
+      rec.onerror = (ev) => {
+        const err = ev?.error || '';
+        isBookMicListening = false;
+        readbackRecognition = null;
+        updateReadbackMicButtonUI();
+        if (resEl) {
+          resEl.className = 'book-rb-result is-info';
+          resEl.innerHTML = err === 'not-allowed'
+            ? `<div>⚠️ Chưa cấp quyền Micro. Bố mẹ bật quyền Micro hoặc cho bé đọc cùng bố mẹ nhé!</div>
+               <button type="button" class="btn-book-rb-self" id="btn-book-rb-self-ok">✅ Bé đã đọc to câu này! (+1 ⭐)</button>`
+            : '🎙️ Chưa nghe rõ giọng bé — bấm nút Micro để thử đọc lại nhé!';
+          $('btn-book-rb-self-ok')?.addEventListener('click', () => {
+            const gained = awardReadbackStars(1, target.keySuffix);
+            if (typeof playSoundEffect === 'function') playSoundEffect('star');
+            resEl.className = 'book-rb-result is-great';
+            resEl.innerHTML = `⭐⭐⭐ <strong>Tuyệt vời!</strong> ${ gained ? `(+${ gained } ⭐)` : '' }`;
+          });
+        }
+      };
+
+      rec.onend = () => {
+        const spoken = finalTranscript.trim();
+        isBookMicListening = false;
+        readbackRecognition = null;
+        updateReadbackMicButtonUI();
+
+        if (!spoken) {
+          if (resEl && resEl.classList.contains('is-listening')) {
+            resEl.className = 'book-rb-result is-info';
+            resEl.textContent = '🎙️ Chưa nghe thấy tiếng — bé bấm nút Micro và đọc to hơn chút nhé!';
+          }
+          return;
+        }
+
+        const { hits, total, pct } = evaluateReadbackWords(spoken, true);
+        let starsCount = 1;
+        let cls = 'is-encourage';
+        let praise = 'Cố lên bé ơi! Chạm vào từ gạch vàng để nghe lại rồi thử đọc tiếp nhé!';
+        if (pct >= 80) {
+          starsCount = 3;
+          cls = 'is-great';
+          praise = 'Tuyệt vời! Bé đọc chuẩn và tự nhiên lắm!';
+          if (typeof playSoundEffect === 'function') playSoundEffect('star');
+          if (typeof launchConfettiBurst === 'function') launchConfettiBurst();
+        } else if (pct >= 50) {
+          starsCount = 2;
+          cls = 'is-good';
+          praise = 'Giỏi lắm! Bé đọc được rất nhiều từ đúng rồi!';
+          if (typeof playSoundEffect === 'function') playSoundEffect('correct');
+        } else {
+          if (typeof playSoundEffect === 'function') playSoundEffect('pop');
+        }
+
+        const gained = awardReadbackStars(starsCount, target.keySuffix);
+        const starsIcons = '⭐'.repeat(starsCount);
+        if (resEl) {
+          resEl.className = `book-rb-result ${ cls }`;
+          resEl.innerHTML = `
+            <div class="brb-score-row">
+              <span class="brb-stars">${ starsIcons }</span>
+              <strong>${ pct }% (${ hits }/${ total } từ)</strong>
+              ${ gained ? `<span class="brb-bonus">+${ gained } ⭐</span>` : '' }
+            </div>
+            <div class="brb-praise">${ praise }</div>
+            <div class="brb-heard">💬 Micro nghe thấy: <em>“${ escapeHtml(spoken) }”</em></div>
+          `;
+        }
+      };
+
+      rec.start();
+    } catch {
+      isBookMicListening = false;
+      readbackRecognition = null;
+      updateReadbackMicButtonUI();
+    }
+  }
+
   function renderCurrentBookPage(autoSpeak = false) {
     if (!currentBook) return;
     inQuizMode = false;
+    stopKaraoke();
+    stopBookMic();
 
     const spreadEl = $('book-spread-view');
     const navEl = $('book-nav-bar');
@@ -400,25 +1079,50 @@
     // Left page illustration
     renderIllustrationScene(page);
 
-    // Right page text
+    // Right page text (Tokenized for Karaoke Read-Aloud & Tap-Any-Word)
     const pageBadge = $('book-page-badge');
     if (pageBadge) pageBadge.textContent = `Trang ${ currentPageIndex + 1 } / ${ total }`;
 
     const bookSub = $('book-page-bookname');
     if (bookSub) bookSub.textContent = currentBook.titleEn;
 
+    const tokenized = tokenizeStoryPage(page.en, page.vocab);
+    currentPageTokens = tokenized.tokens;
+    currentPageSentences = tokenized.sentences;
+    readbackSentenceIdx = 0;
+
     const enEl = $('book-text-en');
     if (enEl) {
-      enEl.innerHTML = highlightStoryVocab(page.en, page.vocab);
-      enEl.querySelectorAll('.book-vocab-word').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const v = page.vocab[Number(btn.dataset.vidx)];
-          if (!v) return;
+      enEl.innerHTML = tokenized.html;
+      enEl.querySelectorAll('.book-kword').forEach(el => {
+        const handleTapWord = () => {
+          const widx = Number(el.dataset.widx);
+          const tok = currentPageTokens[widx];
+          if (!tok) return;
           cancelAutoRead();
+          stopBookMic();
           if (typeof playSoundEffect === 'function') playSoundEffect('pop');
-          showWordTooltip(v);
-          if (typeof window.speakEnglish === 'function') window.speakEnglish(v.w, 0.92);
-        });
+          setActiveKaraokeWord(widx, [widx]);
+          setTimeout(() => {
+            if (karaokeActiveWidx === widx) clearKaraokeHighlights();
+          }, 900);
+          if (tok.vocabIdx >= 0 && page.vocab && page.vocab[tok.vocabIdx]) {
+            const v = page.vocab[tok.vocabIdx];
+            showWordTooltip(v);
+            if (typeof window.speakEnglish === 'function') window.speakEnglish(v.w, 0.90);
+          } else {
+            if (typeof window.speakEnglish === 'function') window.speakEnglish(tok.word, 0.90);
+          }
+        };
+        el.addEventListener('click', handleTapWord);
+        if (el.tagName !== 'BUTTON') {
+          el.addEventListener('keydown', e => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              handleTapWord();
+            }
+          });
+        }
       });
     }
 
@@ -446,12 +1150,16 @@
           const v = page.vocab[Number(btn.dataset.vidx)];
           if (!v) return;
           cancelAutoRead();
+          stopBookMic();
           if (typeof playSoundEffect === 'function') playSoundEffect('pop');
           showWordTooltip(v);
           if (typeof window.speakEnglish === 'function') window.speakEnglish(v.w, 0.92);
         });
       });
     }
+
+    // Update Read-Back panel if open
+    renderReadbackPanel();
 
     // Page navigation buttons & dots
     const prevBtn = $('btn-book-prev');
@@ -472,6 +1180,7 @@
       dotsWrap.querySelectorAll('.book-dot').forEach(dot => {
         dot.addEventListener('click', () => {
           cancelAutoRead();
+          stopBookMic();
           if (typeof playSoundEffect === 'function') playSoundEffect('pop');
           currentPageIndex = Number(dot.dataset.p) || 0;
           renderCurrentBookPage(false);
@@ -512,14 +1221,15 @@
     if (!currentBook || inQuizMode) return;
     const page = currentBook.pages[currentPageIndex];
     if (!page) return;
+    stopBookMic();
     if (autoTurnHandle && typeof autoTurnHandle.cancel === 'function') {
       autoTurnHandle.cancel();
       autoTurnHandle = null;
     }
-    if (typeof window.speakEnglish === 'function') {
-      const audioUrl = getBookPageAudioUrl(currentBook.id, currentPageIndex);
-      window.speakEnglish(page.en, 0.92, { audioUrl });
-    }
+    const allIndices = currentPageTokens.map(t => t.widx);
+    const audioUrl = getBookPageAudioUrl(currentBook.id, currentPageIndex);
+    speakTextWithKaraoke(page.en, allIndices, 0, 0.92, audioUrl);
+
     if (isAutoReading && typeof window.afterSpeech === 'function') {
       autoTurnHandle = window.afterSpeech(() => {
         if (!isAutoReading || !currentBook) return;
@@ -540,6 +1250,8 @@
   function startBookQuiz() {
     if (!currentBook) return;
     cancelAutoRead();
+    stopBookMic();
+    readbackOpen = false;
     if (typeof window.stopAllSpeech === 'function') window.stopAllSpeech();
 
     const questions = currentBook.quiz || [];
@@ -695,6 +1407,8 @@
     if (!book) return;
 
     cancelAutoRead();
+    stopBookMic();
+    readbackOpen = false;
     if (typeof window.stopAllSpeech === 'function') window.stopAllSpeech();
 
     currentBook = book;
@@ -718,6 +1432,8 @@
 
   function openBooksHub(filter = null) {
     cancelAutoRead();
+    stopBookMic();
+    readbackOpen = false;
     if (typeof window.stopAllSpeech === 'function') window.stopAllSpeech();
     if (filter) activeBookFilter = filter;
     renderBooksHub();
@@ -756,6 +1472,8 @@
 
     $('btn-book-reader-back')?.addEventListener('click', () => {
       cancelAutoRead();
+      stopBookMic();
+      readbackOpen = false;
       if (typeof window.stopAllSpeech === 'function') window.stopAllSpeech();
       if (typeof playSoundEffect === 'function') playSoundEffect('pop');
       openBooksHub();
@@ -764,6 +1482,7 @@
     $('btn-book-prev')?.addEventListener('click', () => {
       if (!currentBook || currentPageIndex <= 0) return;
       cancelAutoRead();
+      stopBookMic();
       if (typeof playSoundEffect === 'function') playSoundEffect('pop');
       currentPageIndex -= 1;
       renderCurrentBookPage(false);
@@ -772,6 +1491,7 @@
     $('btn-book-next')?.addEventListener('click', () => {
       if (!currentBook) return;
       cancelAutoRead();
+      stopBookMic();
       if (typeof playSoundEffect === 'function') playSoundEffect('pop');
       if (currentPageIndex < currentBook.pages.length - 1) {
         currentPageIndex += 1;
@@ -792,9 +1512,55 @@
         cancelAutoRead();
         if (typeof window.stopAllSpeech === 'function') window.stopAllSpeech();
       } else {
+        stopBookMic();
         isAutoReading = true;
         updateAutoReadButtonUI();
         speakCurrentPage();
+      }
+    });
+
+    // Kid Read-Back Microphone controls
+    $('btn-book-mic')?.addEventListener('click', () => {
+      if (!currentBook || inQuizMode) return;
+      cancelAutoRead();
+      stopBookMic();
+      if (typeof window.stopAllSpeech === 'function') window.stopAllSpeech();
+      if (typeof playSoundEffect === 'function') playSoundEffect('pop');
+      readbackOpen = !readbackOpen;
+      renderReadbackPanel();
+    });
+
+    $('btn-book-rb-close')?.addEventListener('click', () => {
+      stopBookMic();
+      stopKaraoke();
+      if (typeof playSoundEffect === 'function') playSoundEffect('pop');
+      readbackOpen = false;
+      renderReadbackPanel();
+    });
+
+    $('btn-book-rb-listen')?.addEventListener('click', () => {
+      if (!currentBook) return;
+      stopBookMic();
+      cancelAutoRead();
+      const target = getActiveReadbackTarget();
+      if (!target.text) return;
+      // If practicing the whole page, use the studio MP3; if single sentence, speak that sentence with Karaoke!
+      const useFullMp3 = readbackSentenceIdx === -1 || currentPageSentences.length <= 1;
+      const audioUrl = useFullMp3 ? getBookPageAudioUrl(currentBook.id, currentPageIndex) : '';
+      speakTextWithKaraoke(target.text, target.wordIndices, target.charOffset, 0.88, audioUrl);
+    });
+
+    $('btn-book-rb-record')?.addEventListener('click', () => {
+      startBookReadbackMic();
+    });
+
+    $('btn-book-rb-next-sent')?.addEventListener('click', () => {
+      if (readbackSentenceIdx < currentPageSentences.length - 1) {
+        stopBookMic();
+        stopKaraoke();
+        if (typeof playSoundEffect === 'function') playSoundEffect('pop');
+        readbackSentenceIdx += 1;
+        renderReadbackPanel();
       }
     });
 
@@ -828,9 +1594,11 @@
       openBooksHub();
     });
 
-    // Stop auto-read if user clicks top logo to go home
+    // Stop auto-read & mic if user clicks top logo to go home
     $('btn-home-logo')?.addEventListener('click', () => {
       cancelAutoRead();
+      stopBookMic();
+      readbackOpen = false;
     });
 
     // Touch swipe left/right on open book spread

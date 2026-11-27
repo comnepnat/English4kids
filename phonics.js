@@ -534,9 +534,12 @@
   /* ==========================================================================
      Navigation & Tabs
      ========================================================================== */
-  function openPhonics(initialTab = 'board') {
+  window.PHONICS_ALPHABET_DATA = ALPHABET_DATA;
+
+  function openPhonics(initialTab = 'board', traceLetter = null) {
     stopAbcSong();
     stopBlendTimers();
+    if (typeof window.stopTracingDemo === 'function') window.stopTracingDemo();
     document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
     $('view-phonics').classList.add('active');
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -544,33 +547,47 @@
       window.recordActivity({
         kind: 'phonics',
         tab: initialTab,
-        icon: '🔤',
-        title: 'Bảng Chữ Cái ABC & Phonics',
-        subtitle: '26 chữ cái, 8 âm ghép đôi & 33 từ ghép vần'
+        icon: initialTab === 'trace' ? '✏️' : '🔤',
+        title: initialTab === 'trace' ? 'Tập Tô Chữ Cái A–Z / a–z' : 'Bảng Chữ Cái ABC & Phonics',
+        subtitle: initialTab === 'trace'
+          ? 'Tập tô cảm ứng có mũi tên dẫn nét & phát âm âm vị'
+          : '26 chữ cái, tập tô A–Z/a–z, 8 âm ghép đôi & 33 từ ghép vần'
       });
     }
-    switchPhonicsTab(initialTab);
+    switchPhonicsTab(initialTab, traceLetter);
   }
 
   window.openPhonicsView = openPhonics;
+  window.openLetterTracing = function (letterChar = null) {
+    openPhonics('trace', letterChar);
+  };
 
-  function switchPhonicsTab(tab) {
+  function switchPhonicsTab(tab, traceLetter = null) {
     stopAbcSong();
     stopBlendTimers();
+    if (tab !== 'trace' && typeof window.stopTracingDemo === 'function') window.stopTracingDemo();
     pState.activeTab = tab;
 
-    ['board', 'blend', 'quiz'].forEach(name => {
+    ['board', 'trace', 'blend', 'quiz'].forEach(name => {
       const btn = $(`tab-phonics-${ name }`);
       const panel = $(`phonics-panel-${ name }`);
       const active = name === tab;
-      btn.classList.toggle('active', active);
-      btn.setAttribute('aria-selected', active ? 'true' : 'false');
-      panel.classList.toggle('hidden', !active);
+      if (btn) {
+        btn.classList.toggle('active', active);
+        btn.setAttribute('aria-selected', active ? 'true' : 'false');
+      }
+      if (panel) {
+        panel.classList.toggle('hidden', !active);
+      }
     });
 
     if (tab === 'board') {
       renderAlphabetGrid();
       renderLetterSpotlight(false);
+    } else if (tab === 'trace') {
+      if (typeof window.initOrRefreshTracingView === 'function') {
+        window.initOrRefreshTracingView(traceLetter);
+      }
     } else if (tab === 'blend') {
       renderBlendFamilyBar();
       renderBlendWord(true);
@@ -582,6 +599,7 @@
   function goHomeFromPhonics() {
     stopAbcSong();
     stopBlendTimers();
+    if (typeof window.stopTracingDemo === 'function') window.stopTracingDemo();
     if (typeof window.stopAllSpeech === 'function') window.stopAllSpeech(); else if ('speechSynthesis' in window) window.speechSynthesis.cancel();
     document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
     $('view-home').classList.add('active');
@@ -696,6 +714,12 @@
       markBtn.classList.remove('is-learned');
       $('mark-letter-icon').textContent = '⭐';
       $('mark-letter-text').textContent = `Bé đã thuộc ${ data.letter }!`;
+    }
+
+    const traceQuickBtn = $('btn-trace-this-letter');
+    if (traceQuickBtn) {
+      traceQuickBtn.classList.toggle('hidden', Boolean(data.isDigraph));
+      traceQuickBtn.textContent = `✏️ Tập tô chữ ${ data.letter }/${ data.letter.toLowerCase() }`;
     }
 
     updatePhonicsProgressUI();
@@ -1111,6 +1135,7 @@
     $('btn-home-logo').addEventListener('click', () => {
       stopAbcSong();
       stopBlendTimers();
+      if (typeof window.stopTracingDemo === 'function') window.stopTracingDemo();
       updatePhonicsProgressUI();
     });
 
@@ -1118,6 +1143,15 @@
       playSoundEffect('pop');
       switchPhonicsTab('board');
     });
+    const traceTabBtn = $('tab-phonics-trace');
+    if (traceTabBtn) {
+      traceTabBtn.addEventListener('click', () => {
+        playSoundEffect('pop');
+        const cur = getActiveBoardDataset()[pState.selectedIndex];
+        const passChar = cur && !cur.isDigraph ? cur.letter : null;
+        switchPhonicsTab('trace', passChar);
+      });
+    }
     $('tab-phonics-blend').addEventListener('click', () => {
       playSoundEffect('pop');
       switchPhonicsTab('blend');
@@ -1126,6 +1160,17 @@
       playSoundEffect('pop');
       switchPhonicsTab('quiz');
     });
+
+    const traceQuickBtn = $('btn-trace-this-letter');
+    if (traceQuickBtn) {
+      traceQuickBtn.addEventListener('click', () => {
+        const data = getActiveBoardDataset()[pState.selectedIndex];
+        if (data && !data.isDigraph) {
+          playSoundEffect('pop');
+          switchPhonicsTab('trace', data.letter);
+        }
+      });
+    }
 
     $('btn-filter-all-letters').addEventListener('click', () => setBoardFilter('all'));
     $('btn-filter-vowels').addEventListener('click', () => setBoardFilter('vowels'));
@@ -1205,6 +1250,7 @@
       renderAlphabetGrid();
       renderLetterSpotlight(false);
     }
+    if (typeof window.refreshTracingUI === 'function') window.refreshTracingUI();
   };
 
   document.addEventListener('DOMContentLoaded', () => {

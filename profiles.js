@@ -13,9 +13,9 @@
     {
       id: 'age_4_5',
       icon: '🐣',
-      label: '4–5 tuổi',
-      shortLabel: '4–5t',
-      stageName: 'Mầm non (Khám phá & Giác quan)',
+      label: '3–5 tuổi',
+      shortLabel: '3–5t',
+      stageName: 'Mầm non (Bé Nhỏ • Khám phá & Giác quan)',
       levels: ['Pre-A1'],
       defaultCefr: 'Pre-A1',
       starterTopicId: 'animals',
@@ -24,7 +24,7 @@
       gameDiff: 'easy',
       color: '#22C55E',
       bg: '#DCFCE7',
-      desc: '500 từ Pre-A1 gần gũi, bài học 3 bước Montessori, ABC Phonics, phim tập đếm & trò chơi Dễ.'
+      desc: '500 từ Pre-A1 gần gũi, Chế độ Bé Nhỏ nút hình lớn, tập tô ABC, truyện sáng đèn & trò chơi Dễ.'
     },
     {
       id: 'age_6_7',

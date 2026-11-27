@@ -66,6 +66,7 @@ const state = {
   stars: 0,
   learnedIds: new Set(),
   learnedLetters: new Set(),
+  tracedLetters: new Set(),
   completedEpisodes: new Set(),
   completedBooks: new Set(),
   lastActivity: null,
@@ -122,6 +123,7 @@ function resetStateInMemory() {
   state.stars = 0;
   state.learnedIds = new Set();
   state.learnedLetters = new Set();
+  state.tracedLetters = new Set();
   state.completedEpisodes = new Set();
   state.completedBooks = new Set();
   state.lastActivity = null;
@@ -155,6 +157,9 @@ function loadProgress() {
     }
     if (Array.isArray(parsed.learnedLetters)) {
       state.learnedLetters = new Set(parsed.learnedLetters);
+    }
+    if (Array.isArray(parsed.tracedLetters)) {
+      state.tracedLetters = new Set(parsed.tracedLetters);
     }
     if (Array.isArray(parsed.completedEpisodes)) {
       state.completedEpisodes = new Set(parsed.completedEpisodes);
@@ -197,6 +202,7 @@ function saveProgress() {
       stars: state.stars,
       learnedIds: Array.from(state.learnedIds),
       learnedLetters: Array.from(state.learnedLetters),
+      tracedLetters: Array.from(state.tracedLetters),
       completedEpisodes: Array.from(state.completedEpisodes),
       completedBooks: Array.from(state.completedBooks),
       lastActivity: state.lastActivity,
@@ -222,6 +228,7 @@ window.reloadActiveProfileState = function () {
   if (typeof window.refreshSrsUI === 'function') window.refreshSrsUI();
   if (typeof window.refreshMilestonesUI === 'function') window.refreshMilestonesUI();
   if (typeof window.refreshQuestUI === 'function') window.refreshQuestUI();
+  if (typeof window.refreshLittleModeUI === 'function') window.refreshLittleModeUI();
 };
 
 window.recordActivity = function (activity) {
@@ -1567,7 +1574,9 @@ function bindEvents() {
     state.stars = 0;
     state.learnedIds.clear();
     state.learnedLetters.clear();
+    state.tracedLetters.clear();
     state.completedEpisodes.clear();
+    state.completedBooks.clear();
     state.lastActivity = null;
     state.srs = {
       cards: {},
@@ -1579,6 +1588,7 @@ function bindEvents() {
     renderRecentActivityCard();
     renderTopicsGrid();
     if (typeof window.refreshPhonicsUI === 'function') window.refreshPhonicsUI();
+    if (typeof window.refreshBooksUI === 'function') window.refreshBooksUI();
     if (typeof window.refreshSrsUI === 'function') window.refreshSrsUI();
     if (typeof window.refreshMilestonesUI === 'function') window.refreshMilestonesUI();
     if (typeof window.refreshStoriesUI === 'function') window.refreshStoriesUI();

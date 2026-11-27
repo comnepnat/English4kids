@@ -6,7 +6,7 @@
  * - Images, fonts and word-audio MP3s: cache first, so each picture or sound is
  *   downloaded once and then appears instantly.
  */
-const VERSION = 'e4k-v10';
+const VERSION = 'e4k-v11';
 const SHELL_CACHE = `${ VERSION }-shell`;
 const MEDIA_CACHE = `${ VERSION }-media`;
 const MAX_MEDIA_ENTRIES = 1500;
@@ -23,6 +23,7 @@ const SHELL_FILES = [
   'art.js',
   'games.js',
   'phonics.js',
+  'tracing.js',
   'stories-data.js',
   'stories.js',
   'books-data.js',
@@ -33,6 +34,7 @@ const SHELL_FILES = [
   'milestones.js',
   'backup.js',
   'quest.js',
+  'little-mode.js',
   'pwa.js',
   'manifest.json',
   'assets/icons/icon-192.png',

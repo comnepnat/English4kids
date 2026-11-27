@@ -77,6 +77,11 @@
       </button>
 
       <div class="header-stats">
+        <button class="btn-little-toggle" id="btn-little-mode-toggle" type="button" aria-pressed="false" title="Bật Chế độ Bé Nhỏ (3–5 tuổi) — Giao diện nút hình lớn tối giản">
+          <span class="little-toggle-icon" aria-hidden="true">🐣</span>
+          <span class="little-toggle-label">Bé 3–5t</span>
+        </button>
+
         <button class="profile-switcher-pill" id="btn-profile-switcher" type="button" title="Chuyển đổi hoặc tạo hồ sơ cho nhiều bé">
           <span class="ps-avatar" id="header-profile-avatar">🦁</span>
           <span class="ps-name" id="header-profile-name">Bé 1</span>
@@ -122,6 +127,68 @@
     <main class="main-stage">
       <!-- VIEW 1: CLEAN TABLET-FIRST HOME DASHBOARD -->
       <section class="view-section active" id="view-home" aria-labelledby="home-heading">
+        <!-- LITTLE KIDS MODE (3–5 TUỔI): Ultra-Simple Giant Pictorial Playground (shown only when body.little-kids-mode) -->
+        <div class="little-kids-home" id="little-kids-home" aria-label="Góc chơi cho Bé Nhỏ 3 đến 5 tuổi" aria-hidden="true">
+          <button type="button" class="little-greet-banner" id="little-leo-btn">
+            <img class="little-leo-img" src="assets/art/painted_leo.webp" alt="Sư tử Leo" draggable="false" />
+            <div class="little-greet-copy">
+              <span class="little-greet-hi">Xin chào <strong id="little-greet-name">Bé yêu</strong>! 👋</span>
+              <span class="little-greet-sub">Chạm hình lớn bên dưới để học &amp; chơi nhé! 🔊</span>
+            </div>
+          </button>
+
+          <div class="little-big-grid">
+            <button type="button" class="little-big-btn" id="little-btn-trace" style="--lb-bg:#FFF4D6; --lb-border:#FF9F1C; --lb-shadow:#D97706; --lb-text:#9A3412;">
+              <span class="lb-icon" aria-hidden="true">✏️</span>
+              <span class="lb-title">Tập Tô ABC</span>
+              <span class="lb-sub">A–Z • a–z</span>
+            </button>
+
+            <button type="button" class="little-big-btn" id="little-btn-books" style="--lb-bg:#FCE7F3; --lb-border:#F472B6; --lb-shadow:#BE185D; --lb-text:#9D174D;">
+              <span class="lb-icon" aria-hidden="true">📖</span>
+              <span class="lb-title">Truyện Tranh</span>
+              <span class="lb-sub">Đọc sáng đèn</span>
+            </button>
+
+            <button type="button" class="little-big-btn" id="little-btn-vocab" style="--lb-bg:#DCFCE7; --lb-border:#4ADE80; --lb-shadow:#15803D; --lb-text:#166534;">
+              <span class="lb-icon" aria-hidden="true">🦁</span>
+              <span class="lb-title">Thẻ Hình Nói</span>
+              <span class="lb-sub">Chạm nghe từ</span>
+            </button>
+
+            <button type="button" class="little-big-btn" id="little-btn-abc" style="--lb-bg:#EDE9FE; --lb-border:#A78BFA; --lb-shadow:#6D28D9; --lb-text:#5B21B6;">
+              <span class="lb-icon" aria-hidden="true">🔤</span>
+              <span class="lb-title">Hát ABC</span>
+              <span class="lb-sub">26 Chữ cái</span>
+            </button>
+
+            <button type="button" class="little-big-btn" id="little-btn-stories" style="--lb-bg:#E0F2FE; --lb-border:#38BDF8; --lb-shadow:#0369A1; --lb-text:#075985;">
+              <span class="lb-icon" aria-hidden="true">🎬</span>
+              <span class="lb-title">Xem Phim</span>
+              <span class="lb-sub">Chạm tương tác</span>
+            </button>
+
+            <button type="button" class="little-big-btn" id="little-btn-games" style="--lb-bg:#FEF9C3; --lb-border:#FACC15; --lb-shadow:#CA8A04; --lb-text:#854D0E;">
+              <span class="lb-icon" aria-hidden="true">🎈</span>
+              <span class="lb-title">Trò Chơi Vui</span>
+              <span class="lb-sub">Mức siêu dễ</span>
+            </button>
+          </div>
+
+          <div class="little-quick-topics" id="little-quick-topics" aria-label="Chủ đề hình ảnh mở nhanh">
+            <button type="button" class="little-topic-bubble" data-little-topic="animals"><span>🐶</span><strong>Động vật</strong></button>
+            <button type="button" class="little-topic-bubble" data-little-topic="fruits_veggies"><span>🍎</span><strong>Trái cây</strong></button>
+            <button type="button" class="little-topic-bubble" data-little-topic="colors_shapes"><span>🎨</span><strong>Màu sắc</strong></button>
+            <button type="button" class="little-topic-bubble" data-little-topic="numbers_time"><span>🔢</span><strong>Số đếm</strong></button>
+          </div>
+
+          <div class="little-exit-bar">
+            <button type="button" class="btn-little-exit" id="btn-little-exit-mode">
+              👨‍👩‍👧 Bố mẹ: Tắt Chế độ Bé Nhỏ (về giao diện đầy đủ)
+            </button>
+          </div>
+        </div>
+
         <!-- Top Dashboard Row: Continue Learning + Learning Progress -->
         <div class="home-dashboard-grid">
           <!-- Card A: Bài mới nhất vừa học (Continue Learning) -->
@@ -261,10 +328,10 @@
 
           <button class="main-hub-card" id="hub-btn-phonics" type="button" style="--hub-accent:#8B5CF6; --hub-border:#A78BFA; --hub-shadow:#6D28D9; --hub-soft:#F3E8FF;">
             <div class="hub-icon-wrap">🔤</div>
-            <h3>ABC &amp; Phonics</h3>
-            <span class="hub-sub">26 Chữ • 8 Âm ghép</span>
-            <p>Hát A–Z, ghép vần 33 từ &amp; 3 kiểu đố vui ngữ âm</p>
-            <span class="hub-cta">Học âm ➔</span>
+            <h3>ABC, Tập Tô &amp; Phonics</h3>
+            <span class="hub-sub">Tập tô A–Z/a–z • 8 Âm ghép</span>
+            <p>Tập tô cảm ứng có mũi tên dẫn nét, hát A–Z, ghép vần 33 từ &amp; đố vui</p>
+            <span class="hub-cta">Học &amp; Tập tô ➔</span>
           </button>
         </div>
 
@@ -272,8 +339,8 @@
         <div class="home-books-shelf" id="home-books-shelf">
           <div class="section-title-bar compact-bar books-shelf-head">
             <div>
-              <h2>📖 Truyện Tranh Đọc &amp; Nghe Có Minh Họa</h2>
-              <span class="books-shelf-sub" id="home-books-sub">16 truyện tranh • Cổ tích, Ngụ ngôn &amp; Phiêu lưu</span>
+              <h2>📖 Truyện Tranh Đọc Sáng Đèn &amp; Luyện Đọc</h2>
+              <span class="books-shelf-sub" id="home-books-sub">16 truyện tranh • Karaoke sáng đèn từng từ &amp; Micro bé đọc lại</span>
             </div>
             <button type="button" class="btn-secondary-pill" id="btn-home-open-books">📚 Xem cả 16 truyện ➔</button>
           </div>
@@ -316,7 +383,7 @@
           </button>
           <div class="topic-badge-header">
             <span>📖</span>
-            <span>Truyện Tranh Đọc &amp; Nghe (16 Cuốn • Cổ Tích &amp; Ngụ Ngôn)</span>
+            <span>Truyện Tranh Đọc Sáng Đèn &amp; Micro (16 Cuốn)</span>
           </div>
         </div>
 
@@ -363,6 +430,7 @@
             <div class="book-page book-page-right">
               <div class="book-page-top">
                 <span class="book-page-badge" id="book-page-badge">Trang 1 / 6</span>
+                <span class="book-karaoke-pill" aria-hidden="true">✨ Sáng đèn từng từ</span>
                 <span class="book-page-bookname" id="book-page-bookname">Leo's Big Red Ball</span>
               </div>
 
@@ -378,6 +446,23 @@
               <div class="book-audio-actions">
                 <button class="btn-speak-primary" id="btn-book-speak-page" type="button">🔊 Đọc trang này</button>
                 <button class="btn-book-autoread" id="btn-book-autoread" type="button">▶ Đọc tự động cả truyện</button>
+                <button class="btn-book-mic" id="btn-book-mic" type="button">🎙️ Bé đọc lại câu</button>
+              </div>
+
+              <!-- Kid Read-Back Microphone Practice Drawer -->
+              <div class="book-readback-panel hidden" id="book-readback-panel" aria-live="polite">
+                <div class="book-rb-head">
+                  <strong>🎙️ Luyện đọc lại từng câu (Micro)</strong>
+                  <button type="button" class="book-rb-close" id="btn-book-rb-close" aria-label="Đóng">✕</button>
+                </div>
+                <div class="book-rb-sentences" id="book-rb-sentences"></div>
+                <div class="book-rb-target" id="book-rb-target-text"></div>
+                <div class="book-rb-actions">
+                  <button type="button" class="btn-book-rb-listen" id="btn-book-rb-listen">🔊 Nghe mẫu</button>
+                  <button type="button" class="btn-book-rb-record" id="btn-book-rb-record">🎙️ Bấm để bé đọc câu này</button>
+                  <button type="button" class="btn-book-rb-next hidden" id="btn-book-rb-next-sent">Câu tiếp ➔</button>
+                </div>
+                <div class="book-rb-result hidden" id="book-rb-result"></div>
               </div>
             </div>
           </div>
@@ -1020,6 +1105,9 @@
             <button class="mode-tab active" id="tab-phonics-board" type="button" role="tab" aria-selected="true">
               🔤 Bảng A–Z
             </button>
+            <button class="mode-tab" id="tab-phonics-trace" type="button" role="tab" aria-selected="false">
+              ✏️ Tập Tô
+            </button>
             <button class="mode-tab" id="tab-phonics-blend" type="button" role="tab" aria-selected="false">
               🧩 Ghép Âm
             </button>
@@ -1101,6 +1189,9 @@
               </div>
 
               <div class="spotlight-bottom-actions">
+                <button class="btn-action-flip" id="btn-trace-this-letter" type="button">
+                  ✏️ Tập tô chữ A/a
+                </button>
                 <button class="btn-action-mastered" id="btn-mark-letter-learned" type="button">
                   <span id="mark-letter-icon">⭐</span>
                   <span id="mark-letter-text">Bé đã thuộc chữ này!</span>
@@ -1115,6 +1206,82 @@
           <div class="alphabet-grid" id="alphabet-grid" aria-label="Bảng chữ cái và âm ghép tiếng Anh">
             <!-- Populated dynamically by phonics.js -->
           </div>
+        </div>
+
+        <!-- TAB 1B: INTERACTIVE TOUCH LETTER TRACING A-Z / a-z -->
+        <div class="phonics-panel hidden" id="phonics-panel-trace">
+          <div class="phonics-toolbar trace-toolbar">
+            <div class="phonics-filter-group">
+              <button class="filter-pill active" id="btn-trace-upper" type="button">🔠 Chữ Hoa (A–Z)</button>
+              <button class="filter-pill" id="btn-trace-lower" type="button">🔡 Chữ Thường (a–z)</button>
+            </div>
+            <div class="phonics-toolbar-right">
+              <span class="hud-pill" id="trace-progress-pill">✏️ Đã tô: 0 / 52 chữ</span>
+              <button class="btn-trace-demo" id="btn-trace-demo" type="button">👀 Xem mẫu nét</button>
+            </div>
+          </div>
+
+          <div class="tracing-stage-card" id="tracing-stage-card">
+            <!-- Left: Interactive Touch Tracing Canvas -->
+            <div class="tracing-board-col">
+              <div class="trace-stroke-status" id="trace-stroke-status">
+                👆 Nét 1 / 3: Đặt tay vào số 1 và kéo theo mũi tên ➤
+              </div>
+
+              <div class="tracing-canvas-wrap">
+                <canvas id="tracing-canvas" width="380" height="380" aria-label="Bảng tập tô chữ cái cảm ứng"></canvas>
+              </div>
+
+              <div class="trace-success-banner hidden" id="trace-success-banner" role="status">
+                <span id="trace-success-msg">🎉 Tuyệt vời! Bé đã tô xong chữ A! +2 ⭐</span>
+                <button type="button" class="btn-action-mastered btn-trace-next-inline" id="btn-trace-success-next">Chữ tiếp ➔</button>
+              </div>
+
+              <div class="trace-canvas-tools">
+                <div class="trace-color-picker" id="trace-color-picker" aria-label="Chọn màu bút sáp"></div>
+                <button type="button" class="btn-secondary-pill" id="btn-trace-clear">🧹 Xóa tô lại</button>
+              </div>
+            </div>
+
+            <!-- Right: Phonics Phoneme Info & Audio -->
+            <div class="tracing-info-col">
+              <div class="trace-letter-header">
+                <span class="trace-big-glyph" id="trace-current-glyph">A</span>
+                <div class="trace-letter-meta">
+                  <span class="trace-pair-badge" id="trace-pair-badge">A / a</span>
+                  <span class="trace-name-ipa" id="trace-name-ipa">/eɪ/ • Đọc là "ây"</span>
+                </div>
+              </div>
+
+              <div class="trace-phoneme-box">
+                <div class="tpb-top">
+                  <span class="tpb-label">🗣️ Âm vị (Phonics Phoneme)</span>
+                  <strong class="tpb-ipa" id="trace-phoneme-ipa">/æ/</strong>
+                </div>
+                <span class="tpb-vi" id="trace-phoneme-vi">Âm ngắn "e-a"</span>
+                <div class="tpb-btn-row">
+                  <button type="button" class="btn-speak-primary" id="btn-trace-play-phoneme">🗣️ Nghe âm vị</button>
+                  <button type="button" class="btn-secondary-pill" id="btn-trace-play-name">🔊 Tên chữ</button>
+                </div>
+              </div>
+
+              <button type="button" class="trace-example-btn" id="btn-trace-example-word">
+                <span class="tex-emoji">🍎</span>
+                <span class="tex-text"><strong>Apple</strong><small>Quả Táo</small></span>
+                <span class="tex-spk">🔊</span>
+              </button>
+
+              <p class="trace-tip-text" id="trace-phoneme-tip">💡 Mở rộng miệng đọc âm ngắn "e-a", như trong từ Apple!</p>
+
+              <div class="trace-nav-row">
+                <button type="button" class="btn-action-flip" id="btn-trace-prev">⬅ Chữ trước</button>
+                <button type="button" class="btn-action-mastered" id="btn-trace-next">Chữ tiếp ➔</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick 26-Letter Strip (A-Z or a-z) -->
+          <div class="trace-letter-strip" id="trace-letter-strip" aria-label="Chọn chữ cái tập tô"></div>
         </div>
 
         <!-- TAB 2: CVC & WORD FAMILY BLENDING -->
@@ -1949,6 +2116,7 @@
   <script src="voice.js"></script>
   <script src="games.js"></script>
   <script src="phonics.js"></script>
+  <script src="tracing.js"></script>
   <script src="stories-data.js"></script>
   <script src="stories.js"></script>
   <script src="books-data.js"></script>
@@ -1959,6 +2127,7 @@
   <script src="milestones.js"></script>
   <script src="backup.js"></script>
   <script src="quest.js"></script>
+  <script src="little-mode.js"></script>
   <script src="pwa.js"></script>
 </body>
 </html>

@@ -261,9 +261,22 @@
       activeAudio.crossOrigin = 'anonymous';
     }
     try {
+      activeAudio.onended = null;
+      activeAudio.onerror = null;
       activeAudio.pause();
       activeAudio.currentTime = 0;
     } catch (e) { /* ignore */ }
+
+    let finished = false;
+    const finishOnce = (cb) => {
+      if (finished) return;
+      finished = true;
+      if (activeAudio) {
+        activeAudio.onended = null;
+        activeAudio.onerror = null;
+      }
+      if (cb) cb();
+    };
 
     activeAudio.src = url;
     activeAudio.playbackRate = Math.max(0.5, Math.min(1.5, playbackRate));
@@ -271,14 +284,14 @@
     if ('webkitPreservesPitch' in activeAudio) activeAudio.webkitPreservesPitch = true;
     if ('mozPreservesPitch' in activeAudio) activeAudio.mozPreservesPitch = true;
 
-    activeAudio.onended = () => { if (onEnd) onEnd(); };
-    activeAudio.onerror = () => { if (onError) onError(); };
+    activeAudio.onended = () => finishOnce(onEnd);
+    activeAudio.onerror = () => finishOnce(onError);
 
-    if (onStart) onStart();
+    if (onStart) onStart(activeAudio);
     const playPromise = activeAudio.play();
     if (playPromise && typeof playPromise.catch === 'function') {
       playPromise.catch(() => {
-        if (onError) onError();
+        finishOnce(onError);
       });
     }
   }
@@ -360,7 +373,7 @@
     return null;
   }
 
-  async function tryPlayCloudTts(rawText, rate, token) {
+  async function tryPlayCloudTts(rawText, rate, token, options = {}) {
     if (prefs.cloudProvider === 'none' || !prefs.cloudApiKey || cloudFailStreak >= 3) return false;
     const text = prepareSpeechText(rawText);
     const key = `${ prefs.cloudProvider }:${ prefs.accent }:${ rate.toFixed(2) }:${ text }`;
@@ -389,7 +402,11 @@
         playHtmlAudioUrl(
           blobUrl,
           1.0,
-          null,
+          (audioEl) => {
+            if (options && typeof options.onAudioStart === 'function') {
+              options.onAudioStart(audioEl, { engine: 'cloud', chunkIndex: 0, chunkCount: 1, chunkText: text });
+            }
+          },
           () => { setSpeakingVisual(false); resolve(true); },
           () => { setSpeakingVisual(false); resolve(false); }
         );
@@ -671,7 +688,7 @@
   }
 
   // Sentence-by-sentence streaming: starts playing sentence 1 immediately while pre-generating sentence 2
-  async function tryPlayKokoroTts(rawText, rate, token) {
+  async function tryPlayKokoroTts(rawText, rate, token, options = {}) {
     if (kokoroState === 'idle' && prefs.kokoroCached) {
       loadKokoroModel().catch(() => {});
     }
@@ -696,7 +713,16 @@
           playHtmlAudioUrl(
             blobUrl,
             audioRate,
-            null,
+            (audioEl) => {
+              if (options && typeof options.onAudioStart === 'function') {
+                options.onAudioStart(audioEl, {
+                  engine: 'kokoro',
+                  chunkIndex: i,
+                  chunkCount: sentences.length,
+                  chunkText: sentences[i]
+                });
+              }
+            },
             () => { setSpeakingVisual(false); resolve(true); },
             () => { setSpeakingVisual(false); resolve(false); }
           );
@@ -750,7 +776,7 @@
     return parts.map(t => t.trim()).filter(Boolean);
   }
 
-  function speakViaBrowserTts(text, requestedRate) {
+  function speakViaBrowserTts(text, requestedRate, options = {}) {
     return new Promise(resolve => {
       if (!('speechSynthesis' in window)) { resolve(); return; }
       const synth = window.speechSynthesis;
@@ -771,14 +797,29 @@
 
       const doSpeak = () => {
         if (settled) return;
-        const chunks = splitIntoChunks(prepareSpeechText(text));
+        const prepared = prepareSpeechText(text);
+        const chunks = splitIntoChunks(prepared);
         const bestVoice = pickBestBrowserVoice();
         // Calibrate natural rate while respecting the full 0.55x - 1.40x speed slider
         const baseRate = requestedRate <= 0.65 ? 0.72 : Math.min(1.04, Math.max(0.92, requestedRate + 0.04));
         const rate = Math.max(0.48, Math.min(1.5, +(baseRate * prefs.speedMultiplier).toFixed(2)));
 
         setSpeakingVisual(true);
+        let searchCursor = 0;
+        let startedNotified = false;
+        const notifyStart = () => {
+          if (startedNotified) return;
+          startedNotified = true;
+          if (options && typeof options.onSpeechStart === 'function') {
+            options.onSpeechStart({ engine: 'browser', rate });
+          }
+        };
+
         chunks.forEach((chunk, i) => {
+          const foundIdx = prepared.indexOf(chunk, searchCursor);
+          const chunkOffset = foundIdx >= 0 ? foundIdx : searchCursor;
+          searchCursor = chunkOffset + chunk.length;
+
           const utterance = new SpeechSynthesisUtterance(chunk);
           if (bestVoice) {
             utterance.voice = bestVoice;
@@ -790,6 +831,25 @@
           utterance.pitch = 1.0; // natural pitch (1.1 sounds like a chipmunk)
           utterance.volume = 1.0;
           liveUtterances.add(utterance);
+
+          utterance.onstart = () => {
+            if (i === 0) notifyStart();
+          };
+          if (options && typeof options.onBoundary === 'function') {
+            utterance.onboundary = (ev) => {
+              if (!ev || (ev.name && ev.name !== 'word')) return;
+              const charIndex = typeof ev.charIndex === 'number' ? ev.charIndex : 0;
+              options.onBoundary({
+                charIndex,
+                charLength: typeof ev.charLength === 'number' ? ev.charLength : 0,
+                globalCharIndex: chunkOffset + charIndex,
+                chunkIndex: i,
+                chunkText: chunk,
+                rate
+              });
+            };
+          }
+
           const done = () => {
             liveUtterances.delete(utterance);
             if (i === chunks.length - 1) finish();
@@ -798,6 +858,8 @@
           utterance.onerror = done;
           synth.speak(utterance);
         });
+
+        notifyStart();
 
         // Safety net in case the browser never reports the end of speech.
         const estimateMs = 2500 + (text.length * 95) / rate;
@@ -838,7 +900,7 @@
     }
   };
 
-  async function tryPlayDirectAudioUrl(url, audioRate, myToken) {
+  async function tryPlayDirectAudioUrl(url, audioRate, myToken, options = {}) {
     if (!url || myToken !== speakToken) return false;
     const clampedRate = Math.max(0.55, Math.min(1.5, audioRate));
     return await new Promise(resolve => {
@@ -846,7 +908,16 @@
       playHtmlAudioUrl(
         url,
         clampedRate,
-        null,
+        (audioEl) => {
+          if (options && typeof options.onAudioStart === 'function') {
+            options.onAudioStart(audioEl, {
+              engine: 'mp3',
+              chunkIndex: 0,
+              chunkCount: 1,
+              chunkText: options.text || ''
+            });
+          }
+        },
         () => { setSpeakingVisual(false); resolve(true); },
         () => { setSpeakingVisual(false); resolve(false); }
       );
@@ -858,11 +929,12 @@
     const isSlow = rate <= 0.68;
     const effectiveRate = (isSlow ? 0.76 : 1.0) * prefs.speedMultiplier;
     const preRecordedUrl = options && options.audioUrl ? String(options.audioUrl) : '';
+    const hookOpts = options ? { ...options, text } : { text };
 
     // Priority 0a (Pre-recorded Studio Audiobook MP3 for 16 storybooks — 0ms latency, Kokoro-82M fp32):
     // Played immediately unless user explicitly activated Google Cloud TTS with an API key.
     if (preRecordedUrl && prefs.nativeWordAudio && !(prefs.speechEngine === 'google' && prefs.cloudApiKey)) {
-      const ok = await tryPlayDirectAudioUrl(preRecordedUrl, effectiveRate, myToken);
+      const ok = await tryPlayDirectAudioUrl(preRecordedUrl, effectiveRate, myToken, hookOpts);
       if (ok || myToken !== speakToken) return;
     }
 
@@ -872,7 +944,7 @@
       if (myToken !== speakToken) return;
       if (mp3Url) {
         const audioRate = isSlow ? 0.74 * prefs.speedMultiplier : 1.0 * prefs.speedMultiplier;
-        const ok = await tryPlayDirectAudioUrl(mp3Url, audioRate, myToken);
+        const ok = await tryPlayDirectAudioUrl(mp3Url, audioRate, myToken, hookOpts);
         if (ok || myToken !== speakToken) return;
       }
     }
@@ -881,28 +953,28 @@
     if (prefs.speechEngine === 'google') {
       // 1a. Google Cloud TTS (or OpenAI if chosen in panel 3)
       if (prefs.cloudApiKey) {
-        const ok = await tryPlayCloudTts(text, (isSlow ? 0.75 : 0.96) * prefs.speedMultiplier, myToken);
+        const ok = await tryPlayCloudTts(text, (isSlow ? 0.75 : 0.96) * prefs.speedMultiplier, myToken, hookOpts);
         if (ok || myToken !== speakToken) return;
       }
       // 1b. Smart fallback -> pre-recorded studio MP3 if available (0ms offline!)
       if (preRecordedUrl) {
-        const ok = await tryPlayDirectAudioUrl(preRecordedUrl, effectiveRate, myToken);
+        const ok = await tryPlayDirectAudioUrl(preRecordedUrl, effectiveRate, myToken, hookOpts);
         if (ok || myToken !== speakToken) return;
       }
       // 1c. Smart fallback -> Kokoro AI if already ready offline on this device
       if (kokoroState === 'ready') {
-        const ok = await tryPlayKokoroTts(text, effectiveRate, myToken);
+        const ok = await tryPlayKokoroTts(text, effectiveRate, myToken, hookOpts);
         if (ok || myToken !== speakToken) return;
       }
     } else if (prefs.speechEngine === 'kokoro') {
       // 1a. Kokoro AI Offline (WebGPU/WASM + sentence streaming + IndexedDB cache)
-      const ok = await tryPlayKokoroTts(text, effectiveRate, myToken);
+      const ok = await tryPlayKokoroTts(text, effectiveRate, myToken, hookOpts);
       if (ok || myToken !== speakToken) return;
     }
 
     // Final layer (always available): Best ranked device/browser voice
     if (myToken !== speakToken) return;
-    await speakViaBrowserTts(text, rate);
+    await speakViaBrowserTts(text, rate, hookOpts);
   }
 
   // Returns a Promise that resolves when the speech has finished (or was interrupted).
@@ -910,7 +982,17 @@
     if (!text || !String(text).trim()) return Promise.resolve();
     window.stopAllSpeech();
     const myToken = speakToken;
-    currentSpeech = speakInternal(text, rate, myToken, options).catch(() => {});
+    let endNotified = false;
+    const notifyEnd = () => {
+      if (endNotified) return;
+      endNotified = true;
+      if (options && typeof options.onSpeechEnd === 'function') {
+        try { options.onSpeechEnd(); } catch (e) { /* ignore */ }
+      }
+    };
+    currentSpeech = speakInternal(text, rate, myToken, options)
+      .catch(() => {})
+      .finally(notifyEnd);
     return currentSpeech;
   };
 
