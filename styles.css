@@ -13256,3 +13256,23 @@ body.little-kids-mode #game-difficulty-bar {
     flex: 1 1 100%;
   }
 }
+
+/* Instant tap responsiveness (eliminates mobile 300ms delay) & snappy tooltip pop */
+.book-kword,
+.book-vocab-chip,
+.book-scene-prop,
+.stage-interactive-item,
+.scene-vocab-chip,
+.stage-dialogue-btn {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.book-word-tooltip.is-pop {
+  animation: bookTooltipPop 0.16s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes bookTooltipPop {
+  from { opacity: 0.4; transform: translateY(-3px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}

@@ -255,7 +255,7 @@
     }
   }
 
-  function playHtmlAudioUrl(url, playbackRate, onStart, onEnd, onError) {
+  function playHtmlAudioUrl(url, playbackRate, onStart, onEnd, onError, maxStartMs = 0) {
     if (!activeAudio) {
       activeAudio = new Audio();
       activeAudio.crossOrigin = 'anonymous';
@@ -263,17 +263,24 @@
     try {
       activeAudio.onended = null;
       activeAudio.onerror = null;
+      activeAudio.onplaying = null;
       activeAudio.pause();
       activeAudio.currentTime = 0;
     } catch (e) { /* ignore */ }
 
     let finished = false;
+    let startTimer = null;
     const finishOnce = (cb) => {
       if (finished) return;
       finished = true;
+      if (startTimer) {
+        clearTimeout(startTimer);
+        startTimer = null;
+      }
       if (activeAudio) {
         activeAudio.onended = null;
         activeAudio.onerror = null;
+        activeAudio.onplaying = null;
       }
       if (cb) cb();
     };
@@ -284,8 +291,23 @@
     if ('webkitPreservesPitch' in activeAudio) activeAudio.webkitPreservesPitch = true;
     if ('mozPreservesPitch' in activeAudio) activeAudio.mozPreservesPitch = true;
 
+    activeAudio.onplaying = () => {
+      if (startTimer) {
+        clearTimeout(startTimer);
+        startTimer = null;
+      }
+    };
     activeAudio.onended = () => finishOnce(onEnd);
     activeAudio.onerror = () => finishOnce(onError);
+
+    if (maxStartMs > 0) {
+      startTimer = setTimeout(() => {
+        if (!finished && activeAudio && activeAudio.currentTime < 0.02) {
+          try { activeAudio.pause(); } catch (e) { /* ignore */ }
+          finishOnce(onError);
+        }
+      }, maxStartMs);
+    }
 
     if (onStart) onStart(activeAudio);
     const playPromise = activeAudio.play();
@@ -859,7 +881,8 @@
           synth.speak(utterance);
         });
 
-        notifyStart();
+        // Wait briefly for utterance.onstart so Karaoke syncs to actual voice onset, with fast safety net
+        setTimeout(() => { if (!settled) notifyStart(); }, 220);
 
         // Safety net in case the browser never reports the end of speech.
         const estimateMs = 2500 + (text.length * 95) / rate;
@@ -896,11 +919,17 @@
     if (!prefs.nativeWordAudio) return;
     const word = extractCleanSingleWord(text);
     if (word) {
-      resolveNativeWordAudioUrl(word, prefs.accent).catch(() => {});
+      resolveNativeWordAudioUrl(word, prefs.accent)
+        .then(url => {
+          if (url && typeof window.preloadAudioUrl === 'function') {
+            window.preloadAudioUrl(url);
+          }
+        })
+        .catch(() => {});
     }
   };
 
-  async function tryPlayDirectAudioUrl(url, audioRate, myToken, options = {}) {
+  async function tryPlayDirectAudioUrl(url, audioRate, myToken, options = {}, maxStartMs = 0) {
     if (!url || myToken !== speakToken) return false;
     const clampedRate = Math.max(0.55, Math.min(1.5, audioRate));
     return await new Promise(resolve => {
@@ -919,7 +948,8 @@
           }
         },
         () => { setSpeakingVisual(false); resolve(true); },
-        () => { setSpeakingVisual(false); resolve(false); }
+        () => { setSpeakingVisual(false); resolve(false); },
+        maxStartMs
       );
     });
   }
@@ -929,23 +959,40 @@
     const isSlow = rate <= 0.68;
     const effectiveRate = (isSlow ? 0.76 : 1.0) * prefs.speedMultiplier;
     const preRecordedUrl = options && options.audioUrl ? String(options.audioUrl) : '';
+    const isInstantTap = Boolean(options && options.instant);
     const hookOpts = options ? { ...options, text } : { text };
 
     // Priority 0a (Pre-recorded Studio Audiobook MP3 for 16 storybooks — 0ms latency, Kokoro-82M fp32):
     // Played immediately unless user explicitly activated Google Cloud TTS with an API key.
     if (preRecordedUrl && prefs.nativeWordAudio && !(prefs.speechEngine === 'google' && prefs.cloudApiKey)) {
-      const ok = await tryPlayDirectAudioUrl(preRecordedUrl, effectiveRate, myToken, hookOpts);
+      const ok = await tryPlayDirectAudioUrl(preRecordedUrl, effectiveRate, myToken, hookOpts, 0);
       if (ok || myToken !== speakToken) return;
     }
 
-    // Priority 0b (Single words): Real human studio MP3 when enabled
+    // Priority 0b (Single words): Real human studio MP3 when enabled — never stall >420ms on live taps!
     if (prefs.nativeWordAudio && cleanWord) {
-      const mp3Url = await resolveNativeWordAudioUrl(cleanWord, prefs.accent);
+      const cacheKey = `${ prefs.accent }:${ cleanWord }`;
+      let mp3Url = '';
+      if (cacheKey in audioCache) {
+        mp3Url = audioCache[cacheKey] || '';
+      } else if (isInstantTap) {
+        // Warm cache in background without blocking the child's tap
+        window.prefetchWordAudio(cleanWord);
+      } else {
+        // Fast 420ms race: play studio MP3 if quick, otherwise fall back immediately while caching in background
+        const lookupPromise = resolveNativeWordAudioUrl(cleanWord, prefs.accent);
+        mp3Url = await Promise.race([
+          lookupPromise,
+          new Promise(r => setTimeout(() => r(''), 420))
+        ]);
+      }
       if (myToken !== speakToken) return;
-      if (mp3Url) {
+      if (mp3Url && (!isInstantTap || preloadedAudioUrls.has(mp3Url))) {
         const audioRate = isSlow ? 0.74 * prefs.speedMultiplier : 1.0 * prefs.speedMultiplier;
-        const ok = await tryPlayDirectAudioUrl(mp3Url, audioRate, myToken, hookOpts);
+        const ok = await tryPlayDirectAudioUrl(mp3Url, audioRate, myToken, hookOpts, isInstantTap ? 450 : 650);
         if (ok || myToken !== speakToken) return;
+      } else if (mp3Url && isInstantTap) {
+        window.preloadAudioUrl(mp3Url);
       }
     }
 

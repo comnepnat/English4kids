@@ -314,9 +314,10 @@
       btn.innerHTML = `<span>${ ch.emoji }</span><strong>${ ch.en }</strong>${ ch.vi ? `<em>${ ch.vi }</em>` : '' }<span>🔊</span>`;
       btn.addEventListener('click', () => {
         playSoundEffect('pop');
-        speakEnglish(ch.en, 0.88);
+        speakEnglish(ch.en, 0.88, { instant: true });
       });
       bar.appendChild(btn);
+      if (typeof window.prefetchWordAudio === 'function') window.prefetchWordAudio(ch.en);
     });
   }
 
@@ -539,7 +540,7 @@
       if (done >= targets.length) {
         advanceAfterSuccess(scene);
       } else {
-        speakEnglish(`${ item.label }!`, 0.95);
+        speakEnglish(`${ item.label }!`, 0.95, { instant: true });
       }
     } else {
       triggerWrongBounce(btn, `Hmm, ${ item.label } does not belong in this basket!`);
@@ -564,7 +565,7 @@
     if (num >= scene.items.length) {
       advanceAfterSuccess(scene);
     } else {
-      speakEnglish(`${ NUMBER_WORDS[num] || num }!`, 0.96);
+      speakEnglish(`${ NUMBER_WORDS[num] || num }!`, 0.96, { instant: true });
     }
   }
 
@@ -585,7 +586,7 @@
         advanceAfterSuccess(scene);
       } else {
         $('story-checkpoint-badge').textContent = `🧩 SẮP XẾP THỨ TỰ (Bước ${ sState.seqStep + 1 } / ${ scene.order.length })`;
-        speakEnglish(`${ item.label }!`, 0.95);
+        speakEnglish(`${ item.label }!`, 0.95, { instant: true });
       }
     } else {
       triggerWrongBounce(btn, `Not yet! ${ scene.promptEn }`);

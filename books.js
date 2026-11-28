@@ -406,16 +406,51 @@
     return { html, tokens, sentences };
   }
 
+  let _bookDictMap = null;
+  let tapHighlightTimer = null;
+
+  function getBookDictMap() {
+    if (!_bookDictMap && typeof window.getAllVocabCards === 'function') {
+      _bookDictMap = new Map();
+      window.getAllVocabCards().forEach(c => {
+        const key = String(c.en || '').toLowerCase().trim();
+        if (key && !_bookDictMap.has(key)) _bookDictMap.set(key, c);
+      });
+    }
+    return _bookDictMap;
+  }
+
+  function lookupWordMeta(word, page) {
+    const clean = String(word || '').trim();
+    const lower = clean.toLowerCase();
+    if (page && Array.isArray(page.vocab)) {
+      const found = page.vocab.find(v => String(v.w || '').toLowerCase() === lower);
+      if (found) return found;
+    }
+    const dMap = getBookDictMap();
+    if (dMap) {
+      const singular = lower.endsWith('s') && lower.length > 3 ? lower.slice(0, -1) : lower;
+      const baseIng = lower.endsWith('ing') && lower.length > 5 ? lower.slice(0, -3) : lower;
+      const card = dMap.get(lower) || dMap.get(singular) || dMap.get(baseIng);
+      if (card) {
+        return { w: clean, ipa: card.phonetic || '', vi: card.vi || '', emoji: card.emoji || '🔊' };
+      }
+    }
+    return { w: clean, ipa: '', vi: 'Đang phát âm', emoji: '🔊' };
+  }
+
   function showWordTooltip(v) {
     const tip = $('book-word-tooltip');
     if (!tip || !v) return;
     tip.innerHTML = `
       <span class="bwt-emoji">${ v.emoji || '✨' }</span>
       <strong>${ escapeHtml(v.w) }</strong>
-      <span class="bwt-ipa">${ escapeHtml(v.ipa || '') }</span>
+      ${ v.ipa ? `<span class="bwt-ipa">${ escapeHtml(v.ipa) }</span>` : '' }
       <span class="bwt-vi">${ escapeHtml(v.vi || '') }</span>
     `;
-    tip.classList.remove('hidden');
+    tip.classList.remove('hidden', 'is-pop');
+    void tip.offsetWidth;
+    tip.classList.add('is-pop');
     clearTimeout(tip._hideTimer);
     tip._hideTimer = setTimeout(() => tip.classList.add('hidden'), 3600);
   }
@@ -522,7 +557,7 @@
           toast._t = setTimeout(() => toast.classList.add('hidden'), 2400);
         }
         if (typeof window.speakEnglish === 'function') {
-          window.speakEnglish(p.speak || p.label, 0.92);
+          window.speakEnglish(p.speak || p.label, 0.92, { instant: true });
         }
       });
     });
@@ -1101,17 +1136,26 @@
           if (!tok) return;
           cancelAutoRead();
           stopBookMic();
+          clearTimeout(tapHighlightTimer);
           if (typeof playSoundEffect === 'function') playSoundEffect('pop');
           setActiveKaraokeWord(widx, [widx]);
-          setTimeout(() => {
+
+          const clearTapGlow = () => {
+            clearTimeout(tapHighlightTimer);
             if (karaokeActiveWidx === widx) clearKaraokeHighlights();
-          }, 900);
-          if (tok.vocabIdx >= 0 && page.vocab && page.vocab[tok.vocabIdx]) {
-            const v = page.vocab[tok.vocabIdx];
-            showWordTooltip(v);
-            if (typeof window.speakEnglish === 'function') window.speakEnglish(v.w, 0.90);
-          } else {
-            if (typeof window.speakEnglish === 'function') window.speakEnglish(tok.word, 0.90);
+          };
+          tapHighlightTimer = setTimeout(clearTapGlow, 1500);
+
+          const meta = (tok.vocabIdx >= 0 && page.vocab && page.vocab[tok.vocabIdx])
+            ? page.vocab[tok.vocabIdx]
+            : lookupWordMeta(tok.word, page);
+          showWordTooltip(meta);
+
+          const speakWord = (tok.vocabIdx >= 0 && page.vocab && page.vocab[tok.vocabIdx])
+            ? page.vocab[tok.vocabIdx].w
+            : tok.word;
+          if (typeof window.speakEnglish === 'function') {
+            window.speakEnglish(speakWord, 0.90, { instant: true, onSpeechEnd: clearTapGlow });
           }
         };
         el.addEventListener('click', handleTapWord);
@@ -1153,7 +1197,7 @@
           stopBookMic();
           if (typeof playSoundEffect === 'function') playSoundEffect('pop');
           showWordTooltip(v);
-          if (typeof window.speakEnglish === 'function') window.speakEnglish(v.w, 0.92);
+          if (typeof window.speakEnglish === 'function') window.speakEnglish(v.w, 0.92, { instant: true });
         });
       });
     }
@@ -1195,6 +1239,15 @@
       spreadEl.classList.remove('page-turn-in');
       void spreadEl.offsetWidth;
       spreadEl.classList.add('page-turn-in');
+    }
+
+    // Preload current page studio MP3 & prefetch page vocab words immediately for 0ms tap response
+    if (typeof window.preloadAudioUrl === 'function') {
+      window.preloadAudioUrl(getBookPageAudioUrl(currentBook.id, currentPageIndex));
+    }
+    if (typeof window.prefetchWordAudio === 'function') {
+      (page.vocab || []).forEach(v => { if (v && v.w) window.prefetchWordAudio(v.w); });
+      (page.props || []).forEach(p => { if (p && (p.speak || p.label)) window.prefetchWordAudio(p.speak || p.label); });
     }
 
     if (autoSpeak) {
